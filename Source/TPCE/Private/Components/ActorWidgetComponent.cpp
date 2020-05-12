@@ -65,7 +65,8 @@ void UActorWidgetComponent::OnHiddenInGameChanged()
 	Super::OnHiddenInGameChanged();
 
 	// Make sure the widget will not respond to visibility traces
-	GetUserWidgetObject()->SetVisibility(IsVisible() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	if (GetUserWidgetObject())
+		GetUserWidgetObject()->SetVisibility(IsVisible() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void UActorWidgetComponent::OnVisibilityChanged()
@@ -73,7 +74,8 @@ void UActorWidgetComponent::OnVisibilityChanged()
 	Super::OnVisibilityChanged();
 
 	// Make sure the widget will not respond to visibility traces
-	GetUserWidgetObject()->SetVisibility(IsVisible() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	if (GetUserWidgetObject())
+		GetUserWidgetObject()->SetVisibility(IsVisible() ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 }
 
 void UActorWidgetComponent::InitWidget()
