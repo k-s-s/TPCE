@@ -252,6 +252,14 @@ public:		// Bitfields
 	UPROPERTY(BlueprintReadOnly, Transient, Category = Character)
 	uint32 bIsJumping : 1;
 
+	/** Forwards/backwards movement value from input actions, added to the axis value. */
+	UPROPERTY(Transient)
+	int32 MoveForwardValue;
+
+	/** Left/right movement value from input actions, added to the axis value. */
+	UPROPERTY(Transient)
+	int32 MoveRightValue;
+
 protected:
 
 	/**
@@ -270,34 +278,46 @@ private:	// Variables
 	FTimerHandle GettingUpTimerHandle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName MoveForwardInputName;
+	FName MoveForwardActionName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName MoveRightInputName;
+	FName MoveBackwardActionName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName LookUpInputName;
+	FName MoveLeftActionName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName LookRightInputName;
+	FName MoveRightActionName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName CrouchInputName;
+	FName MoveForwardAxisName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName JumpInputName;
+	FName MoveRightAxisName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName WalkInputName;
+	FName LookUpAxisName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName SprintInputName;
+	FName LookRightAxisName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName GenericActionInputName;
+	FName CrouchActionName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName FireInputName;
+	FName JumpActionName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
+	FName WalkActionName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
+	FName SprintActionName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
+	FName GenericActionName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
+	FName FireActionName;
 
 	/** Name of the collision profile to be used by the capsule component when in ragdoll mode. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Ragdoll, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
@@ -493,6 +513,30 @@ protected:	// Methods
 
 	/** [local] Handle player input to move side to side */
 	virtual void PlayerInputMoveRight(float Value);
+
+	/** [local] Handle player input to start moving forwards */
+	virtual void PlayerInputStartMoveForward();
+
+	/** [local] Handle player input to stop moving forwards */
+	virtual void PlayerInputStopMoveForward();
+
+	/** [local] Handle player input to start moving backwards */
+	virtual void PlayerInputStartMoveBackward();
+
+	/** [local] Handle player input to stop moving backwards */
+	virtual void PlayerInputStopMoveBackward();
+
+	/** [local] Handle player input to start moving left */
+	virtual void PlayerInputStartMoveLeft();
+
+	/** [local] Handle player input to stop moving left */
+	virtual void PlayerInputStopMoveLeft();
+
+	/** [local] Handle player input to start moving right */
+	virtual void PlayerInputStartMoveRight();
+
+	/** [local] Handle player input to stop moving right */
+	virtual void PlayerInputStopMoveRight();
 
 	/** [local] Handle player input to look up/down */
 	virtual void PlayerInputLookUp(float Value);

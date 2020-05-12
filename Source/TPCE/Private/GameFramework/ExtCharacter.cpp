@@ -52,16 +52,20 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 		FName NAME_AccelerationArrow;
 #endif
 #endif
-		FName NAME_MoveForwardInput;
-		FName NAME_MoveRightInput;
-		FName NAME_LookUpInput;
-		FName NAME_LookRightInput;
-		FName NAME_CrouchInput;
-		FName NAME_JumpInput;
-		FName NAME_WalkInput;
-		FName NAME_SprintInput;
-		FName NAME_GenericActionInput;
-		FName NAME_FireInput;
+		FName NAME_MoveForwardAction;
+		FName NAME_MoveBackwardAction;
+		FName NAME_MoveLeftAction;
+		FName NAME_MoveRightAction;
+		FName NAME_MoveForwardAxis;
+		FName NAME_MoveRightAxis;
+		FName NAME_LookUpAxis;
+		FName NAME_LookRightAxis;
+		FName NAME_CrouchAction;
+		FName NAME_JumpAction;
+		FName NAME_WalkAction;
+		FName NAME_SprintAction;
+		FName NAME_GenericAction;
+		FName NAME_FireAction;
 		FName NAME_RagdollMeshCollisionProfile;
 		FName NAME_RagdollCapsuleCollisionProfile;
 		FName NAME_RagdollMeshConstraintProfile;
@@ -84,16 +88,20 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 #endif
 #endif
 
-			NAME_MoveForwardInput(TEXT("MoveForward")),
-			NAME_MoveRightInput(TEXT("MoveRight")),
-			NAME_LookUpInput(TEXT("LookUp")),
-			NAME_LookRightInput(TEXT("LookRight")),
-			NAME_CrouchInput(TEXT("Crouch")),
-			NAME_JumpInput(TEXT("Jump")),
-			NAME_WalkInput(TEXT("Walk")),
-			NAME_SprintInput(TEXT("Sprint")),
-			NAME_GenericActionInput(TEXT("GenericAction")),
-			NAME_FireInput(TEXT("Fire")),
+			NAME_MoveForwardAction(TEXT("MoveForward")),
+			NAME_MoveBackwardAction(TEXT("MoveBackward")),
+			NAME_MoveLeftAction(TEXT("MoveLeft")),
+			NAME_MoveRightAction(TEXT("MoveRight")),
+			NAME_MoveForwardAxis(TEXT("MoveForward")),
+			NAME_MoveRightAxis(TEXT("MoveRight")),
+			NAME_LookUpAxis(TEXT("LookUp")),
+			NAME_LookRightAxis(TEXT("LookRight")),
+			NAME_CrouchAction(TEXT("Crouch")),
+			NAME_JumpAction(TEXT("Jump")),
+			NAME_WalkAction(TEXT("Walk")),
+			NAME_SprintAction(TEXT("Sprint")),
+			NAME_GenericAction(TEXT("GenericAction")),
+			NAME_FireAction(TEXT("Fire")),
 			NAME_RagdollMeshCollisionProfile(NAME_Ragdoll),
 			NAME_RagdollCapsuleCollisionProfile(NAME_Spectator),
 			NAME_RagdollMeshConstraintProfile(NAME_Ragdoll),
@@ -105,16 +113,20 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	} ConstructorStatics;
 
 	// Input settings
-	MoveForwardInputName = ConstructorStatics.NAME_MoveForwardInput;
-	MoveRightInputName = ConstructorStatics.NAME_MoveRightInput;
-	LookUpInputName = ConstructorStatics.NAME_LookUpInput;
-	LookRightInputName = ConstructorStatics.NAME_LookRightInput;
-	CrouchInputName = ConstructorStatics.NAME_CrouchInput;
-	JumpInputName = ConstructorStatics.NAME_JumpInput;
-	WalkInputName = ConstructorStatics.NAME_WalkInput;
-	SprintInputName = ConstructorStatics.NAME_SprintInput;
-	GenericActionInputName = ConstructorStatics.NAME_GenericActionInput;
-	FireInputName = ConstructorStatics.NAME_FireInput;
+	MoveForwardActionName = ConstructorStatics.NAME_MoveForwardAction;
+	MoveBackwardActionName = ConstructorStatics.NAME_MoveBackwardAction;
+	MoveLeftActionName = ConstructorStatics.NAME_MoveLeftAction;
+	MoveRightActionName = ConstructorStatics.NAME_MoveRightAction;
+	MoveForwardAxisName = ConstructorStatics.NAME_MoveForwardAxis;
+	MoveRightAxisName = ConstructorStatics.NAME_MoveRightAxis;
+	LookUpAxisName = ConstructorStatics.NAME_LookUpAxis;
+	LookRightAxisName = ConstructorStatics.NAME_LookRightAxis;
+	CrouchActionName = ConstructorStatics.NAME_CrouchAction;
+	JumpActionName = ConstructorStatics.NAME_JumpAction;
+	WalkActionName = ConstructorStatics.NAME_WalkAction;
+	SprintActionName = ConstructorStatics.NAME_SprintAction;
+	GenericActionName = ConstructorStatics.NAME_GenericAction;
+	FireActionName = ConstructorStatics.NAME_FireAction;
 
 	RagdollMeshCollisionProfileName = ConstructorStatics.NAME_RagdollMeshCollisionProfile;
 	RagdollCapsuleCollisionProfileName = ConstructorStatics.NAME_RagdollCapsuleCollisionProfile;
@@ -918,34 +930,48 @@ void AExtCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis(MoveForwardInputName, this, &ThisClass::PlayerInputMoveForward);
-	PlayerInputComponent->BindAxis(MoveRightInputName, this, &ThisClass::PlayerInputMoveRight);
+	PlayerInputComponent->BindAxis(MoveForwardAxisName, this, &ThisClass::PlayerInputMoveForward);
+	PlayerInputComponent->BindAxis(MoveRightAxisName, this, &ThisClass::PlayerInputMoveRight);
 
-	PlayerInputComponent->BindAxis(LookUpInputName, this, &ThisClass::PlayerInputLookUp);
-	PlayerInputComponent->BindAxis(LookRightInputName, this, &ThisClass::PlayerInputLookRight);
+	PlayerInputComponent->BindAxis(LookUpAxisName, this, &ThisClass::PlayerInputLookUp);
+	PlayerInputComponent->BindAxis(LookRightAxisName, this, &ThisClass::PlayerInputLookRight);
 
-	PlayerInputComponent->BindAction(CrouchInputName, IE_Pressed, this, &ThisClass::PlayerInputStartCrouch);
-	PlayerInputComponent->BindAction(CrouchInputName, IE_Released, this, &ThisClass::PlayerInputStopCrouch);
+	PlayerInputComponent->BindAction(MoveForwardActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveForward);
+	PlayerInputComponent->BindAction(MoveForwardActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveForward);
 
-	PlayerInputComponent->BindAction(JumpInputName, IE_Pressed, this, &ThisClass::PlayerInputStartJump);
-	PlayerInputComponent->BindAction(JumpInputName, IE_Released, this, &ThisClass::PlayerInputStopJump);
+	PlayerInputComponent->BindAction(MoveBackwardActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveBackward);
+	PlayerInputComponent->BindAction(MoveBackwardActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveBackward);
 
-	PlayerInputComponent->BindAction(WalkInputName, IE_Pressed, this, &ThisClass::PlayerInputStartWalk);
-	PlayerInputComponent->BindAction(WalkInputName, IE_Released, this, &ThisClass::PlayerInputStopWalk);
+	PlayerInputComponent->BindAction(MoveLeftActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveLeft);
+	PlayerInputComponent->BindAction(MoveLeftActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveLeft);
 
-	PlayerInputComponent->BindAction(SprintInputName, IE_Pressed, this, &ThisClass::PlayerInputStartSprint);
-	PlayerInputComponent->BindAction(SprintInputName, IE_Released, this, &ThisClass::PlayerInputStopSprint);
+	PlayerInputComponent->BindAction(MoveRightActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveRight);
+	PlayerInputComponent->BindAction(MoveRightActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveRight);
 
-	PlayerInputComponent->BindAction(GenericActionInputName, IE_Pressed, this, &ThisClass::PlayerInputStartGenericAction);
-	PlayerInputComponent->BindAction(GenericActionInputName, IE_Released, this, &ThisClass::PlayerInputStopGenericAction);
+	PlayerInputComponent->BindAction(CrouchActionName, IE_Pressed, this, &ThisClass::PlayerInputStartCrouch);
+	PlayerInputComponent->BindAction(CrouchActionName, IE_Released, this, &ThisClass::PlayerInputStopCrouch);
 
-	PlayerInputComponent->BindAction(FireInputName, IE_Pressed, this, &ThisClass::PlayerInputStartFire);
-	PlayerInputComponent->BindAction(FireInputName, IE_Released, this, &ThisClass::PlayerInputStopFire);
+	PlayerInputComponent->BindAction(JumpActionName, IE_Pressed, this, &ThisClass::PlayerInputStartJump);
+	PlayerInputComponent->BindAction(JumpActionName, IE_Released, this, &ThisClass::PlayerInputStopJump);
+
+	PlayerInputComponent->BindAction(WalkActionName, IE_Pressed, this, &ThisClass::PlayerInputStartWalk);
+	PlayerInputComponent->BindAction(WalkActionName, IE_Released, this, &ThisClass::PlayerInputStopWalk);
+
+	PlayerInputComponent->BindAction(SprintActionName, IE_Pressed, this, &ThisClass::PlayerInputStartSprint);
+	PlayerInputComponent->BindAction(SprintActionName, IE_Released, this, &ThisClass::PlayerInputStopSprint);
+
+	PlayerInputComponent->BindAction(GenericActionName, IE_Pressed, this, &ThisClass::PlayerInputStartGenericAction);
+	PlayerInputComponent->BindAction(GenericActionName, IE_Released, this, &ThisClass::PlayerInputStopGenericAction);
+
+	PlayerInputComponent->BindAction(FireActionName, IE_Pressed, this, &ThisClass::PlayerInputStartFire);
+	PlayerInputComponent->BindAction(FireActionName, IE_Released, this, &ThisClass::PlayerInputStopFire);
 }
 
 void AExtCharacter::PlayerInputMoveForward(float Value)
 {
-	if (Value != 0.0f &&  Controller  && Controller->IsLocalPlayerController())
+	Value += MoveForwardValue;
+
+	if (Value != 0.0f && Controller && Controller->IsLocalPlayerController())
 	{
 		FVector Location;
 		FRotator Rotation;
@@ -956,7 +982,9 @@ void AExtCharacter::PlayerInputMoveForward(float Value)
 
 void AExtCharacter::PlayerInputMoveRight(float Value)
 {
-	if (Value != 0.0f && Controller  && Controller->IsLocalPlayerController())
+	Value += MoveRightValue;
+
+	if (Value != 0.0f && Controller && Controller->IsLocalPlayerController())
 	{
 		FVector Location;
 		FRotator Rotation;
@@ -965,9 +993,73 @@ void AExtCharacter::PlayerInputMoveRight(float Value)
 	}
 }
 
+void AExtCharacter::PlayerInputStartMoveForward()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveForwardValue += 1;
+	}
+}
+
+void AExtCharacter::PlayerInputStopMoveForward()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveForwardValue -= 1;
+	}
+}
+
+void AExtCharacter::PlayerInputStartMoveBackward()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveForwardValue -= 1;
+	}
+}
+
+void AExtCharacter::PlayerInputStopMoveBackward()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveForwardValue += 1;
+	}
+}
+
+void AExtCharacter::PlayerInputStartMoveLeft()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveRightValue -= 1;
+	}
+}
+
+void AExtCharacter::PlayerInputStopMoveLeft()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveRightValue += 1;
+	}
+}
+
+void AExtCharacter::PlayerInputStartMoveRight()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveRightValue += 1;
+	}
+}
+
+void AExtCharacter::PlayerInputStopMoveRight()
+{
+	if (Controller && Controller->IsLocalPlayerController())
+	{
+		MoveRightValue -= 1;
+	}
+}
+
 void AExtCharacter::PlayerInputLookUp(float Value)
 {
-	if (Value != 0.0f &&  Controller  && Controller->IsLocalPlayerController())
+	if (Value != 0.0f && Controller && Controller->IsLocalPlayerController())
 	{
 		AddControllerPitchInput(LookUpInputSpeed > 0.0f ? LookUpInputSpeed * GetWorld()->GetDeltaSeconds() * Value : Value);
 	}
@@ -975,9 +1067,9 @@ void AExtCharacter::PlayerInputLookUp(float Value)
 
 void AExtCharacter::PlayerInputLookRight(float Value)
 {
-	if (Value != 0.0f && Controller  && Controller->IsLocalPlayerController())
+	if (Value != 0.0f && Controller && Controller->IsLocalPlayerController())
 	{
-		AddControllerYawInput(LookRightInputSpeed  > 0.0f ? LookRightInputSpeed * GetWorld()->GetDeltaSeconds() * Value : Value);
+		AddControllerYawInput(LookRightInputSpeed > 0.0f ? LookRightInputSpeed * GetWorld()->GetDeltaSeconds() * Value : Value);
 	}
 }
 
