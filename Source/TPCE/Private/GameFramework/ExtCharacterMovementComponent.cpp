@@ -196,6 +196,11 @@ void UExtCharacterMovementComponent::TickComponent(float DeltaTime, enum ELevelT
 #endif
 }
 
+float UExtCharacterMovementComponent::GetRVOAvoidanceRadius()
+{
+	return (AvoidanceRadius > 0.0f) ? AvoidanceRadius : Super::GetRVOAvoidanceRadius();
+}
+
 /// Replication
 
 

@@ -399,6 +399,10 @@ public: // Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: Ragdoll", meta = (ClampMin = "0", UIMin = "0"))
 	float BrakingDecelerationRagdoll;
 
+	/** Avoidance radius. If zero, uses the capsule radius instead. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance")
+	float AvoidanceRadius;
+
 protected: // Methods
 
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
@@ -424,6 +428,8 @@ public: // Methods
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
+	virtual float GetRVOAvoidanceRadius() override;
+
 	virtual float GetMaxSpeed() const override;
 	virtual float GetMaxBrakingDeceleration() const override;
 	virtual float GetBrakingFrictionFactor() const;
@@ -446,6 +452,7 @@ public: // Methods
 
 	/** Perform rotation over deltaTime. This is an override to support interpolation, turn in place and adaptive rotation. */
 	virtual void PhysicsRotation(float DeltaSeconds) override;
+
 
 	/**
 	 * @return true if the character is allowed to turn in place in the current state. Does not apply if ground speed is not zero, if falling
