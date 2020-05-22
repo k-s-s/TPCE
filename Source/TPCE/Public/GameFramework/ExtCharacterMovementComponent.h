@@ -403,12 +403,36 @@ public: // Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance")
 	float AvoidanceRadius;
 
+	/**
+	 * Allows soft collision between characters by pushing ourselves away from other ECC_Pawn capsules.
+	 * Make sure collision response is set to overlap.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
+	bool bPushAwayFromPawns;
+
+	/** Repulsion force from pawn capsules that barely overlap ours. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
+	float MinPushAwayForce;
+
+	/** Repulsion force from pawn capsules that heavily overlap ours. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
+	float MaxPushAwayForce;
+
+	/** Repulsion force ignores mass. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
+	bool bPushAwayForceIgnoresMass;
+
+	/** Distance curve exponent. Higher values make the repulsion force approach the maximum value faster. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Character Movement: Pawn Interaction")
+	float PushAwayDistanceExp;
+
 protected: // Methods
 
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual FVector ScaleInputAcceleration(const FVector& InputAcceleration) const override;
 
 	virtual void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration) override;
+	virtual void ApplyAccumulatedForces(float DeltaSeconds) override;
 	virtual void SimulateMovement(float DeltaSeconds) override;
 
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity);

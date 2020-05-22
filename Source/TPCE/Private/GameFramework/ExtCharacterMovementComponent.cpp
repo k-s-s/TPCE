@@ -130,12 +130,19 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 	TurnInPlaceMaxDistance = 90.0f;
 	TurnInPlaceTargetYaw = INFINITY;
 
-	// Walk of Ledges
+	// Walk Off Ledges
 	bCanWalkOffLedgesWhenCrouching = true;
 	bCanWalkOffLedgesWhenWalking = true;
 	bCanWalkOffLedgesWhenRunning = true;
 	bCanWalkOffLedgesWhenSprinting = true;
 	bCanWalkOffLedgesWhenPerformingGenericAction = true;
+
+	// Pawn Interaction
+	bPushAwayFromPawns = false;
+	MinPushAwayForce = 5000.0f;
+	MaxPushAwayForce = 300000.0f;
+	bPushAwayForceIgnoresMass = false;
+	PushAwayDistanceExp = 3.0f;
 }
 
 #if WITH_EDITOR
@@ -282,6 +289,51 @@ void UExtCharacterMovementComponent::ApplyVelocityBraking(float DeltaTime, float
 	{
 		Velocity = FVector::ZeroVector;
 	}
+}
+
+void UExtCharacterMovementComponent::ApplyAccumulatedForces(float DeltaSeconds)
+{
+	if (bPushAwayFromPawns && IsWalking())
+	{
+		const TArray<FOverlapInfo>& Overlaps = UpdatedPrimitive->GetOverlapInfos();
+
+		if (Overlaps.Num() > 0)
+		{
+			float MyCapsuleRadius = 0.0f;
+			float MyCapsuleHalfHeight = 0.0f;
+			CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleSize(MyCapsuleRadius, MyCapsuleHalfHeight);
+			const FVector MyCapsuleLocation = UpdatedPrimitive->GetComponentLocation();
+
+			for (int32 OverlapIndex = 0; OverlapIndex < Overlaps.Num(); OverlapIndex++)
+			{
+				const FOverlapInfo& Overlap = Overlaps[OverlapIndex];
+				UPrimitiveComponent* OverlapComp = Overlap.OverlapInfo.Component.Get();
+
+				if (!OverlapComp || OverlapComp->GetCollisionObjectType() != ECollisionChannel::ECC_Pawn)
+				{
+					continue;
+				}
+
+				if (UCapsuleComponent* OverlapCapsule = Cast<UCapsuleComponent>(OverlapComp))
+				{
+					const float BothRadii = MyCapsuleRadius + OverlapCapsule->GetScaledCapsuleRadius();
+					FVector PushDirection = MyCapsuleLocation - OverlapComp->GetComponentLocation();
+					PushDirection.Z = 0.0f;
+					const float PushForcePct = 1.0f - FMath::Pow(FMath::Clamp(PushDirection.Size() / BothRadii, 0.0f, 1.0f), PushAwayDistanceExp);
+					float PushForce = FMath::Lerp(MinPushAwayForce, MaxPushAwayForce, PushForcePct);
+					if (!bPushAwayForceIgnoresMass)
+					{
+						PushForce /= Mass;
+					}
+					
+					PushDirection.Normalize();
+					PendingForceToApply += PushDirection * PushForce;
+				}
+			}
+		}
+	}
+
+	Super::ApplyAccumulatedForces(DeltaSeconds);
 }
 
 void UExtCharacterMovementComponent::SimulateMovement(float DeltaSeconds)
