@@ -404,6 +404,20 @@ public: // Variables
 	float AvoidanceRadius;
 
 	/**
+	 * Smooths out changes in the direction of the avoidance velocity.
+	 * Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance")
+	float AvoidanceDirectionLagSpeed;
+
+	/**
+	 * Smooths out changes in the magnitude of the avoidance velocity.
+	 * Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance")
+	float AvoidanceMagnitudeLagSpeed;
+
+	/**
 	 * Allows soft collision between characters by pushing ourselves away from other ECC_Pawn capsules.
 	 * Make sure collision response is set to overlap.
 	 */
@@ -453,6 +467,7 @@ public: // Methods
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
 	virtual float GetRVOAvoidanceRadius() override;
+	virtual void CalcAvoidanceVelocity(float DeltaTime) override;
 
 	virtual float GetMaxSpeed() const override;
 	virtual float GetMaxBrakingDeceleration() const override;

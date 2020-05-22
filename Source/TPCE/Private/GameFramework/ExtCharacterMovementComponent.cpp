@@ -8,6 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "AI/Navigation/AvoidanceManager.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/NetworkObjectList.h"
 #include "PhysicsEngine/ConstraintInstance.h"
@@ -143,6 +144,11 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 	MaxPushAwayForce = 300000.0f;
 	bPushAwayForceIgnoresMass = false;
 	PushAwayDistanceExp = 3.0f;
+
+	// Avoidance
+	AvoidanceRadius = 0.0f;
+	AvoidanceDirectionLagSpeed = 0.0f;
+	AvoidanceMagnitudeLagSpeed = 0.0f;
 }
 
 #if WITH_EDITOR
@@ -206,6 +212,19 @@ void UExtCharacterMovementComponent::TickComponent(float DeltaTime, enum ELevelT
 float UExtCharacterMovementComponent::GetRVOAvoidanceRadius()
 {
 	return (AvoidanceRadius > 0.0f) ? AvoidanceRadius : Super::GetRVOAvoidanceRadius();
+}
+
+void UExtCharacterMovementComponent::CalcAvoidanceVelocity(float DeltaTime)
+{
+	const FVector OldVelocity = Velocity;
+
+	Super::CalcAvoidanceVelocity(DeltaTime);
+
+	const FVector Direction = (AvoidanceDirectionLagSpeed <= 0.0f) ? Velocity.GetSafeNormal() 
+		: FMath::VInterpNormalRotationTo(OldVelocity.GetSafeNormal(), Velocity.GetSafeNormal(), DeltaTime, AvoidanceDirectionLagSpeed);
+	const float Magnitude = (AvoidanceMagnitudeLagSpeed <= 0.0f) ? Velocity.Size()
+		: FMath::FInterpTo(OldVelocity.Size(), Velocity.Size(), DeltaTime, AvoidanceMagnitudeLagSpeed);
+	Velocity = Direction * Magnitude;
 }
 
 /// Replication
