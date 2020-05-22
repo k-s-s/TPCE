@@ -67,6 +67,7 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 	JumpZVelocity = 350.f;
 	AirControl = 0.1f;
 	bPreserveMovementOnLanding = true;
+	MaxSprintAngle = 50.0f;
 
 	// Max acceleration should be treated as a temporary and only used in Authority or Autonomous proxy
 	MaxAcceleration = 0.f;
@@ -1411,7 +1412,7 @@ bool UExtCharacterMovementComponent::CanSprintInCurrentState() const
 		&& !ExtCharacterOwner->IsGettingUp()
 		&& !ExtCharacterOwner->bIsCrouched
 		&& Velocity.SizeSquared2D() > KINDA_SMALL_NUMBER
-		&& FVector::DotProduct(Acceleration.GetSafeNormal2D(), UpdatedComponent->GetForwardVector()) > 0.642788f;
+		&& (MaxSprintAngle <= 0.0f || FVector::DotProduct(Acceleration.GetSafeNormal2D(), UpdatedComponent->GetForwardVector()) >= FMath::Cos(FMath::DegreesToRadians(MaxSprintAngle)));
 }
 
 

@@ -366,6 +366,10 @@ public: // Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: Walking", meta = (ClampMin = "0", UIMin = "0"))
 	float WalkFriction;
 
+	/** Limits sprinting only towards the facing direction. Set the maximum angle difference in degrees or 0 to disable. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: Walking", meta = (ClampMin = "0", UIMin = "0", ClampMax = "180", UIMax = "180"))
+	float MaxSprintAngle;
+
 	/** */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: Jumping / Falling", meta = (ClampMin = "0", UIMin = "0"))
 	float MaxFallingAcceleration;
@@ -400,21 +404,21 @@ public: // Variables
 	float BrakingDecelerationRagdoll;
 
 	/** Avoidance radius. If zero, uses the capsule radius instead. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance", meta = (ClampMin = "0", UIMin = "0"))
 	float AvoidanceRadius;
 
 	/**
 	 * Smooths out changes in the direction of the avoidance velocity.
 	 * Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance", meta = (ClampMin = "0", UIMin = "0"))
 	float AvoidanceDirectionLagSpeed;
 
 	/**
 	 * Smooths out changes in the magnitude of the avoidance velocity.
 	 * Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Avoidance", meta = (ClampMin = "0", UIMin = "0"))
 	float AvoidanceMagnitudeLagSpeed;
 
 	/**
@@ -425,11 +429,11 @@ public: // Variables
 	bool bPushAwayFromPawns;
 
 	/** Repulsion force from pawn capsules that barely overlap ours. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0"))
 	float MinPushAwayForce;
 
 	/** Repulsion force from pawn capsules that heavily overlap ours. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0"))
 	float MaxPushAwayForce;
 
 	/** Repulsion force ignores mass. */
@@ -437,7 +441,7 @@ public: // Variables
 	bool bPushAwayForceIgnoresMass;
 
 	/** Distance curve exponent. Higher values make the repulsion force approach the maximum value faster. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Character Movement: Pawn Interaction")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0"))
 	float PushAwayDistanceExp;
 
 protected: // Methods
