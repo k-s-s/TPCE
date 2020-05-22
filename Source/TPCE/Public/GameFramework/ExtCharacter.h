@@ -428,6 +428,14 @@ public:		// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
 	FCharacterMovementSettings MovementSettings;
 
+	/** Base chest height above collision center. Used for targeting. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float BaseChestHeight;
+
+	/** Whether other pawns should target this character at eye level or chest level. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	bool bPawnsLookAtEyes;
+
 public: // Dynamic Multicast Delegates
 
 	UPROPERTY(BlueprintAssignable, Category = Character)
@@ -731,6 +739,7 @@ public:		// Methods
 	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
 	virtual bool HasActiveCameraComponent() const override;
 	virtual bool HasActivePawnControlCameraComponent() const override;
+	virtual FVector GetTargetLocation(AActor* RequestedBy) const override;
 
 	virtual void Landed(const FHitResult& Hit) override;
 

@@ -160,6 +160,7 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	// Educated guesses based on capsule size.
 	CrouchedEyeHeight = 48;
 	BaseEyeHeight = 80;
+	BaseChestHeight = 40;
 
 	// Don't rotate when the controller rotates let the movement component do the work.
 	bUseControllerRotationPitch = false;
@@ -921,6 +922,21 @@ bool AExtCharacter::HasActiveCameraComponent() const
 bool AExtCharacter::HasActivePawnControlCameraComponent() const
 {
 	return (bRelayCameraFunctionsToController && Controller) ? Controller->HasActivePawnControlCameraComponent() : Super::HasActivePawnControlCameraComponent();
+}
+
+FVector AExtCharacter::GetTargetLocation(AActor* RequestedBy) const
+{
+	if (bPawnsLookAtEyes)
+	{
+		if (APawn* Pawn = Cast<APawn>(RequestedBy))
+		{
+			// Pawns should look at the eyes
+			return GetPawnViewLocation();
+		}
+	}
+
+	// Return a point that is around chest level
+	return GetActorTransform().TransformPosition(FVector(0.0f, 0.0f, BaseChestHeight));
 }
 
 
