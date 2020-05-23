@@ -6,7 +6,7 @@
 #include "AnimationModifier.h"
 #include "Animation/AnimTypes.h"
 
-#include "AutomaticFootSyncMarkers.generated.h"
+#include "AnimationModifier_FootSyncMarkers.generated.h"
 
 class UAnimSequence;
 
@@ -33,8 +33,8 @@ struct FBoneModifier
  * Animation Modifier to automatically generate foot sync markers. 
  * C++ implementation based on the work of Giuseppe Portelli <https://github.com/gportelli/FootSyncMarkers>
  */
-UCLASS()
-class UAutomaticFootSyncMarkers : public UAnimationModifier
+UCLASS(meta=(DisplayName="Foot Sync Markers"))
+class UAnimationModifier_FootSyncMarkers : public UAnimationModifier
 {
 	GENERATED_BODY()
 
@@ -42,7 +42,7 @@ public:
 
 	static const FName NotifyTrackName;
 
-	UAutomaticFootSyncMarkers();
+	UAnimationModifier_FootSyncMarkers();
 
 protected:
 

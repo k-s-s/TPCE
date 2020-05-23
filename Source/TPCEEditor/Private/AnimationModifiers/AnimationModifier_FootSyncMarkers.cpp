@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AnimationModifiers/AutomaticFootSyncMarkers.h"
+#include "AnimationModifiers/AnimationModifier_FootSyncMarkers.h"
 #include "Animation/AnimSequence.h"
 #include "UObject/UObjectBaseUtility.h"
 #include "ExtraTypes.h"
 
-const FName UAutomaticFootSyncMarkers::NotifyTrackName(TEXT("FootSync"));
+const FName UAnimationModifier_FootSyncMarkers::NotifyTrackName(TEXT("FootSync"));
 
 FBoneModifier::FBoneModifier() :
 	BoneName(NAME_None),
@@ -26,7 +26,7 @@ FBoneModifier::FBoneModifier(FName InBoneName, float InOffset):
 {
 }
 
-UAutomaticFootSyncMarkers::UAutomaticFootSyncMarkers()
+UAnimationModifier_FootSyncMarkers::UAnimationModifier_FootSyncMarkers()
 {
 	PelvisBoneName = NAME_Root;
 	MovementAxis = EAxisOption::Y;
@@ -36,7 +36,7 @@ UAutomaticFootSyncMarkers::UAutomaticFootSyncMarkers()
 	FootBones.Add(FBoneModifier(NAME_Foot_R));
 }
 
-bool UAutomaticFootSyncMarkers::CanEditChange(const UProperty* InProperty) const
+bool UAnimationModifier_FootSyncMarkers::CanEditChange(const UProperty* InProperty) const
 {
 	bool bCanChange = Super::CanEditChange(InProperty);
 
@@ -52,7 +52,7 @@ bool UAutomaticFootSyncMarkers::CanEditChange(const UProperty* InProperty) const
 	return bCanChange;
 }
 
-void UAutomaticFootSyncMarkers::RemoveSyncTrack(UAnimSequence* AnimationSequence)
+void UAnimationModifier_FootSyncMarkers::RemoveSyncTrack(UAnimSequence* AnimationSequence)
 {
 	UAnimationBlueprintLibrary::RemoveAnimationNotifyTrack(AnimationSequence, NotifyTrackName);
 	for (auto& FootBone : FootBones)
@@ -63,7 +63,7 @@ void UAutomaticFootSyncMarkers::RemoveSyncTrack(UAnimSequence* AnimationSequence
 	}
 }
 
-FVector UAutomaticFootSyncMarkers::GetRelativeBoneLocationAtTime(UAnimSequence* AnimationSequence, FName TargetBoneName, FName RelativeBoneName, float Time)
+FVector UAnimationModifier_FootSyncMarkers::GetRelativeBoneLocationAtTime(UAnimSequence* AnimationSequence, FName TargetBoneName, FName RelativeBoneName, float Time)
 {
 	FTransform Transform;
 	TArray<FName> BonePath;
@@ -81,7 +81,7 @@ FVector UAutomaticFootSyncMarkers::GetRelativeBoneLocationAtTime(UAnimSequence* 
 	return Transform.GetLocation();
 }
 
-void UAutomaticFootSyncMarkers::OnApply_Implementation(UAnimSequence* AnimationSequence)
+void UAnimationModifier_FootSyncMarkers::OnApply_Implementation(UAnimSequence* AnimationSequence)
 {
 	Super::OnApply_Implementation(AnimationSequence);
 
@@ -139,7 +139,7 @@ void UAutomaticFootSyncMarkers::OnApply_Implementation(UAnimSequence* AnimationS
 
 }
 
-void UAutomaticFootSyncMarkers::OnRevert_Implementation(UAnimSequence* AnimationSequence)
+void UAnimationModifier_FootSyncMarkers::OnRevert_Implementation(UAnimSequence* AnimationSequence)
 {
 	Super::OnRevert_Implementation(AnimationSequence);
 
@@ -147,7 +147,7 @@ void UAutomaticFootSyncMarkers::OnRevert_Implementation(UAnimSequence* Animation
 
 }
 
-FName UAutomaticFootSyncMarkers::GetSyncTrackName() const
+FName UAnimationModifier_FootSyncMarkers::GetSyncTrackName() const
 {
 	return NotifyTrackName;
 }
