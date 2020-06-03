@@ -128,7 +128,6 @@ void UAnimationModifier_FootstepNotifies::OnApply_Implementation(UAnimSequence* 
 		for (FAnimNotifyEvent* Event : Notifies)
 		{
 			AverageTime += Event->GetTime();
-			UE_LOG(LogTemp, Warning, TEXT("%s %f"), *Event->NotifyName.ToString(), Event->GetTime());
 		}
 		AverageTime /= NumNotifies;
 
