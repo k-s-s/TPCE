@@ -101,7 +101,13 @@ void UAnimationModifier_FootSyncMarkers::OnApply_Implementation(UAnimSequence* A
 			const FName& CurveName = CurrentBoneName;			
 
 			if (bCreateCurve)
+			{
+				if (UAnimationBlueprintLibrary::DoesCurveExist(AnimationSequence, CurveName, ERawCurveTrackTypes::RCT_Float))
+				{
+					UAnimationBlueprintLibrary::RemoveCurve(AnimationSequence, CurveName);
+				}
 				UAnimationBlueprintLibrary::AddCurve(AnimationSequence, CurveName, ERawCurveTrackTypes::RCT_Float, false);
+			}
 
 			float LastBoneDistance = 0.0f;
 			const float TotalTime = AnimationSequence->GetPlayLength();
@@ -145,6 +151,17 @@ void UAnimationModifier_FootSyncMarkers::OnRevert_Implementation(UAnimSequence* 
 
 	RemoveSyncTrack(AnimationSequence);
 
+	if (bCreateCurve)
+	{
+		for (auto& FootBone : FootBones)
+		{
+			const FName& CurveName = FootBone.BoneName;
+			if (UAnimationBlueprintLibrary::DoesCurveExist(AnimationSequence, CurveName, ERawCurveTrackTypes::RCT_Float))
+			{
+				UAnimationBlueprintLibrary::RemoveCurve(AnimationSequence, CurveName);
+			}
+		}
+	}
 }
 
 FName UAnimationModifier_FootSyncMarkers::GetSyncTrackName() const

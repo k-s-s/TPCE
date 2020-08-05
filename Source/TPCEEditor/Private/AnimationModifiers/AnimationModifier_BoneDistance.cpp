@@ -51,6 +51,10 @@ void UAnimationModifier_BoneDistance::OnApply_Implementation(UAnimSequence* Anim
 		for (const FBonePair& BonePair : BonePairs)
 		{
 			const FName& CurveName = *FString::Printf(TEXT("%s_to_%s"), *BonePair.BoneName1.ToString(), *BonePair.BoneName2.ToString());
+			if (UAnimationBlueprintLibrary::DoesCurveExist(AnimationSequence, CurveName, ERawCurveTrackTypes::RCT_Float))
+			{
+				UAnimationBlueprintLibrary::RemoveCurve(AnimationSequence, CurveName);
+			}
 			UAnimationBlueprintLibrary::AddCurve(AnimationSequence, CurveName, ERawCurveTrackTypes::RCT_Float, false);
 
 			const float TotalTime = AnimationSequence->GetPlayLength();
@@ -81,4 +85,13 @@ void UAnimationModifier_BoneDistance::OnApply_Implementation(UAnimSequence* Anim
 void UAnimationModifier_BoneDistance::OnRevert_Implementation(UAnimSequence* AnimationSequence)
 {
 	Super::OnRevert_Implementation(AnimationSequence);
+
+	for (const FBonePair& BonePair : BonePairs)
+	{
+		const FName& CurveName = *FString::Printf(TEXT("%s_to_%s"), *BonePair.BoneName1.ToString(), *BonePair.BoneName2.ToString());
+		if (UAnimationBlueprintLibrary::DoesCurveExist(AnimationSequence, CurveName, ERawCurveTrackTypes::RCT_Float))
+		{
+			UAnimationBlueprintLibrary::RemoveCurve(AnimationSequence, CurveName);
+		}
+	}
 }
