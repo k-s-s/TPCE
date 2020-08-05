@@ -14,7 +14,7 @@ UAnimationModifier_FootstepNotifies::UAnimationModifier_FootstepNotifies()
 {
 	FootDownThreshold = 1.0f;
 	FootLiftThreshold = 2.0f;
-	NudgeEvenThreshold = 0.02f;
+	NudgeEvenThreshold = 0.06f;
 
 	FootBoneNames.Add(NAME_Foot_L);
 	FootBoneNames.Add(NAME_Foot_R);
