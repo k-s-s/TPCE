@@ -141,6 +141,9 @@ void FAnimNode_SpeedWarping::EvaluateSkeletalControl_AnyThread(FComponentSpacePo
 		CachedIKFootInfo.Add(FIKFootInfo(OriginalLocation, DesiredLocation, ActualLocation));
 #endif		
 	}
+
+	// Sort OutBoneTransforms so indices are in increasing order.
+	OutBoneTransforms.Sort(FCompareBoneTransformIndex());
 }
 
 bool FAnimNode_SpeedWarping::IsValidToEvaluate(const USkeleton * Skeleton, const FBoneContainer & RequiredBones)

@@ -127,7 +127,10 @@ void FAnimNode_FootPlacement::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 	PelvisZOffset = FMath::FInterpTo(PelvisZOffset, MinFootOffsetZ * FMath::Clamp(PelvisAdjustmentAlpha, 0.f, 1.f), DeltaTime, 20.f);
 	FTransform PelvisBoneCSTransform = Output.Pose.GetComponentSpaceTransform(PelvisBoneCompactPoseIndex);	
 	PelvisBoneCSTransform.AddToTranslation(ComponentTransform.InverseTransformVector(FVector(0.0f, 0.0f, PelvisZOffset)));
-	OutBoneTransforms.Insert(FBoneTransform(PelvisBoneCompactPoseIndex, PelvisBoneCSTransform), 0);
+	OutBoneTransforms.Add(FBoneTransform(PelvisBoneCompactPoseIndex, PelvisBoneCSTransform));
+
+	// Sort OutBoneTransforms so indices are in increasing order.
+	OutBoneTransforms.Sort(FCompareBoneTransformIndex());
 }
 
 bool FAnimNode_FootPlacement::IsValidToEvaluate(const USkeleton * Skeleton, const FBoneContainer & RequiredBones)
