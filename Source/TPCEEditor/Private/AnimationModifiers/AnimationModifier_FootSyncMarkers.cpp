@@ -4,6 +4,7 @@
 #include "Animation/AnimSequence.h"
 #include "UObject/UObjectBaseUtility.h"
 #include "ExtraTypes.h"
+#include "Internationalization/Regex.h"
 
 const FName UAnimationModifier_FootSyncMarkers::NotifyTrackName(TEXT("FootSync"));
 
@@ -29,6 +30,7 @@ FBoneModifier::FBoneModifier(FName InBoneName, float InOffset):
 UAnimationModifier_FootSyncMarkers::UAnimationModifier_FootSyncMarkers()
 {
 	PelvisBoneName = NAME_Root;
+	bAxisFromName = true;
 	MovementAxis = EAxisOption::Y;
 	bMarkFootPlantOnly = true;
 
@@ -89,9 +91,57 @@ void UAnimationModifier_FootSyncMarkers::OnApply_Implementation(UAnimSequence* A
 	if (PathFilter == NAME_None || Path.Contains(PathFilter.ToString()))
 	{
 		RemoveSyncTrack(AnimationSequence);
-
 		UAnimationBlueprintLibrary::AddAnimationNotifyTrack(AnimationSequence, NotifyTrackName, FLinearColor::Green);
-		const FVector Axis = FAxisOption::GetAxisVector(MovementAxis, CustomMovementAxis.GetSafeNormal());
+
+		FVector Axis = FVector::ZeroVector;
+		if (bAxisFromName)
+		{
+			static const FRegexPattern AxisPattern(
+				R"((Fwd)"				// Forward
+				R"(|Bwd)"				// Backward
+				R"(|[LR][A-Z\d][a-z])"	// Left/Right before another word (e.g A_RunLStart)
+				R"(|[LR]\d*$)"			// Left/Right at end of sentence (e.g A_RunL2)
+				R"(|\d{2,3}[LR]))"		// Angle and Left/Right (e.g A_Walk45R)
+			);
+
+			FRegexMatcher AxisMatcher(AxisPattern, AnimationSequence->GetName());
+			if (AxisMatcher.FindNext())
+			{
+				FString Capture = AxisMatcher.GetCaptureGroup(1);
+				if (Capture == TEXT("Fwd"))
+				{
+					Axis = FVector::RightVector;
+				}
+				else if (Capture == TEXT("Bwd"))
+				{
+					// Should be -FVector::RightVector, however most Bwd animations will face forward and -Y would invert the feet
+					Axis = FVector::RightVector;
+				}
+				else if (Capture.StartsWith(TEXT("L")))
+				{
+					Axis = -FVector::ForwardVector;
+				}
+				else if (Capture.StartsWith(TEXT("R")))
+				{
+					Axis = FVector::ForwardVector;
+				}
+				else if (Capture.EndsWith(TEXT("L")))
+				{
+					const int32 Degrees = FCString::Atoi(*Capture.LeftChop(1));
+					Axis = FRotator(0.0f, Degrees, 0.0f).Vector();
+				}
+				else if (Capture.EndsWith(TEXT("R")))
+				{
+					const int32 Degrees = FCString::Atoi(*Capture.LeftChop(1));
+					Axis = FRotator(0.0f, -Degrees, 0.0f).Vector();
+				}
+			}
+		}
+
+		if (Axis.IsZero())
+		{
+			Axis = FAxisOption::GetAxisVector(MovementAxis, CustomMovementAxis.GetSafeNormal());
+		}
 
 		for (auto& FootBone : FootBones)
 		{

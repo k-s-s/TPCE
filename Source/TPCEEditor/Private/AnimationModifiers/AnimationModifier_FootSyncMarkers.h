@@ -56,15 +56,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	FName PathFilter;
 	
-	/** The name of the pelvis bone in your character’s skeleton. */
+	/** The name of the pelvis bone in your character's skeleton. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	FName PelvisBoneName;
+
+	/**
+	 * Try to guess the correct axis from the animation name.
+	 * The full expression is (Fwd|Bwd|[LR][A-Z\d][a-z]|[LR]\d*$|\d{2,3}[LR])
+	 * 
+	 * Some examples:
+	 * A_Idle -> Default (uses current settings)
+	 * A_RunLStart -> Left
+	 * A_Walk45R -> 45 degrees right
+	 * A_RunFwdStart135L -> Forward
+	 * A_CrouchWalkBwdStopLU -> Backwards
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
+	uint32 bAxisFromName : 1;
 
 	/** The script computes foot distances from pelvis axis line in the movement direction. You have to set the direction along which your animation sequence is moving. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	TEnumAsByte<EAxisOption::Type> MovementAxis;
 
-	/** Custom forward vector of the pelvis bone in world coordinates. Should tipically be a a normalized vector. Only used when PelvisAxis is Custom. */
+	/** Custom forward vector of the pelvis bone in world coordinates. Should typically be a a normalized vector. Only used when PelvisAxis is Custom. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	FVector CustomMovementAxis;
 
