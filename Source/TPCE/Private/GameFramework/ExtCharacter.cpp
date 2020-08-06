@@ -11,7 +11,6 @@
 #include "Components/ArrowComponent.h"
 #include "Curves/CurveFloat.h"
 #include "Animation/AnimInstance.h"
-#include "Animation/ExtCharacterAnimInstance.h"
 
 #include "Net/UnrealNetwork.h"
 #include "Logging/LogMacros.h"
@@ -72,6 +71,8 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 		FName NAME_PelvisBone;
 		FName NAME_LeftFootBone;
 		FName NAME_RightFootBone;
+		FName NAME_LeftForearmBone;
+		FName NAME_RightForearmBone;
 
 		FConstructorStatics() :
 			ID_Characters(TEXT("Characters")),
@@ -107,7 +108,9 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 			NAME_RagdollMeshConstraintProfile(NAME_Ragdoll),
 			NAME_PelvisBone(NAME_Pelvis),
 			NAME_LeftFootBone(NAME_Foot_L),
-			NAME_RightFootBone(NAME_Foot_R)
+			NAME_RightFootBone(NAME_Foot_R),
+			NAME_LeftForearmBone(NAME_LowerArm_L),
+			NAME_RightForearmBone(NAME_LowerArm_R)
 		{
 		}
 	} ConstructorStatics;
@@ -135,6 +138,8 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	PelvisBoneName = ConstructorStatics.NAME_PelvisBone;
 	LeftFootBoneName = ConstructorStatics.NAME_LeftFootBone;
 	RightFootBoneName = ConstructorStatics.NAME_RightFootBone;
+	LeftForearmBoneName = ConstructorStatics.NAME_LeftForearmBone;
+	RightForearmBoneName = ConstructorStatics.NAME_RightForearmBone;
 
 	// Animation
 	bEnableFootIK = true;

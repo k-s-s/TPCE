@@ -331,17 +331,25 @@ private:	// Variables
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Ragdoll, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName RagdollMeshConstraintProfileName;;
 
-	/** Name of the bone that is considered pelvis of the character. All bones below and including the pelvis are set to simulate physics when in ragdoll mode. */
+	/** Name of the bone that is considered the pelvis of the character. All bones below and including the pelvis are set to simulate physics when in ragdoll mode. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName PelvisBoneName;
 
-	/** Name of the bone that is considered left foot of the character. */
+	/** Name of the bone that is considered the left foot of the character. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName LeftFootBoneName;
 
-	/** Name of the bone that is considered right foot of the character. */
+	/** Name of the bone that is considered the right foot of the character. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName RightFootBoneName;
+
+	/** Name of the bone that is considered the left forearm of the character. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
+	FName LeftForearmBoneName;
+
+	/** Name of the bone that is considered the right forearm of the character. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
+	FName RightForearmBoneName;
 
 #if WITH_EDITORONLY_DATA
 
