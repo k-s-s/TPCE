@@ -9,7 +9,7 @@
 #include "Math/Bounds.h"
 #include "ExtraTypes.h"
 
-#include "ExtCharacterAnimInstance.generated.h"
+#include "ExtCharacterLocomotionAnimInstance.generated.h"
 
 class USkeletalMeshComponent;
 class UAnimSequence;
@@ -75,7 +75,7 @@ struct FootIKOffset
  *
  */
 UCLASS(abstract)
-class TPCE_API UExtCharacterAnimInstance : public UAnimInstance
+class TPCE_API UExtCharacterLocomotionAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
@@ -83,7 +83,7 @@ public:
 
 	static const float AngleTolerance;
 
-	UExtCharacterAnimInstance();
+	UExtCharacterLocomotionAnimInstance();
 
 private:
 
