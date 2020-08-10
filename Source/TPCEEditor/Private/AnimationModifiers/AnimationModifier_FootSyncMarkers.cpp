@@ -114,16 +114,15 @@ void UAnimationModifier_FootSyncMarkers::OnApply_Implementation(UAnimSequence* A
 				}
 				else if (Capture == TEXT("Bwd"))
 				{
-					// Should be -FVector::RightVector, however most Bwd animations will face forward and -Y would invert the feet
-					Axis = FVector::RightVector;
+					Axis = -FVector::RightVector;
 				}
 				else if (Capture.StartsWith(TEXT("L")))
 				{
-					Axis = -FVector::ForwardVector;
+					Axis = FVector::ForwardVector;
 				}
 				else if (Capture.StartsWith(TEXT("R")))
 				{
-					Axis = FVector::ForwardVector;
+					Axis = -FVector::ForwardVector;
 				}
 				else if (Capture.EndsWith(TEXT("L")))
 				{
