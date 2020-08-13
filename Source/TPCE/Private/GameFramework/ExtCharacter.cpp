@@ -69,6 +69,7 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 		FName NAME_RagdollCapsuleCollisionProfile;
 		FName NAME_RagdollMeshConstraintProfile;
 		FName NAME_PelvisBone;
+		FName NAME_HeadBone;
 		FName NAME_LeftFootBone;
 		FName NAME_RightFootBone;
 		FName NAME_LeftForearmBone;
@@ -107,6 +108,7 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 			NAME_RagdollCapsuleCollisionProfile(NAME_Spectator),
 			NAME_RagdollMeshConstraintProfile(NAME_Ragdoll),
 			NAME_PelvisBone(NAME_Pelvis),
+			NAME_HeadBone(NAME_Head),
 			NAME_LeftFootBone(NAME_Foot_L),
 			NAME_RightFootBone(NAME_Foot_R),
 			NAME_LeftForearmBone(NAME_LowerArm_L),
@@ -136,6 +138,7 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	RagdollMeshConstraintProfileName = ConstructorStatics.NAME_RagdollMeshConstraintProfile;
 
 	PelvisBoneName = ConstructorStatics.NAME_PelvisBone;
+	HeadBoneName = ConstructorStatics.NAME_HeadBone;
 	LeftFootBoneName = ConstructorStatics.NAME_LeftFootBone;
 	RightFootBoneName = ConstructorStatics.NAME_RightFootBone;
 	LeftForearmBoneName = ConstructorStatics.NAME_LeftForearmBone;
@@ -143,6 +146,7 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 
 	// Animation
 	bEnableFootIK = true;
+	bEnableLookIK = false;
 
 	// Look rotation settings
 	LookUpInputSpeed = 0.0f;

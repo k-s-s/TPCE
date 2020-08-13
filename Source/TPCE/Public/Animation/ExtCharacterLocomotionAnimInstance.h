@@ -249,6 +249,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character|Foot IK", meta = (AllowPrivateAccess = "true"))
 	uint32 bEnableFootIK : 1;
 
+	/** If true looking IK should be applied. This is for in game control. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "Animation|Skeleton", meta = (AllowPrivateAccess = "true"))
+	uint32 bEnableLookIK : 1;
+
 	/** 
 	 * If direction the character is pivot turning if bIsPivotTurning is true.
 	 * @see bIsPivotTurning
@@ -645,6 +649,8 @@ public:
 	FORCEINLINE bool IsPivotTurning() const { return bIsPivotTurning; }
 
 	FORCEINLINE bool IsFootIKEnabled() const { return bEnableFootIK; }
+
+	FORCEINLINE bool IsLookIKEnabled() const { return bEnableLookIK; }
 
 	FORCEINLINE ECardinalDirection GetPivotTurnDirection() const { return PivotTurnDirection; }
 

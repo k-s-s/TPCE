@@ -202,6 +202,10 @@ public:		// Bitfields
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation)
 	uint32 bEnableFootIK : 1;
 
+	/** If true looking IK is used. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Animation)
+	uint32 bEnableLookIK : 1;
+
 	/** If true character is female. Can be used to play animations based on gender. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
 	uint32 bIsFemale : 1;
@@ -329,11 +333,15 @@ private:	// Variables
 
 	/** Name of the constraint profile name to be used when in ragdoll mode. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Ragdoll, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName RagdollMeshConstraintProfileName;;
+	FName RagdollMeshConstraintProfileName;
 
 	/** Name of the bone that is considered the pelvis of the character. All bones below and including the pelvis are set to simulate physics when in ragdoll mode. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName PelvisBoneName;
+
+	/** Name of the bone that is considered the head of the character. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
+	FName HeadBoneName;
 
 	/** Name of the bone that is considered the left foot of the character. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
@@ -443,6 +451,14 @@ public:		// Variables
 	/** Whether other pawns should target this character at eye level or chest level. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	bool bPawnsLookAtEyes;
+
+	/** Headlook weight. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (ClampMin = "0", UIMin = "0", ClampMax = "1", UIMax = "1"))
+	float UseHeadlook;
+
+	/** Bodylook weight. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (ClampMin = "0", UIMin = "0", ClampMax = "1", UIMax = "1"))
+	float UseBodylook;
 
 public: // Dynamic Multicast Delegates
 
@@ -940,6 +956,9 @@ public:		// Methods
 
 	/** */
 	FORCEINLINE FName GetPelvisBoneName() const { return PelvisBoneName; }
+
+	/** */
+	FORCEINLINE FName GetHeadBoneName() const { return HeadBoneName; }
 
 	/** */
 	FORCEINLINE FName GetLeftFootBoneName() const { return LeftFootBoneName; }

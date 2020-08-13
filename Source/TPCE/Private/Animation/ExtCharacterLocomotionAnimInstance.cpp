@@ -161,6 +161,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 
 		// Enable Foot IK only if enabled by the character, not ragdoll and moving on ground.
 		bEnableFootIK = CharacterOwner->bEnableFootIK && !bIsRagdoll && (MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking);
+		bEnableLookIK = CharacterOwner->bEnableLookIK && !bIsRagdoll && (MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking);
 
 		if (bIsRagdoll)
 		{
