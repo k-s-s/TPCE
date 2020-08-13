@@ -113,7 +113,19 @@ public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Interpolate"), Category = "Math|Bounds")
 	static float BoundsInterpolate(const FBounds& A, float Alpha);
 
-	/** Returns a value from Min to Max interpolated by Alpha. */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "CalculateCardinalDirection"), Category = "Math|Orientation")
+	/** Find the cardinal direction for an angle given the current cardinal direction, the half angle width of the north segment and a buffer for tolerance */
+	UFUNCTION(BlueprintPure, Category = "Math|Orientation")
 	static ECardinalDirection CalculateCardinalDirection(float Angle, ECardinalDirection CurrentCardinalDirection, const float NorthSegmentHalfWidth, float Buffer);
+
+	/** Applies a function that is linear until Start, then caps at (Start+End)/2 when Value moves towards End. */
+	UFUNCTION(BlueprintPure, Category = "Math|Float")
+	static float SoftCap(float Value, float Start, float End);
+
+	/** Returns Value clamped between 0 and 1 (inclusive). */
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "[0..1]"), Category = "Math|Float")
+	static float Saturate(float Value);
+
+	/** Returns 1-Value. */
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "1-x", Keywords = "- subtract minus"), Category = "Math|Float")
+	static float OneMinus(float Value);
 };
