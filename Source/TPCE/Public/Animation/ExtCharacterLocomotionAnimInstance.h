@@ -344,6 +344,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
 	float AimOffsetResetInterpSpeed;
 
+	/** Clamps aim offset yaw and pitch. 0 disables clamping. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0", ClampMax = "180", UIMax = "180"))
+	float AimOffsetMaxAngle;
+
+	/** Aiming distance when not looking at any particular target. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
+	float AimDistanceDefault;
+
 	/** How fast the root bone offset should reset. Use 0 for immediate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
 	float RootBoneOffsetResetInterpSpeed;
@@ -525,6 +533,10 @@ protected:
 	/** Angular offset from character rotation to look rotation. X is Yaw, Y is Pitch. */
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Skeleton")
 	FVector2D AimOffset;
+
+	/** Distance to the look target, defaults to AimDistanceDefault. */
+	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Skeleton")
+	float AimDistance;
 
 	/** Angular offset of the root bone in relation to the mesh component rotation. X is Yaw, Y is Pitch. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Animation|Skeleton")

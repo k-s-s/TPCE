@@ -21,6 +21,8 @@ UExtCharacterLocomotionAnimInstance::UExtCharacterLocomotionAnimInstance()
 {
 	AimOffsetInterpSpeed = 10.0f;
 	AimOffsetResetInterpSpeed = 2.0f;
+	AimOffsetMaxAngle = 0.0f;
+	AimDistanceDefault = 200.0f;
 	RootBoneOffsetResetInterpSpeed = 5.0f;
 
 	WalkSpeed = 165.f;
@@ -181,6 +183,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 
 			// Reset Aim Offset
 			AimOffset = FVector2D(0.f, 0.f);
+			AimDistance = AimDistanceDefault;
 		}
 		else
 		{
@@ -463,8 +466,10 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSecon
 	{
 		if (IsValid(LookAtActor))
 		{
-			const FRotator Delta = FRotationMatrix::MakeFromX(LookAtActor->GetActorLocation() - CharacterLocation).Rotator();
-			AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(Delta.Yaw, bIsJumping && Velocity.Z < 0.f ? Delta.Pitch - 60.f : Delta.Pitch).ClampAxes(-90.f, 90.f), DeltaSeconds, AimOffsetInterpSpeed);
+			const FVector DeltaLoc = LookAtActor->GetTargetLocation() - CharacterOwnerMesh->GetSocketLocation(CharacterOwner->GetHeadBoneName());
+			const FRotator Delta = FRotationMatrix::MakeFromX(DeltaLoc).Rotator();
+			AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(Delta.Yaw, bIsJumping && Velocity.Z < 0.f ? Delta.Pitch - 60.f : Delta.Pitch), DeltaSeconds, AimOffsetInterpSpeed);
+			AimDistance = DeltaLoc.Size();
 		}
 		else
 		{
@@ -475,13 +480,15 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSecon
 				{
 					// Look in the direction of Movement Input.
 					const FRotator Delta = (LastMovementAccelerationRotation - CharacterRotation).GetNormalized();
-					AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(Delta.Yaw, bIsJumping && Velocity.Z < 0.f ? Delta.Pitch - 60.f : Delta.Pitch).ClampAxes(-90.f, 90.f), DeltaSeconds, AimOffsetInterpSpeed);
+					AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(Delta.Yaw, bIsJumping && Velocity.Z < 0.f ? Delta.Pitch - 60.f : Delta.Pitch), DeltaSeconds, AimOffsetInterpSpeed);
+					AimDistance = AimDistanceDefault;
 					break;
 				}
 				else if (bIsMoving)
 				{
 					// Look in the direction of Movement.
-					AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(MovementDrift, bIsJumping && Velocity.Z < 0.f ? LookDelta.Pitch - 60.f : LookDelta.Pitch).ClampAxes(-90.f, 90.f), DeltaSeconds, AimOffsetInterpSpeed);
+					AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(MovementDrift, bIsJumping && Velocity.Z < 0.f ? LookDelta.Pitch - 60.f : LookDelta.Pitch), DeltaSeconds, AimOffsetInterpSpeed);
+					AimDistance = AimDistanceDefault;
 					break;
 				}
 				goto ResetAimOffset;
@@ -489,7 +496,8 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSecon
 				if (true) // NoOp: the if will be optimized away, it's just to make the editor indent the block corretly.
 				{
 					// Use the Look Rotation
-					AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(LookDelta.Yaw, bIsJumping && Velocity.Z < 0.f ? LookDelta.Pitch - 60.f : LookDelta.Pitch).ClampAxes(-90.f, 90.f), DeltaSeconds, AimOffsetInterpSpeed);
+					AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(LookDelta.Yaw, bIsJumping && Velocity.Z < 0.f ? LookDelta.Pitch - 60.f : LookDelta.Pitch), DeltaSeconds, AimOffsetInterpSpeed);
+					AimDistance = AimDistanceDefault;
 					break;
 				}
 			default: goto ResetAimOffset;
@@ -500,6 +508,12 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSecon
 	{
 	ResetAimOffset:
 		AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D::ZeroVector, DeltaSeconds, AimOffsetResetInterpSpeed);
+		AimDistance = AimDistanceDefault;
+	}
+
+	if (AimOffsetMaxAngle > 0.0f)
+	{
+		AimOffset = AimOffset.ClampAxes(-AimOffsetMaxAngle, AimOffsetMaxAngle);
 	}
 }
 
