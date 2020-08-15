@@ -16,12 +16,13 @@
 #include "Kismet/KismetStringTableLibrary.h"
 #include "Kismet/KismetTextLibrary.h"
 #include "KismetMathLibraryExtensions.h"
+#include "KismetInputLibraryExtensions.h"
 
 static struct TPCE_API Kismet: public UKismetSystemLibrary
 {
 	typedef ::UKismetArrayLibrary Array;
 	typedef ::UKismetGuidLibrary Guid;
-	typedef ::UKismetInputLibrary Input;
+	typedef ::UKismetInputLibraryEx Input;
 	typedef ::UKismetInternationalizationLibrary i18n;
 	typedef ::UKismetMaterialLibrary Material;
 	typedef ::UKismetMathLibraryEx Math;
