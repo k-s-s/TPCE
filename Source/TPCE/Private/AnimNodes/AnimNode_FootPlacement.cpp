@@ -107,6 +107,7 @@ void FAnimNode_FootPlacement::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 		// Convert back to component space and apply to the foot
 		IKBoneCSTransform.SetLocation(ComponentTransform.InverseTransformPosition(IKBoneLocation));
 		IKBoneCSTransform.SetRotation(ComponentTransform.InverseTransformRotation(IKBoneRotation));
+		IKBoneCSTransform.AddToTranslation(FVector(0.0f, 0.0f, ZOffset));
 
 		OutBoneTransforms.Add(FBoneTransform(IKFootBoneCompactPoseIndex, IKBoneCSTransform));
 

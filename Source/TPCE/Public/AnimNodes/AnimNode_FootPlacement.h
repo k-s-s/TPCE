@@ -76,6 +76,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	float TraceLengthBelowFoot;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinHiddenByDefault))
+	float ZOffset;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	float MinZOffset;
 
