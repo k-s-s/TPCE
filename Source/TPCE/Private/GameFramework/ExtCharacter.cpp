@@ -1022,7 +1022,7 @@ void AExtCharacter::PlayerInputStartMoveForward()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveForwardValue += 1;
+		MoveForwardValue = +1;
 	}
 }
 
@@ -1030,7 +1030,7 @@ void AExtCharacter::PlayerInputStopMoveForward()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveForwardValue -= 1;
+		MoveForwardValue = 0;
 	}
 }
 
@@ -1038,7 +1038,7 @@ void AExtCharacter::PlayerInputStartMoveBackward()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveForwardValue -= 1;
+		MoveForwardValue = -1;
 	}
 }
 
@@ -1046,7 +1046,7 @@ void AExtCharacter::PlayerInputStopMoveBackward()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveForwardValue += 1;
+		MoveForwardValue = 0;
 	}
 }
 
@@ -1054,7 +1054,7 @@ void AExtCharacter::PlayerInputStartMoveLeft()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveRightValue -= 1;
+		MoveRightValue = -1;
 	}
 }
 
@@ -1062,7 +1062,7 @@ void AExtCharacter::PlayerInputStopMoveLeft()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveRightValue += 1;
+		MoveRightValue = 0;
 	}
 }
 
@@ -1070,7 +1070,7 @@ void AExtCharacter::PlayerInputStartMoveRight()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveRightValue += 1;
+		MoveRightValue = +1;
 	}
 }
 
@@ -1078,7 +1078,7 @@ void AExtCharacter::PlayerInputStopMoveRight()
 {
 	if (Controller && Controller->IsLocalPlayerController())
 	{
-		MoveRightValue -= 1;
+		MoveRightValue = 0;
 	}
 }
 
