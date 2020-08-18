@@ -159,3 +159,44 @@ float UKismetMathLibraryEx::OneMinus(float Value)
 {
 	return 1.0f - Value;
 }
+
+float UKismetMathLibraryEx::GetVectorComponent(const FVector& A, const EVectorComponent Select)
+{
+	if (Select == EVectorComponent::X)
+	{
+		return A.X;
+	}
+	else if (Select == EVectorComponent::Y)
+	{
+		return A.Y;
+	}
+	else if (Select == EVectorComponent::Z)
+	{
+		return A.Z;
+	}
+
+	return 0.0f;
+}
+
+FVector UKismetMathLibraryEx::SetVectorComponent(const FVector& A, const EVectorComponent Select, const float& Value)
+{
+	if (Select == EVectorComponent::X)
+	{
+		return FVector(Value, A.Y, A.Z);
+	}
+	else if (Select == EVectorComponent::Y)
+	{
+		return FVector(A.X, Value, A.Z);
+	}
+	else if (Select == EVectorComponent::Z)
+	{
+		return FVector(A.X, A.Y, Value);
+	}
+
+	return A;
+}
+
+FTransform UKismetMathLibraryEx::Transform_Identity()
+{
+	return FTransform();
+}

@@ -8,6 +8,13 @@
 
 #include "KismetMathLibraryExtensions.generated.h"
 
+UENUM()
+enum class EVectorComponent : uint8
+{
+	X,
+	Y,
+	Z,
+};
 
 UCLASS(meta = (BlueprintThreadSafe))
 class TPCE_API UKismetMathLibraryEx : public UKismetMathLibrary
@@ -113,6 +120,10 @@ public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Interpolate"), Category = "Math|Bounds")
 	static float BoundsInterpolate(const FBounds& A, float Alpha);
 
+	//
+	// Float functions.
+	//
+
 	/** Find the cardinal direction for an angle given the current cardinal direction, the half angle width of the north segment and a buffer for tolerance */
 	UFUNCTION(BlueprintPure, Category = "Math|Orientation")
 	static ECardinalDirection CalculateCardinalDirection(float Angle, ECardinalDirection CurrentCardinalDirection, const float NorthSegmentHalfWidth, float Buffer);
@@ -128,4 +139,24 @@ public:
 	/** Returns 1-Value. */
 	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "1-x", Keywords = "- subtract minus"), Category = "Math|Float")
 	static float OneMinus(float Value);
+
+	//
+	// Vector (3D) functions.
+	//
+
+	/** Returns a component of the given vector. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Math|Vector")
+	static float GetVectorComponent(const FVector& A, const EVectorComponent Select);
+
+	/** Returns a copy of a vector with a changed component. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Math|Vector")
+	static FVector SetVectorComponent(const FVector& A, const EVectorComponent Select, const float& Value);
+
+	//
+	// Transform functions
+	//
+
+	/** Identity transform constant. */
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "0", ScriptConstant = "Identity", ScriptConstantHost = "Transform"), Category = "Math|Transform")
+	static FTransform Transform_Identity();
 };
