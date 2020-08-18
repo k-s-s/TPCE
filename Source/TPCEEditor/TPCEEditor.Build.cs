@@ -22,7 +22,7 @@ public class TPCEEditor: ModuleRules
 				"CoreUObject",
 				"InputCore",
 				"Engine",
-				"UnrealEd"
+				"UnrealEd",
 			});
 
 		PrivateDependencyModuleNames.AddRange(
@@ -35,7 +35,7 @@ public class TPCEEditor: ModuleRules
 				"AnimationModifiers",
                 "AnimGraph",
                 "BlueprintGraph",
-                "TPCE"
+                "TPCE",
 			});
 	}
 }

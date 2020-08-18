@@ -25,7 +25,7 @@ public class TPCE: ModuleRules
 				"AnimationCore",
 				"AnimGraphRuntime",
 				"InputCore",
-				"AIModule"
+				"AIModule",
 			}
 		);
 
@@ -35,7 +35,8 @@ public class TPCE: ModuleRules
 				// UI
 				"Slate",
 				"SlateCore",
-				"UMG"
+				"UMG",
+				"RHI", // Needed for GetMax2DTextureDimension
             }
 		);
 	}
