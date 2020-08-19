@@ -467,7 +467,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSecon
 	{
 		if (IsValid(LookAtActor))
 		{
-			const FVector DeltaLoc = LookAtActor->GetTargetLocation() - CharacterOwnerMesh->GetSocketLocation(CharacterOwner->GetHeadBoneName());
+			const FVector DeltaLoc = LookAtActor->GetTargetLocation(CharacterOwner) - CharacterOwner->GetPawnViewLocation();
 			const FRotator Delta = (FRotationMatrix::MakeFromX(DeltaLoc).Rotator() - CharacterOwner->GetActorRotation()).GetNormalized();
 			AimOffset = FMathEx::Vector2DSafeInterpTo(AimOffset, FVector2D(Delta.Yaw, bIsJumping && Velocity.Z < 0.f ? Delta.Pitch - 60.f : Delta.Pitch), DeltaSeconds, AimOffsetInterpSpeed);
 			AimDistance = DeltaLoc.Size();
