@@ -7,6 +7,17 @@
 
 #include "PushToTargetComponent.generated.h"
 
+UENUM(BlueprintType)
+enum class EPushToTargetRotationType : uint8
+{
+	/** Do not rotate. */
+	None,
+	/** Face the target. */
+	FaceTarget,
+	/** Face the local player's view location. */
+	FaceView,
+};
+
 /**
  * Updates the position of another component simulating an unrealistic attraction force towards a target. 
  * This 'force' becomes stronger with distance and ignores both inertia and gravity. Supports sliding over
@@ -26,32 +37,36 @@ public:
 private:
 
 	/** The current target we are homing towards. Can only be set at runtime (when the component is spawned or updating). */
-	UPROPERTY(VisibleInstanceOnly, Transient, BlueprintReadOnly, Category = PushToTarget, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleInstanceOnly, Transient, BlueprintReadOnly, Category=PushToTarget, meta=(AllowPrivateAccess="true"))
 	TWeakObjectPtr<USceneComponent> TargetComponent;
 
 	/** The socket name of the current target we are homing towards. Can only be set at runtime (when the component is spawned or updating). */
-	UPROPERTY(VisibleInstanceOnly, Transient, BlueprintReadOnly, Category = PushToTarget, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleInstanceOnly, Transient, BlueprintReadOnly, Category=PushToTarget, meta=(AllowPrivateAccess="true"))
 	FName TargetSocketName;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = PushToTarget, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=PushToTarget, meta=(AllowPrivateAccess="true"))
 	bool bIsBlocked;
 
 	/**
 	 * Draws markers at the target (in green) and the lagged position (in yellow).
 	 * A line is drawn between the two locations, in green normally but in red if the distance to the lag target has been clamped (by TargetLagMaxDistance).
 	 */
-	UPROPERTY(EditDefaultsOnly, Category = PushToTarget, AdvancedDisplay)
+	UPROPERTY(EditDefaultsOnly, Category=PushToTarget, AdvancedDisplay)
 	bool bDrawDebugMarkers;
 
 	FVector PreviousTargetLocation;
+	FRotator PreviousTargetRotation;
 
 protected:
 	
 	/** Minimum delta time considered when ticking. Delta times below this are not considered. This is a very small non-zero positive value to avoid potential divide-by-zero in simulation code. */
 	static const float MIN_TICK_TIME;
 
-	/** Return the target location considering the socket name if any */
+	/** Return the target location considering the socket name if any. */
 	FVector GetTargetLocation() const;
+
+	/** Return the target rotation considering the current rotation behavior. */
+	FRotator GetTargetRotation() const;
 
 	/** 
 	 * Return the location of the UpdatedComponent in world space to be used for this frame. 
@@ -61,8 +76,17 @@ protected:
 	 */
 	virtual FVector AdjustCurrentLocationToTarget(const FVector& CurrentLocation, const FVector& TargetLocation) const;
 
-	/** Interpolation method used for target lag */
+	/**
+	 * Return the rotation of the UpdatedComponent in world space to be used for this frame.
+	 * Default implementation simply returns the UpdatedComponent's rotation unmodified.
+	 */
+	virtual FRotator AdjustCurrentRotationToTarget(const FRotator& CurrentRotation, const FRotator& TargetRotation) const;
+
+	/** Interpolation method used for target location lag. */
 	virtual FVector VInterpTo(const FVector& Current, const FVector& Target, float DeltaTime, float InterpSpeed);
+
+	/** Interpolation method used for target rotation lag. */
+	virtual FRotator RInterpTo(const FRotator& Current, const FRotator& Target, float DeltaTime, float InterpSpeed);
 
 	/** 
 	 * Move the updated component accounting for initial penetration, blocking collisions and sliding surfaces. 
@@ -73,30 +97,52 @@ protected:
 
 public:	
 
+	/** Offset in local space of the targeted socket or component. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
+	FVector RelativeOffset;
+
+	/** Offset in local space of the targeted actor. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
+	FVector ActorRelativeOffset;
+
 	/**
 	 * If true, the updated component lags behind the target to smooth its movement.
 	 * @see Speed
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PushToTarget)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
 	bool bEnableLag;
 
 	/** 
 	 * Controls how strong the attraction is, thus how quickly the updated component reaches the target. Low values are slower (more drag), high values are faster (less drag), while zero is instant (no drag). 
 	 * If the updated componet is simulating physics 
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PushToTarget, meta = (ClampMin = "0.0", ClampMax = "10000.0", UIMin = "0.0", UIMax = "10000.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget, meta=(EditCondition="bEnableLag", ClampMin="0.0", ClampMax="10000.0", UIMin="0.0", UIMax="10000.0"))
 	float Speed;
 
+	/** 
+	 * Controls rotation interpolation speed. Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget, meta=(EditCondition="bEnableLag", ClampMin="0.0", ClampMax="10000.0", UIMin="0.0", UIMax="10000.0"))
+	float RotationSpeed;
+
+	/** Rotation behaviour of the component. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
+	EPushToTargetRotationType RotationType;
+
 	/** If true, the updated component will slide over surfaces when blocked. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PushToTarget)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
 	bool bSlide;
 
-	/** A normalized coeficient of friction representing the ammount of movement lost due to friction when sliding. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PushToTarget, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	/** A normalized coefficient of friction representing the ammount of movement lost due to friction when sliding. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget, meta=(EditCondition="bSlide", ClampMin="0.0", ClampMax="1.0", UIMin="0.0", UIMax="1.0"))
 	float Friction;
 
+	/** Makes the component stay upright in world space, regardless of the rotation mode. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
+	bool bStayUpright;
+
 	/** If true, the updated component is teleported immediately to the new homing target when assigned. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PushToTarget)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
 	bool bTeleportToTargetToStart;
 
 	/**
@@ -104,7 +150,7 @@ public:
 	 * Objects that move in a straight line typically do *not* need to set this, as movement always uses continuous collision detection (sweeps).
 	 * @see MaxSimulationTimeStep, MaxSimulationIterations
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PushToTargetSimulation, AdvancedDisplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTargetSimulation, AdvancedDisplay)
 	bool bForceSubStepping;
 
 	/**
@@ -114,7 +160,7 @@ public:
 	 * WARNING: if (MaxSimulationTimeStep * MaxSimulationIterations) is too low for the min framerate, the last simulation step may exceed MaxSimulationTimeStep to complete the simulation.
 	 * @see MaxSimulationIterations, bForceSubStepping
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0166", ClampMax = "0.50", UIMin = "0.0166", UIMax = "0.50"), Category = PushToTargetSimulation, AdvancedDisplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin="0.0166", ClampMax="0.50", UIMin="0.0166", UIMax="0.50"), Category=PushToTargetSimulation, AdvancedDisplay)
 	float MaxSimulationTimeStep;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
@@ -126,8 +172,8 @@ public:
 	 */
 	virtual bool IsStillInWorld();
 
-	UFUNCTION(BlueprintCallable, Category = "Game|Components|PushToTarget")
-	virtual void SetTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName = NAME_None);
+	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
+	virtual void SetTargetComponent(USceneComponent* NewTargetComponent, const FName SocketName = NAME_None);
 
 	FORCEINLINE USceneComponent* GetTargetComponent() { return TargetComponent.Get(); }
 

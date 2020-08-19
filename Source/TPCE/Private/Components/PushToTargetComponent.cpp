@@ -4,6 +4,7 @@
 #include "CollisionQueryParams.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
+#include "Engine/LocalPlayer.h"
 #include "Components/PrimitiveComponent.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "Logging/LogMacros.h"
@@ -22,6 +23,8 @@ const float UPushToTargetComponent::MIN_TICK_TIME = 1e-6f;
 UPushToTargetComponent::UPushToTargetComponent()
 {
 	Speed = 0.0f;
+	RotationSpeed = 0.0f;
+	RotationType = EPushToTargetRotationType::None;
 	bTeleportToTargetToStart = false;
 	bForceSubStepping = true;
 	MaxSimulationTimeStep = 1.f / 30.f;
@@ -100,7 +103,8 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		return;
 	}
 
-	const FVector TargetLocation = GetTargetLocation();
+	FVector TargetLocation = GetTargetLocation();
+	FRotator TargetRotation = GetTargetRotation();
 
 #if ENABLE_DRAW_DEBUG
 	if (bDrawDebugMarkers)
@@ -114,33 +118,42 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	FVector DesiredLocation = TargetLocation;
 	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
 	FVector AdjustedLocation = AdjustCurrentLocationToTarget(CurrentLocation, DesiredLocation);
+	FRotator DesiredRotation = TargetRotation;
+	FRotator CurrentRotation = UpdatedComponent->GetComponentRotation();
+	FRotator AdjustedRotation = AdjustCurrentRotationToTarget(CurrentRotation, DesiredRotation);
 
 	if (bEnableLag)
 	{
-		if (bForceSubStepping && DeltaTime > MaxSimulationTimeStep && Speed > 0.f)
+		if (bForceSubStepping && DeltaTime > MaxSimulationTimeStep)
 		{
-			const FVector TargetMovementStep = (TargetLocation - PreviousTargetLocation) * (TargetMovementStep / DeltaTime);
+			const FVector TargetMovementStep = (TargetLocation - PreviousTargetLocation) * (1.0f / DeltaTime);
+			const FRotator TargetRotationStep = (TargetRotation - PreviousTargetRotation) * (1.0f / DeltaTime);
 
-			FVector LerpTarget = PreviousTargetLocation;
+			FVector LerpLocationTarget = PreviousTargetLocation;
+			FRotator LerpRotationTarget = PreviousTargetRotation;
 			float RemainingTime = DeltaTime;
 			bool bKeepMoving = true;
 			while (bKeepMoving && RemainingTime > MIN_TICK_TIME)
 			{
 				// Calculate desired location
 				const float LerpAmount = FMath::Min(MaxSimulationTimeStep, RemainingTime);
-				LerpTarget += TargetMovementStep * (LerpAmount * InverseTargetLagMaxTimeStep);
+				LerpLocationTarget += TargetMovementStep * (LerpAmount * InverseTargetLagMaxTimeStep);
+				LerpRotationTarget += TargetRotationStep * (LerpAmount * InverseTargetLagMaxTimeStep);
 				RemainingTime -= LerpAmount;
-				DesiredLocation = VInterpTo(AdjustedLocation, LerpTarget, LerpAmount, Speed);
+				DesiredLocation = VInterpTo(AdjustedLocation, LerpLocationTarget, LerpAmount, Speed);
+				DesiredRotation = RInterpTo(AdjustedRotation, LerpRotationTarget, LerpAmount, RotationSpeed);
 				// Perform Move
-				bKeepMoving = MoveUpdatedComponent(ConstrainDirectionToPlane(DesiredLocation - CurrentLocation), UpdatedComponent->GetComponentQuat());
+				bKeepMoving = MoveUpdatedComponent(ConstrainDirectionToPlane(DesiredLocation - CurrentLocation), CurrentRotation.Quaternion());
 				// Update Velocity (for the record) and locations for next iteration
 				if (UpdatedComponent)
 				{
 					const FVector NewLocation = UpdatedComponent->GetComponentLocation();
+					const FRotator NewRotation = UpdatedComponent->GetComponentRotation();
 					// Update Velocity
 					Velocity = (NewLocation - CurrentLocation) / LerpAmount;
 					// Get the actual updated component location every time as it could have been constrained to a plane or blocked  
 					AdjustedLocation = CurrentLocation = NewLocation;
+					AdjustedRotation = CurrentRotation = NewRotation;
 				}
 				else
 				{
@@ -154,17 +167,19 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		else
 		{
 			DesiredLocation = VInterpTo(AdjustedLocation, DesiredLocation, DeltaTime, Speed);
+			DesiredRotation = RInterpTo(AdjustedRotation, DesiredRotation, DeltaTime, RotationSpeed);
 		}
 	}
 
 	// NOTE: skipped if lag sub-stepping was executed above
 	{
-		MoveUpdatedComponent(ConstrainDirectionToPlane(DesiredLocation - CurrentLocation), UpdatedComponent->GetComponentQuat());
+		MoveUpdatedComponent(ConstrainDirectionToPlane(DesiredLocation - CurrentLocation), DesiredRotation.Quaternion());
 		Velocity = UpdatedComponent ? (UpdatedComponent->GetComponentLocation() - CurrentLocation) / DeltaTime : FVector::ZeroVector;
 	}
 
 UpdatedComponentMoved:
 	PreviousTargetLocation = TargetLocation;
+	PreviousTargetRotation = TargetRotation;
 	
 #if ENABLE_DRAW_DEBUG
 	if (bDrawDebugMarkers)
@@ -225,7 +240,7 @@ bool UPushToTargetComponent::IsStillInWorld()
 	return true;
 }
 
-void UPushToTargetComponent::SetTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName)
+void UPushToTargetComponent::SetTargetComponent(USceneComponent* NewTargetComponent, const FName SocketName)
 {
 	if (TargetComponent != NewTargetComponent || TargetSocketName != SocketName)
 	{
@@ -235,10 +250,13 @@ void UPushToTargetComponent::SetTargetComponent(USceneComponent* NewTargetCompon
 		if (TargetComponent.IsValid())
 		{
 			const FVector NewTargetLocation = GetTargetLocation();
+			const FRotator NewTargetRotation = GetTargetRotation();
 			PreviousTargetLocation = NewTargetLocation;
-			if (bTeleportToTargetToStart)
-				if (IsValid(UpdatedComponent))
-					UpdatedComponent->SetWorldLocation(ConstrainLocationToPlane(NewTargetLocation), false, nullptr, ETeleportType::TeleportPhysics);
+			PreviousTargetRotation = NewTargetRotation;
+			if (bTeleportToTargetToStart && IsValid(UpdatedComponent))
+			{
+				UpdatedComponent->SetWorldLocationAndRotation(ConstrainLocationToPlane(NewTargetLocation), NewTargetRotation.Quaternion(), false, nullptr, ETeleportType::TeleportPhysics);
+			}
 		}
 	}
 }
@@ -253,7 +271,9 @@ void UPushToTargetComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComp
 	{
 		bIsBlocked = false;
 		if (UpdatedComponent && bTeleportToTargetToStart && TargetComponent.IsValid())
-			UpdatedComponent->SetWorldLocation(ConstrainLocationToPlane(GetTargetLocation()), false, nullptr, ETeleportType::TeleportPhysics);
+		{
+			UpdatedComponent->SetWorldLocationAndRotation(ConstrainLocationToPlane(GetTargetLocation()), GetTargetRotation().Quaternion(), false, nullptr, ETeleportType::TeleportPhysics);
+		}
 	}
 }
 
@@ -261,7 +281,60 @@ FVector UPushToTargetComponent::GetTargetLocation() const
 {
 	check(TargetComponent.Get());
 
-	return TargetComponent->GetSocketLocation(TargetSocketName);
+	const FTransform SocketTransform = TargetComponent->GetSocketTransform(TargetSocketName);
+	const FTransform ActorTransform = TargetComponent->GetOwner()->GetActorTransform();
+
+	return (SocketTransform.GetLocation()
+		+ SocketTransform.TransformVector(RelativeOffset)
+		+ ActorTransform.TransformVector(ActorRelativeOffset));
+}
+
+FRotator UPushToTargetComponent::GetTargetRotation() const
+{
+	check(TargetComponent.Get());
+
+	const FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
+	FRotator NewTargetRotation = UpdatedComponent->GetComponentRotation();
+
+	if (RotationType == EPushToTargetRotationType::FaceTarget)
+	{
+		const FVector TargetLocationNoOffset = TargetComponent->GetSocketLocation(TargetSocketName);
+		const FVector DeltaLocation = TargetLocationNoOffset - CurrentLocation;
+		if (!DeltaLocation.IsNearlyZero())
+		{
+			NewTargetRotation = FRotationMatrix::MakeFromX(DeltaLocation).Rotator();
+		}
+	}
+	else if (RotationType == EPushToTargetRotationType::FaceView)
+	{
+		if (UWorld* LocalWorld = GetWorld())
+		{
+#if WITH_EDITOR
+			// Getting the viewport camera is trickier than it seems. This is a hack found at https://answers.unrealengine.com/questions/124563/
+			if (LocalWorld->ViewLocationsRenderedLastFrame.Num() > 0)
+			{
+				const FVector TargetViewLocation = LocalWorld->ViewLocationsRenderedLastFrame[0];
+				const FVector DeltaLocation = TargetViewLocation - CurrentLocation;
+				NewTargetRotation = FRotationMatrix::MakeFromX(DeltaLocation).Rotator();
+			}
+#endif
+
+			if (ULocalPlayer* LocalPlayer = LocalWorld->GetFirstLocalPlayerFromController())
+			{
+				const FVector TargetViewLocation = LocalPlayer->LastViewLocation;
+				const FVector DeltaLocation = TargetViewLocation - CurrentLocation;
+				NewTargetRotation = FRotationMatrix::MakeFromX(DeltaLocation).Rotator();
+			}
+		}
+	}
+
+	if (bStayUpright)
+	{
+		NewTargetRotation.Roll = 0.0f;
+		NewTargetRotation.Pitch = 0.0f;
+	}
+
+	return NewTargetRotation;
 }
 
 FVector UPushToTargetComponent::AdjustCurrentLocationToTarget(const FVector& CurrentLocation, const FVector& TargetLocation) const
@@ -269,10 +342,19 @@ FVector UPushToTargetComponent::AdjustCurrentLocationToTarget(const FVector& Cur
 	return CurrentLocation;
 }
 
+FRotator UPushToTargetComponent::AdjustCurrentRotationToTarget(const FRotator& CurrentRotation, const FRotator& TargetRotation) const
+{
+	return CurrentRotation;
+}
 
 FVector UPushToTargetComponent::VInterpTo(const FVector& Current, const FVector& Target, float DeltaTime, float InterpSpeed)
 {
 	return FMathEx::VSafeInterpTo(Current, Target, DeltaTime, InterpSpeed);
+}
+
+FRotator UPushToTargetComponent::RInterpTo(const FRotator& Current, const FRotator& Target, float DeltaTime, float InterpSpeed)
+{
+	return FMathEx::RSafeInterpTo(Current, Target, DeltaTime, InterpSpeed);
 }
 
 #undef LOCTEXT_NAMESPACE
