@@ -948,6 +948,12 @@ FVector AExtCharacter::GetTargetLocation(AActor* RequestedBy) const
 	return GetActorTransform().TransformPosition(FVector(0.0f, 0.0f, BaseChestHeight));
 }
 
+FVector AExtCharacter::GetPawnViewLocation() const
+{
+	// Overridden to actually use the actor's transform. Base method just adds to the actor's world Z
+	return GetActorTransform().TransformPosition(FVector(0.0f, 0.0f, BaseEyeHeight));
+}
+
 
 /// Input
 

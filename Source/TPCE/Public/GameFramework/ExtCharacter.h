@@ -764,6 +764,7 @@ public:		// Methods
 	virtual bool HasActiveCameraComponent() const override;
 	virtual bool HasActivePawnControlCameraComponent() const override;
 	virtual FVector GetTargetLocation(AActor* RequestedBy) const override;
+	virtual FVector GetPawnViewLocation() const override;
 
 	virtual void Landed(const FHitResult& Hit) override;
 
