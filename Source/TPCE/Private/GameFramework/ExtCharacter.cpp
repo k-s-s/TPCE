@@ -169,7 +169,7 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	// Educated guesses based on capsule size.
 	CrouchedEyeHeight = 48;
 	BaseEyeHeight = 80;
-	BaseChestHeight = 40;
+	BaseChestHeight = 60;
 
 	// Don't rotate when the controller rotates let the movement component do the work.
 	bUseControllerRotationPitch = false;
@@ -951,6 +951,7 @@ FVector AExtCharacter::GetTargetLocation(AActor* RequestedBy) const
 FVector AExtCharacter::GetPawnViewLocation() const
 {
 	// Overridden to actually use the actor's transform. Base method just adds to the actor's world Z
+	// NOTE: A Pawn's BaseEyeHeight will be reset to the CDO on play, for whatever reason. See APawn::RecalculateBaseEyeHeight
 	return GetActorTransform().TransformPosition(FVector(0.0f, 0.0f, BaseEyeHeight));
 }
 

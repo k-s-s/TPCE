@@ -78,7 +78,7 @@ void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		// Reconstruct the look target in world space
 		LookTarget = UKismetMathLibrary::CreateVectorFromYawPitch(LookOffset.X, LookOffset.Y, LookOffset.Z);
-		LookTarget = CharacterOwner->GetActorRotation().RotateVector(LookTarget) + CharacterOwnerMesh->GetSocketLocation(CharacterOwner->GetHeadBoneName());
+		LookTarget = CharacterOwner->GetActorRotation().RotateVector(LookTarget) + CharacterOwner->GetPawnViewLocation();
 
 		// Update headlook values
 		const float TotalLookWeight = UseHeadlook + UseBodylook;
