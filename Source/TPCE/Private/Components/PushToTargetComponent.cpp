@@ -291,9 +291,16 @@ FVector UPushToTargetComponent::GetTargetLocation() const
 	const FTransform SocketTransform = TargetComponent->GetSocketTransform(TargetSocketName);
 	const FTransform ActorTransform = TargetComponent->GetOwner()->GetActorTransform();
 
-	return (SocketTransform.GetLocation()
+	FVector NewTargetLocation = SocketTransform.GetLocation()
 		+ SocketTransform.TransformVector(RelativeOffset)
-		+ ActorTransform.TransformVector(ActorRelativeOffset));
+		+ ActorTransform.TransformVector(ActorRelativeOffset);
+
+	if (APawn* TargetPawn = Cast<APawn>(TargetComponent->GetOwner()))
+	{
+		NewTargetLocation += TargetPawn->GetControlRotation().RotateVector(ControllerRelativeOffset);
+	}
+
+	return NewTargetLocation;
 }
 
 FRotator UPushToTargetComponent::GetTargetRotation(const FVector& CurrentLocation) const

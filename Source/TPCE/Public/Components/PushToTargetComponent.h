@@ -105,6 +105,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
 	FVector ActorRelativeOffset;
 
+	/** Offset in local space of the controller possessing the targeted actor, if available. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
+	FVector ControllerRelativeOffset;
+
 	/**
 	 * If true, the updated component lags behind the target to smooth its movement.
 	 * @see Speed
