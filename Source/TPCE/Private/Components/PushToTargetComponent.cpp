@@ -103,8 +103,16 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		return;
 	}
 
+	const float InverseTargetLagMaxTimeStep = 1.f / MaxSimulationTimeStep;
+	
 	FVector TargetLocation = GetTargetLocation();
-	FRotator TargetRotation = GetTargetRotation();
+	FVector DesiredLocation = TargetLocation;
+	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
+	FVector AdjustedLocation = AdjustCurrentLocationToTarget(CurrentLocation, DesiredLocation);
+	FRotator TargetRotation = GetTargetRotation(CurrentLocation);
+	FRotator DesiredRotation = TargetRotation;
+	FRotator CurrentRotation = UpdatedComponent->GetComponentRotation();
+	FRotator AdjustedRotation = AdjustCurrentRotationToTarget(CurrentRotation, DesiredRotation);
 
 #if ENABLE_DRAW_DEBUG
 	if (bDrawDebugMarkers)
@@ -112,15 +120,6 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		DrawDebugSphere(GetWorld(), TargetLocation, 5.0f, 8, FColor::Red);
 	}
 #endif
-
-	const float InverseTargetLagMaxTimeStep = 1.f / MaxSimulationTimeStep;
-	
-	FVector DesiredLocation = TargetLocation;
-	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
-	FVector AdjustedLocation = AdjustCurrentLocationToTarget(CurrentLocation, DesiredLocation);
-	FRotator DesiredRotation = TargetRotation;
-	FRotator CurrentRotation = UpdatedComponent->GetComponentRotation();
-	FRotator AdjustedRotation = AdjustCurrentRotationToTarget(CurrentRotation, DesiredRotation);
 
 	if (bEnableLag)
 	{
@@ -246,17 +245,10 @@ void UPushToTargetComponent::SetTargetComponent(USceneComponent* NewTargetCompon
 	{
 		TargetComponent = NewTargetComponent;
 		TargetSocketName = SocketName;
-		
-		if (TargetComponent.IsValid())
+
+		if (bTeleportToTargetToStart)
 		{
-			const FVector NewTargetLocation = GetTargetLocation();
-			const FRotator NewTargetRotation = GetTargetRotation();
-			PreviousTargetLocation = NewTargetLocation;
-			PreviousTargetRotation = NewTargetRotation;
-			if (bTeleportToTargetToStart && IsValid(UpdatedComponent))
-			{
-				UpdatedComponent->SetWorldLocationAndRotation(ConstrainLocationToPlane(NewTargetLocation), NewTargetRotation.Quaternion(), false, nullptr, ETeleportType::TeleportPhysics);
-			}
+			SnapToTarget();
 		}
 	}
 }
@@ -270,9 +262,24 @@ void UPushToTargetComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComp
 	if (bIsNewValue)
 	{
 		bIsBlocked = false;
-		if (UpdatedComponent && bTeleportToTargetToStart && TargetComponent.IsValid())
+		if (bTeleportToTargetToStart)
 		{
-			UpdatedComponent->SetWorldLocationAndRotation(ConstrainLocationToPlane(GetTargetLocation()), GetTargetRotation().Quaternion(), false, nullptr, ETeleportType::TeleportPhysics);
+			SnapToTarget();
+		}
+	}
+}
+
+void UPushToTargetComponent::SnapToTarget()
+{
+	if (TargetComponent.IsValid())
+	{
+		const FVector NewTargetLocation = GetTargetLocation();
+		const FRotator NewTargetRotation = GetTargetRotation(NewTargetLocation);
+		PreviousTargetLocation = NewTargetLocation;
+		PreviousTargetRotation = NewTargetRotation;
+		if (IsValid(UpdatedComponent))
+		{
+			UpdatedComponent->SetWorldLocationAndRotation(ConstrainLocationToPlane(NewTargetLocation), NewTargetRotation.Quaternion(), false, nullptr, ETeleportType::TeleportPhysics);
 		}
 	}
 }
@@ -289,11 +296,15 @@ FVector UPushToTargetComponent::GetTargetLocation() const
 		+ ActorTransform.TransformVector(ActorRelativeOffset));
 }
 
-FRotator UPushToTargetComponent::GetTargetRotation() const
+FRotator UPushToTargetComponent::GetTargetRotation(const FVector& CurrentLocation) const
 {
 	check(TargetComponent.Get());
 
-	const FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
+	if (!IsValid(UpdatedComponent))
+	{
+		return FRotator::ZeroRotator;
+	}
+
 	FRotator NewTargetRotation = UpdatedComponent->GetComponentRotation();
 
 	if (RotationType == EPushToTargetRotationType::FaceTarget)
@@ -317,8 +328,8 @@ FRotator UPushToTargetComponent::GetTargetRotation() const
 				const FVector DeltaLocation = TargetViewLocation - CurrentLocation;
 				NewTargetRotation = FRotationMatrix::MakeFromX(DeltaLocation).Rotator();
 			}
+			else
 #endif
-
 			if (ULocalPlayer* LocalPlayer = LocalWorld->GetFirstLocalPlayerFromController())
 			{
 				const FVector TargetViewLocation = LocalPlayer->LastViewLocation;

@@ -66,7 +66,7 @@ protected:
 	FVector GetTargetLocation() const;
 
 	/** Return the target rotation considering the current rotation behavior. */
-	FRotator GetTargetRotation() const;
+	FRotator GetTargetRotation(const FVector& CurrentLocation) const;
 
 	/** 
 	 * Return the location of the UpdatedComponent in world space to be used for this frame. 
@@ -167,13 +167,16 @@ public:
 	virtual void InitializeComponent() override;
 	virtual void SetUpdatedComponent(USceneComponent* NewUpdatedComponent) override;
 
-	/**
-	 * Return true if still in the world.  It will check things like the KillZ, outside world bounds, etc. and handle the situation.
-	 */
+	/** Return true if still in the world.  It will check things like the KillZ, outside world bounds, etc. and handle the situation. */
 	virtual bool IsStillInWorld();
 
+	/** Sets the target component or socket. */
 	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
 	virtual void SetTargetComponent(USceneComponent* NewTargetComponent, const FName SocketName = NAME_None);
+
+	/** Immediately moves to the target location and rotation, according to the current settings. */
+	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
+	void SnapToTarget();
 
 	FORCEINLINE USceneComponent* GetTargetComponent() { return TargetComponent.Get(); }
 
