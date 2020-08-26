@@ -9,7 +9,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDrawSizeChanged, FIntPoint, NewDrawSize);
 
-/** Widget component with scalable internal resolution. */
+/**
+ * Widget component with scalable internal resolution.
+ */
 UCLASS(Blueprintable, ClassGroup="UserInterface", hidecategories=(Object,Activation,"Components|Activation",Sockets,Base,Lighting,LOD,Mesh), editinlinenew, meta=(BlueprintSpawnableComponent) )
 class TPCE_API UScalableWidgetComponent : public UWidgetComponent
 {
