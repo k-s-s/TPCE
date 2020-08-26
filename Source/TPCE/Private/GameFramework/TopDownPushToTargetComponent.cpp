@@ -10,7 +10,7 @@ UTopDownPushToTargetComponent::UTopDownPushToTargetComponent()
 	bAdjustTargetLagForViewTarget = false;
 }
 
-FVector UTopDownPushToTargetComponent::AdjustCurrentLocationToTarget(const FVector& CurrentLocation, const FVector& TargetLocation) const
+FVector UTopDownPushToTargetComponent::AdjustCurrentLocationToTarget(const FVector& InCurrentLocation, const FVector& InTargetLocation) const
 {
 	if (bAdjustTargetLagForViewTarget)
 	{
@@ -18,12 +18,12 @@ FVector UTopDownPushToTargetComponent::AdjustCurrentLocationToTarget(const FVect
 		{
 			const FVector HeadStart = (ViewTarget->GetActorLocation() - PreviousViewTargetLocation).ProjectOnTo(ViewTarget->GetActorForwardVector());
 			// If the head start we're applying to our updated component is not opposing to where we want it to be, we can 
-			if (FVector::DotProduct(HeadStart, TargetLocation - CurrentLocation) > 0.0f)
-				return CurrentLocation + HeadStart;
+			if (FVector::DotProduct(HeadStart, InTargetLocation - InCurrentLocation) > 0.0f)
+				return InCurrentLocation + HeadStart;
 		}
 	}
 
-	return CurrentLocation;
+	return InCurrentLocation;
 }
 
 void UTopDownPushToTargetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

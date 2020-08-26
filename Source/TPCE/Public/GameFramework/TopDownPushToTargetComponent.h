@@ -38,7 +38,7 @@ protected:
 	* This produces the effect of dragging the updated component along with the view target depending on how straight the latter is moving.
 	* The more sideways the view target moves (to a max of 90deg), the less will be the headstart (downto 0).
 	*/
-	virtual FVector AdjustCurrentLocationToTarget(const FVector& CurrentLocation, const FVector& TargetLocation) const override;
+	virtual FVector AdjustCurrentLocationToTarget(const FVector& InCurrentLocation, const FVector& InTargetLocation) const override;
 
 public:
 

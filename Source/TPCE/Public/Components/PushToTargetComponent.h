@@ -36,9 +36,13 @@ public:
 
 private:
 
-	/** The current target we are homing towards. Can only be set at runtime (when the component is spawned or updating). */
+	/** The target component we are homing towards. Can only be set at runtime (when the component is spawned or updating). */
 	UPROPERTY(VisibleInstanceOnly, Transient, BlueprintReadOnly, Category=PushToTarget, meta=(AllowPrivateAccess="true"))
 	TWeakObjectPtr<USceneComponent> TargetComponent;
+
+	/** The target location we are homing towards, if set. Can only be set at runtime (when the component is spawned or updating). */
+	UPROPERTY(VisibleInstanceOnly, Transient, BlueprintReadOnly, Category=PushToTarget, meta=(AllowPrivateAccess="true"))
+	FVector TargetLocation;
 
 	/** The socket name of the current target we are homing towards. Can only be set at runtime (when the component is spawned or updating). */
 	UPROPERTY(VisibleInstanceOnly, Transient, BlueprintReadOnly, Category=PushToTarget, meta=(AllowPrivateAccess="true"))
@@ -54,8 +58,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category=PushToTarget, AdvancedDisplay)
 	bool bDrawDebugMarkers;
 
-	FVector PreviousTargetLocation;
-	FRotator PreviousTargetRotation;
+	FVector PreviousDesiredLocation;
+	FRotator PreviousDesiredRotation;
+	bool bTargetLocationSet;
 
 protected:
 	
@@ -66,7 +71,7 @@ protected:
 	FVector GetTargetLocation() const;
 
 	/** Return the target rotation considering the current rotation behavior. */
-	FRotator GetTargetRotation(const FVector& CurrentLocation) const;
+	FRotator GetTargetRotation(const FVector& InCurrentLocation) const;
 
 	/** 
 	 * Return the location of the UpdatedComponent in world space to be used for this frame. 
@@ -74,13 +79,13 @@ protected:
 	 * this method to implement diferent rules depending on the state of the components involved, for example, producing 
 	 * a boost or a drag effect.  
 	 */
-	virtual FVector AdjustCurrentLocationToTarget(const FVector& CurrentLocation, const FVector& TargetLocation) const;
+	virtual FVector AdjustCurrentLocationToTarget(const FVector& InCurrentLocation, const FVector& InTargetLocation) const;
 
 	/**
 	 * Return the rotation of the UpdatedComponent in world space to be used for this frame.
 	 * Default implementation simply returns the UpdatedComponent's rotation unmodified.
 	 */
-	virtual FRotator AdjustCurrentRotationToTarget(const FRotator& CurrentRotation, const FRotator& TargetRotation) const;
+	virtual FRotator AdjustCurrentRotationToTarget(const FRotator& InCurrentRotation, const FRotator& InTargetRotation) const;
 
 	/** Interpolation method used for target location lag. */
 	virtual FVector VInterpTo(const FVector& Current, const FVector& Target, float DeltaTime, float InterpSpeed);
@@ -99,7 +104,7 @@ public:
 
 	/** Offset in local space of the targeted socket or component. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
-	FVector RelativeOffset;
+	FVector SocketRelativeOffset;
 
 	/** Offset in local space of the targeted actor. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
@@ -174,9 +179,17 @@ public:
 	/** Return true if still in the world.  It will check things like the KillZ, outside world bounds, etc. and handle the situation. */
 	virtual bool IsStillInWorld();
 
-	/** Sets the target component or socket. */
+	/** Sets the target component or socket and clears the target world location. */
 	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
 	virtual void SetTargetComponent(USceneComponent* NewTargetComponent, const FName SocketName = NAME_None);
+
+	/** Sets the target world location and clears the target component. */
+	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
+	virtual void SetTargetLocation(FVector NewTargetLocation);
+
+	/** Clears both the target component and target world location. */
+	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
+	void ClearTarget();
 
 	/** Immediately moves to the target location and rotation, according to the current settings. */
 	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
