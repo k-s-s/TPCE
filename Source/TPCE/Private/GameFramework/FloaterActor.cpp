@@ -6,7 +6,7 @@
 #include "Curves/CurveLinearColor.h"
 #include "UObject/ConstructorHelpers.h"
 
-FName AFloaterActor::MovementComponentName(TEXT("Movement"));
+FName AFloaterActor::PushToTargetName(TEXT("PushToTarget"));
 
 AFloaterActor::AFloaterActor()
 	: AnimationRate(1.0f)
@@ -17,14 +17,14 @@ AFloaterActor::AFloaterActor()
 	PopUpCurve = PopUpCurveObject.Object;
 	PopInCurve = PopInCurveObject.Object;
 
-	MovementComponent = CreateDefaultSubobject<UPushToTargetComponent>(MovementComponentName);
-	MovementComponent->RelativeOffset = FVector(0.0f, 80.0f, 0.0f);
-	MovementComponent->bEnableLag = true;
-	MovementComponent->Speed = 3.0f;
-	MovementComponent->RotationSpeed = 2.8f;
-	MovementComponent->RotationType = EPushToTargetRotationType::FaceView;
-	MovementComponent->bStayUpright = false;
-	MovementComponent->bForceSubStepping = false;
+	PushToTarget = CreateDefaultSubobject<UPushToTargetComponent>(PushToTargetName);
+	PushToTarget->SocketRelativeOffset = FVector(0.0f, 80.0f, 0.0f);
+	PushToTarget->bEnableLag = true;
+	PushToTarget->Speed = 3.0f;
+	PushToTarget->RotationSpeed = 2.8f;
+	PushToTarget->RotationType = EPushToTargetRotationType::FaceView;
+	PushToTarget->bStayUpright = false;
+	PushToTarget->bForceSubStepping = false;
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
@@ -95,7 +95,7 @@ void AFloaterActor::Show()
 	if (ShowState == EFloaterShowState::Hidden)
 	{
 		// Begin playing, currently invisible so snap to the desired transform
-		MovementComponent->SnapToTarget();
+		PushToTarget->SnapToTarget();
 
 		SetActorRelativeScale3D(FVector::ZeroVector);
 

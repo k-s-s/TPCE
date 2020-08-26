@@ -56,7 +56,7 @@ public:
 	class UCurveLinearColor* PopInCurve;
 
 	/** Returns the movement component subobject. */
-	class UPushToTargetComponent* GetMovement() const { return MovementComponent; }
+	class UPushToTargetComponent* GetPushToTarget() const { return PushToTarget; }
 
 protected:
 	/** Current animation phase. */
@@ -65,10 +65,10 @@ protected:
 
 	/** Movement component. */
 	UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
-	class UPushToTargetComponent* MovementComponent;
+	class UPushToTargetComponent* PushToTarget;
 
 	/** Name of the movement component. */
-	static FName MovementComponentName;
+	static FName PushToTargetName;
 
 	void OnTimelineProgress(FLinearColor Value);
 	void OnTimelineFinished();
