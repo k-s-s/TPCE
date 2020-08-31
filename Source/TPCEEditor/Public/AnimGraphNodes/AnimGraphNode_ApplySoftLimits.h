@@ -9,8 +9,8 @@
 
 #include "AnimGraphNode_ApplySoftLimits.generated.h"
 
-UCLASS(MinimalAPI)
-class UAnimGraphNode_ApplySoftLimits : public UAnimGraphNode_SkeletalControlBase
+UCLASS()
+class TPCEEDITOR_API UAnimGraphNode_ApplySoftLimits : public UAnimGraphNode_SkeletalControlBase
 {
 	GENERATED_BODY()
 
