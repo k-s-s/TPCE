@@ -7,12 +7,14 @@
 #include "AnimationRuntime.h"
 
 FAnimNode_ArmSeparation::FAnimNode_ArmSeparation()
-	: EndEffectorRadius(10.0f)
+	: EndEffectorRadius(10.f)
+	, CapsuleOffset(0.f, 0.f, 0.f)
+	, CapsuleRotation(0.f, 90.f, 0.f)
+	, CapsuleRadius(30.f)
+	, CapsuleLength(30.f)
+	, BiasTowardsSide(0.5f)
 	, SmoothDisplacement(5.0f)
-	, CapsuleOffset(-20.0f, 0.0f, 0.0f)
-	, CapsuleRotation(0.0f, 90.0f, 0.0f)
-	, CapsuleRadius(30.0f)
-	, CapsuleLength(30.0f)
+	, bFlipDisplacement(false)
 {
 }
 
@@ -29,9 +31,8 @@ void FAnimNode_ArmSeparation::GatherDebugData(FNodeDebugData& DebugData)
 	ComponentPose.GatherDebugData(DebugData);
 }
 
-float FAnimNode_ArmSeparation::GetClosestPointAndNormalFromInside(const FVector& Position, const FTransform& BoneTM, FVector& ClosestPosition, FVector& Normal) const
+float FAnimNode_ArmSeparation::GetClosestPointAndNormalFromInside(const FVector& Position, const FTransform& BoneTM, FVector& ClosestPosition, FVector& SidePosition, FVector& Normal) const
 {
-	// Similar to FKSphylElem::GetClosestPointAndNormal but calculates penetration instead
 	const FKSphylElem ScaledSphyl = GetColliderSphylElem().GetFinalScaled(BoneTM.GetScale3D(), FTransform::Identity);
 
 	const FTransform LocalTM = ScaledSphyl.GetTransform() * BoneTM;
@@ -44,7 +45,8 @@ float FAnimNode_ArmSeparation::GetClosestPointAndNormalFromInside(const FVector&
 	const FVector Sphere = LocalTM.TransformPositionNoScale(FVector(0.f, 0.f, TargetZ));
 	const FVector Dir = Sphere - Position;
 	const float DistToCenter = Dir.Size();
-	const float DistToEdge = DistToCenter - ScaledSphyl.Radius;
+	const float ScaledRadius = ScaledSphyl.Radius + EndEffectorRadius;
+	const float DistToEdge = DistToCenter - ScaledRadius;
 
 	bool bIsInside = DistToEdge < -SMALL_NUMBER;
 	if (bIsInside)
@@ -57,8 +59,9 @@ float FAnimNode_ArmSeparation::GetClosestPointAndNormalFromInside(const FVector&
 	}
 
 	ClosestPosition = Position - Normal * DistToEdge;
+	SidePosition = LocalTM.TransformPositionNoScale(FVector(ScaledRadius, 0.f, 0.f));
 
-	return bIsInside ? -DistToEdge : 0.0f;
+	return (bIsInside && ScaledRadius > 0.0f) ? (-DistToEdge / ScaledRadius) : 0.f;
 }
 
 void FAnimNode_ArmSeparation::EvaluateSkeletalControl_AnyThread(FComponentSpacePoseContext& Output, TArray<FBoneTransform>& OutBoneTransforms)
@@ -73,18 +76,26 @@ void FAnimNode_ArmSeparation::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 	FTransform PivotBoneTM = Output.Pose.GetComponentSpaceTransform(PivotBoneIndex);
 	const FTransform EndEffectorBoneTM = Output.Pose.GetComponentSpaceTransform(EndEffectorBoneIndex);
 	const FTransform ColliderBoneTM = Output.Pose.GetComponentSpaceTransform(ColliderBoneIndex);
-
 	const FVector EndEffectorLocation = EndEffectorBoneTM.GetLocation();
-	FVector ClosestPosition, Normal;
-	const float DistToEdge = GetClosestPointAndNormalFromInside(EndEffectorLocation, ColliderBoneTM, ClosestPosition, Normal);
-	float DisplacementAlpha = 0.0f;
 
-	if (DistToEdge > 0.0f && CapsuleRadius + EndEffectorRadius > 0.0f)
+	const FKSphylElem SphylElem = GetColliderSphylElem();
+	FVector ClosestPosition, Normal, SidePosition;
+	const float PenetrationFactor = GetClosestPointAndNormalFromInside(EndEffectorLocation, ColliderBoneTM, ClosestPosition, SidePosition, Normal);
+
+	const FVector TargetPosition = FMath::Lerp(ClosestPosition, SidePosition, BiasTowardsSide);
+	float DisplacementAlpha = 0.f;
+
+	if (PenetrationFactor > 0.f)
 	{
-		DisplacementAlpha = FMath::Pow(DistToEdge / (CapsuleRadius + EndEffectorRadius), SmoothDisplacement);
+		DisplacementAlpha = FMath::Pow(PenetrationFactor, SmoothDisplacement);
+		if (bFlipDisplacement)
+		{
+			DisplacementAlpha *= -1.f;
+		}
+
 		const FVector PivotLocation = PivotBoneTM.GetLocation();
-		const FQuat DeltaRotation = FQuat::FindBetween(PivotLocation - EndEffectorLocation, PivotLocation - ClosestPosition);
-		PivotBoneTM.ConcatenateRotation(FQuat::Slerp(FQuat::Identity, DeltaRotation, DisplacementAlpha));
+		const FQuat DeltaRotation = FQuat::FindBetween(PivotLocation - EndEffectorLocation, PivotLocation - TargetPosition);
+		PivotBoneTM.ConcatenateRotation(FQuat::SlerpFullPath(FQuat::Identity, DeltaRotation, DisplacementAlpha));
 
 		OutBoneTransforms.Add(FBoneTransform(PivotBoneIndex, PivotBoneTM));
 	}
@@ -93,6 +104,7 @@ void FAnimNode_ArmSeparation::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 	CachedDisplacementAlpha = DisplacementAlpha;
 	CachedEndEffectorBoneTM = EndEffectorBoneTM;
 	CachedColliderBoneTM = ColliderBoneTM;
+	CachedTargetPosition = TargetPosition;
 #endif
 }
 
@@ -131,7 +143,8 @@ void FAnimNode_ArmSeparation::ConditionalDebugDraw(FPrimitiveDrawInterface* PDI,
 
 		DrawWireSphere(PDI, EndEffectorBoneWorldTM.GetLocation(), FLinearColor::Red, EndEffectorRadius, 16, SDPG_World);
 		const FKSphylElem SphylElem = GetColliderSphylElem();
-		SphylElem.DrawElemWire(PDI, SphylElem.GetTransform() * ColliderWorldTM, ColliderWorldTM.GetScale3D(), FColor::Yellow);
+		SphylElem.DrawElemWire(PDI, SphylElem.GetTransform() * ColliderWorldTM, FVector::OneVector, FColor::Yellow);
+		PDI->DrawPoint(CachedTargetPosition, FLinearColor::Yellow, 6.0f, SDPG_World);
 	}
 }
 #endif

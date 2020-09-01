@@ -36,33 +36,43 @@ struct TPCE_API FAnimNode_ArmSeparation : public FAnimNode_SkeletalControlBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ArmSeparation, meta=(PinHiddenByDefault))
 	float EndEffectorRadius;
 
-	/** Exponent applied to the penetration factor. Use values > 1.0 to soften the displacement when lightly touching. */
-	UPROPERTY(EditAnywhere, Category=ArmSeparation, meta=(ClampMin="0", UIMin="0"))
-	float SmoothDisplacement;
-
 	/** Name of bone to attach the collider. */
-	UPROPERTY(EditAnywhere, Category=CapsuleCollider)
+	UPROPERTY(EditAnywhere, Category=ArmSeparation)
 	FBoneReference ColliderBone;
 
 	/** Position of the capsule's origin in the bone's local space. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=CapsuleCollider)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ArmSeparation, meta=(PinHiddenByDefault))
 	FVector CapsuleOffset;
 
 	/** Rotation of the capsule. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=CapsuleCollider, meta=(PinHiddenByDefault))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ArmSeparation, meta=(PinHiddenByDefault))
 	FRotator CapsuleRotation;
 
 	/** Radius of the capsule. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=CapsuleCollider, meta=(PinHiddenByDefault))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ArmSeparation, meta=(PinHiddenByDefault))
 	float CapsuleRadius;
 
 	/** Add Radius to both ends to find total length. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=CapsuleCollider, meta=(PinHiddenByDefault))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ArmSeparation, meta=(PinHiddenByDefault))
 	float CapsuleLength;
+
+	/** Prefer the side instead of out, which can cause rapid movements as the effector moves through the capsule. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ArmSeparation, meta=(ClampMin="0", UIMin="0", ClampMax="1", UIMax="1"))
+	float BiasTowardsSide;
+
+	/**
+	 * Exponent applied to the penetration factor.
+	 * A value of 0.0 causes it to be impenetrable, 1.0 is linear pushback and higher will soften the displacement when lightly touching.
+	 */
+	UPROPERTY(EditAnywhere, Category=ArmSeparation, meta=(ClampMin="0", UIMin="0"))
+	float SmoothDisplacement;
+
+	/** If true, the rotation delta is inverted. */
+	UPROPERTY(EditAnywhere, Category=ArmSeparation)
+	bool bFlipDisplacement;
 
 	// Begin FAnimNode_Base Interface
 	virtual void GatherDebugData(FNodeDebugData& DebugData) override;
-	virtual bool NeedsOnInitializeAnimInstance() const override { return true; }
 	// End FAnimNode_Base Interface
 
 	// Begin FAnimNode_SkeletalControlBase Interface
@@ -79,8 +89,11 @@ private:
 	virtual void InitializeBoneReferences(const FBoneContainer& RequiredBones) override;
 	// End FAnimNode_SkeletalControlBase Interface
 
-	/** Similar to FKSphylElem::GetClosestPointAndNormal but calculates penetration instead. */
-	float GetClosestPointAndNormalFromInside(const FVector& Position, const FTransform& BoneTM, FVector& ClosestPosition, FVector& Normal) const;
+	/**
+	 * Similar to FKSphylElem::GetClosestPointAndNormal but calculates penetration instead.
+	 * Returns 0.0 if the point is outside, moving towards 1.0 as it approaches the center.
+	 */
+	float GetClosestPointAndNormalFromInside(const FVector& Position, const FTransform& BoneTM, FVector& ClosestPosition, FVector& SidePosition, FVector& Normal) const;
 
 	/** Utility function that builds a FKSphylElem from the current data. */
 	FKSphylElem GetColliderSphylElem() const;
@@ -90,6 +103,7 @@ private:
 	FTransform CachedEndEffectorBoneTM;
 	FTransform CachedColliderBoneTM;
 	float CachedDisplacementAlpha;
+	FVector CachedTargetPosition;
 
 	friend class UAnimGraphNode_ArmSeparation;
 #endif
