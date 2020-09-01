@@ -251,6 +251,9 @@ protected:  // Variables
 	/** Smoothly updated rotation offset used when rotating to desired contol rotation. */
 	float RotationOffset;
 
+	/** Current smoothed turn in place speed. */
+	FRotator EasedTurnInPlaceRotationRate;
+
 	/** Time counter used for turn in place delay. */
 	float TurnInPlaceTimeCounter;
 
@@ -320,13 +323,24 @@ public: // Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Rotation Settings)", meta = (editcondition = "bUseControllerDesiredRotation && !bOrientRotationToMovement", ClampMin = "0", UIMin = "0", ClampMax = "180", UIMax = "180"))
 	float ControlRotationMaxDistance;
 
-	/**   */
+	/** Delay after user view rotation input before the character */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bUseTurnInPlaceDelay", ClampMin = "0", UIMin = "0"))
 	float TurnInPlaceDelay;
 
-	/**   */
+	/** Maximum turn in place rotation rate, independent from character rotation rate. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace", ClampMin = "0", UIMin = "0"))
 	FRotator TurnInPlaceRotationRate;
+
+	/**
+	 * Smooths turn in place by moving towards the target rate at this speed.
+	 * Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace", ClampMin = "0", UIMin = "0"))
+	float TurnInPlaceRotationRateSpeed;
+
+	/** Slow down turning in place when the yaw delta is less than this many degrees. Only used if TurnInPlaceRotationRateSpeed is > 0.0. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace", ClampMin = "0", UIMin = "0"))
+	float TurnInPlaceRotationRateSpeedCutoff;
 
 	/**   */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace && !bUseTurnInPlaceDelay", ClampMin = "0", UIMin = "0", ClampMax = "180", UIMax = "180"))

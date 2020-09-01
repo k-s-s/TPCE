@@ -129,6 +129,8 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 	bUseTurnInPlaceDelay = false;
 	TurnInPlaceDelay = 0.5f; 
 	TurnInPlaceRotationRate = FRotator(0.0f, 180.f, 0.f);
+	TurnInPlaceRotationRateSpeed = 0.0f;
+	TurnInPlaceRotationRateSpeedCutoff = 40.0f;
 	TurnInPlaceMaxDistance = 90.0f;
 	TurnInPlaceTargetYaw = INFINITY;
 
@@ -1198,9 +1200,12 @@ void UExtCharacterMovementComponent::PhysicsRotation(float DeltaSeconds)
 					return;
 				}
 
-				DeltaRot.Pitch = CalculateConstantDeltaRotationAxis(CurrentRotation.Pitch, TargetRotation.Pitch, DeltaSeconds, TurnInPlaceRotationRate.Pitch);
-				DeltaRot.Yaw = CalculateConstantDeltaRotationAxis(CurrentRotation.Yaw, TargetRotation.Yaw, DeltaSeconds, TurnInPlaceRotationRate.Yaw);
-				DeltaRot.Roll = CalculateConstantDeltaRotationAxis(CurrentRotation.Roll, TargetRotation.Roll, DeltaSeconds, TurnInPlaceRotationRate.Roll);
+				const float TargetRateFactor = FMath::Clamp(FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TurnInPlaceTargetYaw)) / TurnInPlaceRotationRateSpeedCutoff, 0.f, 1.f);
+				EasedTurnInPlaceRotationRate = FMathEx::RSafeInterpTo(EasedTurnInPlaceRotationRate, TurnInPlaceRotationRate * TargetRateFactor, DeltaSeconds, TurnInPlaceRotationRateSpeed);
+
+				DeltaRot.Pitch = CalculateConstantDeltaRotationAxis(CurrentRotation.Pitch, TargetRotation.Pitch, DeltaSeconds, EasedTurnInPlaceRotationRate.Pitch);
+				DeltaRot.Yaw = CalculateConstantDeltaRotationAxis(CurrentRotation.Yaw, TargetRotation.Yaw, DeltaSeconds, EasedTurnInPlaceRotationRate.Yaw);
+				DeltaRot.Roll = CalculateConstantDeltaRotationAxis(CurrentRotation.Roll, TargetRotation.Roll, DeltaSeconds, EasedTurnInPlaceRotationRate.Roll);
 			}
 			else // if (IsMoving())
 			{
