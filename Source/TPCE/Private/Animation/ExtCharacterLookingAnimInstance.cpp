@@ -27,6 +27,7 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 	PitchDamping = 0.8f;
 	PitchInterpSpeed = 6.0f;
 
+	HeadPitchOffset = 0.0f;
 	HeadDownLookingUp = 10.0f;
 	HeadUpLookingDown = 0.0f;
 	HeadYawInterpSpeed = 5.0f;
@@ -84,7 +85,7 @@ void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		const float TotalLookWeight = UseHeadlook + UseBodylook;
 		const float HeadlookWeight = TotalLookWeight <= 1.0f ? UseHeadlook : (UseHeadlook / TotalLookWeight);
 		HeadAimOffset.X = FMath::FInterpTo(HeadAimOffset.X, FRotator::NormalizeAxis(LookOffset.X * HeadlookWeight), DeltaSeconds, HeadYawInterpSpeed);
-		HeadAimOffset.Y = LookOffset.Y * HeadPitchMultiplier;
+		HeadAimOffset.Y = LookOffset.Y * HeadPitchMultiplier + HeadPitchOffset;
 		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / 45.0f, 0.0f, 1.0f) * -HeadDownLookingUp;
 		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / -45.0f, 0.0f, 1.0f) * HeadUpLookingDown;
 		HeadAimOffset = HeadAimOffset.ClampAxes(-90.0f, 90.0f);

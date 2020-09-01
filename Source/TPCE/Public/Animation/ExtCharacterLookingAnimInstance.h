@@ -93,6 +93,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
 	float PitchInterpSpeed;
 
+	/** Constant head pitch offset. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	float HeadPitchOffset;
+
 	/** Downwards head pitch offset in degrees when looking up. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
 	float HeadDownLookingUp;
