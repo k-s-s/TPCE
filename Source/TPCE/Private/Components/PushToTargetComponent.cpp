@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "Components/PushToTargetComponent.h"
 #include "CollisionQueryParams.h"
@@ -14,7 +14,7 @@
 #include "UObject/UObjectIterator.h"
 #include "DrawDebugHelpers.h"
 #include "Math/MathExtensions.h"
- 
+
 #define LOCTEXT_NAMESPACE "PushToTarget"
 DEFINE_LOG_CATEGORY_STATIC(LogPushToTarget, Log, All);
 
@@ -108,7 +108,7 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	}
 
 	const float InverseTargetLagMaxTimeStep = 1.f / MaxSimulationTimeStep;
-	
+
 	FVector FinalDesiredLocation = GetTargetLocation();
 	FVector DesiredLocation = FinalDesiredLocation;
 	FVector CurrentLocation = UpdatedComponent->GetComponentLocation();
@@ -155,7 +155,7 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 					const FRotator NewRotation = UpdatedComponent->GetComponentRotation();
 					// Update Velocity
 					Velocity = (NewLocation - CurrentLocation) / LerpAmount;
-					// Get the actual updated component location every time as it could have been constrained to a plane or blocked  
+					// Get the actual updated component location every time as it could have been constrained to a plane or blocked
 					AdjustedLocation = CurrentLocation = NewLocation;
 					AdjustedRotation = CurrentRotation = NewRotation;
 				}
@@ -184,7 +184,7 @@ void UPushToTargetComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 UpdatedComponentMoved:
 	PreviousDesiredLocation = FinalDesiredLocation;
 	PreviousDesiredRotation = FinalDesiredRotation;
-	
+
 #if ENABLE_DRAW_DEBUG
 	if (bDrawDebugMarkers)
 	{
@@ -286,7 +286,7 @@ void UPushToTargetComponent::SetUpdatedComponent(USceneComponent* NewUpdatedComp
 	const bool bIsNewValue = UpdatedComponent != NewUpdatedComponent;
 
 	Super::SetUpdatedComponent(NewUpdatedComponent);
-	
+
 	if (bIsNewValue)
 	{
 		bIsBlocked = false;

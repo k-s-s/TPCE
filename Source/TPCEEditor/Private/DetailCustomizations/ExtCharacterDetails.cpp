@@ -1,3 +1,5 @@
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+
 #include "DetailCustomizations/ExtCharacterDetails.h"
 #include "PropertyEditing.h"
 #include "IDetailsView.h"
@@ -6,7 +8,7 @@
 #include "UnrealEd.h"
 #include "EditorCategoryUtils.h"
 
-#define LOCTEXT_NAMESPACE "ExtCharacterDetails" 
+#define LOCTEXT_NAMESPACE "ExtCharacterDetails"
 
 DEFINE_LOG_CATEGORY_STATIC(LogExtCharacterDetails, Log, All);
 

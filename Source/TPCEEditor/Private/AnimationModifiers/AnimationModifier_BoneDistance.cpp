@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "AnimationModifiers/AnimationModifier_BoneDistance.h"
 
@@ -63,7 +63,7 @@ void UAnimationModifier_BoneDistance::OnApply_Implementation(UAnimSequence* Anim
 
 			for (int32 Frame = 0; Frame <= NumFrames; ++Frame)
 			{
-				float Time = AnimationSequence->GetTimeAtFrame(Frame); 
+				float Time = AnimationSequence->GetTimeAtFrame(Frame);
 				if (Frame == NumFrames)
 				{
 					// Subtract a little time from the last frame to avoid errors

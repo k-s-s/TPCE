@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "GameFramework/ExtCharacterMovementComponent.h"
 #include "GameFramework/ExtCharacter.h"
@@ -63,7 +63,7 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 	bMaintainHorizontalGroundVelocity = false;
 
 	InputAccelerationScale = 1.0f;
-	
+
 	JumpZVelocity = 350.f;
 	AirControl = 0.1f;
 	bPreserveMovementOnLanding = true;
@@ -104,7 +104,7 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 
 	// This should be adjusted according to view point distance and character scale but a value
 	// of one should be reasonable and stable for most cases.
-	BrakingSpeedTolerance = 1.f; 
+	BrakingSpeedTolerance = 1.f;
 
 	// Rotation Settings
 	RotationRateFactor = 1.0f;
@@ -127,7 +127,7 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 	// Turn In Place
 	bEnableTurnInPlace = true;
 	bUseTurnInPlaceDelay = false;
-	TurnInPlaceDelay = 0.5f; 
+	TurnInPlaceDelay = 0.5f;
 	TurnInPlaceRotationRate = FRotator(0.0f, 180.f, 0.f);
 	TurnInPlaceRotationRateSpeed = 0.0f;
 	TurnInPlaceRotationRateSpeedCutoff = 40.0f;
@@ -223,7 +223,7 @@ void UExtCharacterMovementComponent::CalcAvoidanceVelocity(float DeltaTime)
 
 	Super::CalcAvoidanceVelocity(DeltaTime);
 
-	const FVector Direction = (AvoidanceDirectionLagSpeed <= 0.0f) ? Velocity.GetSafeNormal() 
+	const FVector Direction = (AvoidanceDirectionLagSpeed <= 0.0f) ? Velocity.GetSafeNormal()
 		: FMath::VInterpNormalRotationTo(OldVelocity.GetSafeNormal(), Velocity.GetSafeNormal(), DeltaTime, AvoidanceDirectionLagSpeed);
 	const float Magnitude = (AvoidanceMagnitudeLagSpeed <= 0.0f) ? Velocity.Size()
 		: FMath::FInterpTo(OldVelocity.Size(), Velocity.Size(), DeltaTime, AvoidanceMagnitudeLagSpeed);
@@ -347,7 +347,7 @@ void UExtCharacterMovementComponent::ApplyAccumulatedForces(float DeltaSeconds)
 					{
 						PushForce /= Mass;
 					}
-					
+
 					PushDirection.Normalize();
 					PendingForceToApply += PushDirection * PushForce;
 				}
@@ -941,7 +941,7 @@ FRotator UExtCharacterMovementComponent::GetDeltaRotation(const FRotator& Curren
 			CalculateInterpDeltaRotationAxis(CurrentRotation.Yaw, DesiredRotation.Yaw, DeltaSeconds, InterpSpeed.Yaw),
 			CalculateInterpDeltaRotationAxis(CurrentRotation.Roll, DesiredRotation.Roll, DeltaSeconds, InterpSpeed.Roll)
 		);
-	else 
+	else
 		return FRotator(
 			CalculateConstantDeltaRotationAxis(CurrentRotation.Pitch, DesiredRotation.Pitch, DeltaSeconds, InterpSpeed.Pitch),
 			CalculateConstantDeltaRotationAxis(CurrentRotation.Yaw, DesiredRotation.Yaw, DeltaSeconds, InterpSpeed.Yaw),
@@ -966,7 +966,7 @@ FRotator UExtCharacterMovementComponent::ComputeOrientToMovementRotation(const F
 		if (Acceleration.SizeSquared() < KINDA_SMALL_NUMBER)
 			// AI path following request can orient us in that direction (it's effectively an acceleration)
 			return (bHasRequestedVelocity && RequestedVelocity.SizeSquared() > KINDA_SMALL_NUMBER) ? RequestedVelocity.GetSafeNormal().Rotation() : CurrentRotation;
-		else 
+		else
 			// Rotate toward direction of acceleration.
 			return Acceleration.GetSafeNormal().Rotation();
 	}
@@ -1106,7 +1106,7 @@ void UExtCharacterMovementComponent::PhysicsRotation(float DeltaSeconds)
 					{
 						TurnInPlaceTargetYaw = INFINITY;
 					}
-					
+
 					if (bUseTurnInPlaceDelay && TurnInPlaceDelay > 0.01f)
 					{
 						if (!FMath::IsFinite(TurnInPlaceTargetYaw)) // if not turning in place
@@ -1165,7 +1165,7 @@ void UExtCharacterMovementComponent::PhysicsRotation(float DeltaSeconds)
 
 						const float MaxLookYawAngle = FMath::Clamp(LookAngleThreshold, 45.f, 90.f);
 						const float LookYawAngle = FMath::Abs(LookYawDelta);
-						
+
 						if (LookYawAngle > MaxLookYawAngle)
 						{
 							const bool bIsLookingRight = LookYawDelta >= 0.0f;
@@ -1261,12 +1261,12 @@ void UExtCharacterMovementComponent::PhysicsRotation(float DeltaSeconds)
 
 		return;
 	}
-	
+
 	DeltaRot.DiagnosticCheckNaN(TEXT("CharacterMovementComponent::PhysicsRotation(): DeltaRotation"));
 
 	// Set the new rotation.
 	const FRotator DesiredRotation = CurrentRotation + DeltaRot;
-	
+
 	DesiredRotation.DiagnosticCheckNaN(TEXT("CharacterMovementComponent::PhysicsRotation(): DesiredRotation"));
 	MoveUpdatedComponent(FVector::ZeroVector, DesiredRotation, true);
 }
@@ -1286,7 +1286,7 @@ bool UExtCharacterMovementComponent::CanCrouchInCurrentState() const
 	// Character should not be allowed to remain crouched while falling/jumping.
 	FULL_OVERRIDE();
 
-	// Character can only crouch if moving on ground 
+	// Character can only crouch if moving on ground
 	return CanEverCrouch()
 		&& IsMovingOnGround()
 		&& ExtCharacterOwner
@@ -1379,7 +1379,7 @@ void UExtCharacterMovementComponent::Sprint(bool bClientSimulation)
 	check(bClientSimulation || CanSprintInCurrentState());
 
 	if (ExtCharacterOwner)
-	{ 
+	{
 		if (!bClientSimulation)
 		{
 			ExtCharacterOwner->bIsSprinting = true;
@@ -1665,7 +1665,7 @@ FNetworkPredictionData_Client* UExtCharacterMovementComponent::GetPredictionData
 
 		// No need to assign MaxSmoothNetUpdateDist or NoSmoothNetUpdateDist here.
 		// They are initialized from ClientMovement.NetworkMaxSmoothUpdateDistance and
-		// ClientMovement.NetworkNoSmoothUpdateDistance respectively in the 
+		// ClientMovement.NetworkNoSmoothUpdateDistance respectively in the
 		// FNetworkPredictionData_Client ctor
 	}
 

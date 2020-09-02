@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -54,7 +54,7 @@ struct FFootPlacementBone
 	FFootPlacementOffset Offset;
 };
 
-USTRUCT(BlueprintInternalUseOnly) 
+USTRUCT(BlueprintInternalUseOnly)
 struct TPCE_API FAnimNode_FootPlacement: public FAnimNode_SkeletalControlBase
 {
 	GENERATED_BODY()
@@ -103,9 +103,9 @@ private:
 	float TimeDilation;
 	float ElapsedTime;
 
-	float PelvisZOffset; 
+	float PelvisZOffset;
 
-public:	
+public:
 
 	virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override;
 	virtual void UpdateInternal(const FAnimationUpdateContext& Context) override;

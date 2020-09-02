@@ -1,4 +1,4 @@
-// Copyright (c) 2020 greisane <ggreisane@gmail.com>
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "AnimNotifies/AnimNotifyState_MatchTarget.h"
 
@@ -49,7 +49,7 @@ void UAnimNotifyState_MatchTarget::NotifyBegin(USkeletalMeshComponent* MeshComp,
 void UAnimNotifyState_MatchTarget::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime);
-	
+
 	Elapsed += FrameDeltaTime;
 	float Alpha = FMath::Clamp(Elapsed / Duration, 0.0f, 1.0f);
 

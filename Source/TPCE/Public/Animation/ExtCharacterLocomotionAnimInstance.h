@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -253,7 +253,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Animation|Skeleton", meta = (AllowPrivateAccess = "true"))
 	uint32 bEnableLookIK : 1;
 
-	/** 
+	/**
 	 * If direction the character is pivot turning if bIsPivotTurning is true.
 	 * @see bIsPivotTurning
 	 */
@@ -431,7 +431,7 @@ private:
 
 	/**
 	 * Intended movement speed of the walking animation. Used to calculate WalkPlayRate and SpeedWarpScale
-	 * @see WalkPlayRate, SpeedWarpScale 
+	 * @see WalkPlayRate, SpeedWarpScale
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking", meta = (AllowPrivateAccess = "true"))
 	float AnimWalkSpeed;
@@ -553,14 +553,14 @@ protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	virtual void NativeUpdateGaitScale(float DeltaSeconds); 
+	virtual void NativeUpdateGaitScale(float DeltaSeconds);
 	virtual void NativeUpdatePivotTurn(const FVector& InLastVelocity, float DeltaSeconds);
 	virtual void NativeUpdateTurnInPlace(float DeltaSeconds);
 	virtual void NativeUpdateAimOffset(float DeltaSeconds);
 
 	virtual void RaiseEvents();
 
-	void SetMovementMode(const EMovementMode Value, const uint8 CustomValue); 
+	void SetMovementMode(const EMovementMode Value, const uint8 CustomValue);
 	void SetCrouched(const bool Value);
 	void SetGait(const ECharacterGait Value);
 	void SetPerformingGenericAction(const bool Value);
@@ -608,7 +608,7 @@ public:
 
 	FORCEINLINE ECharacterGait GetGait() const { return Gait; }
 
-	FORCEINLINE ECharacterRotationMode GetRotationMode() const { return RotationMode; } 
+	FORCEINLINE ECharacterRotationMode GetRotationMode() const { return RotationMode; }
 
 	FORCEINLINE bool WasMoving() const { return bWasMoving; }
 

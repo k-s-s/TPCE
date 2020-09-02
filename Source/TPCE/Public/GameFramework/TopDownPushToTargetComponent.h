@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -32,7 +32,7 @@ private:
 protected:
 
 	/**
-	* Calculate an immediate adjustment to the updated component location, a headstart, along the view target's forward vector 
+	* Calculate an immediate adjustment to the updated component location, a headstart, along the view target's forward vector
 	* and proportional to how it's aligned to the direction of movement.
 	*
 	* This produces the effect of dragging the updated component along with the view target depending on how straight the latter is moving.

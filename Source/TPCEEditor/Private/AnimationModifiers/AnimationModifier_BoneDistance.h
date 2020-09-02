@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -32,7 +32,7 @@ struct FBonePair
 };
 
 /**
- * Animation Modifier to generate curves from the distance between two bones. 
+ * Animation Modifier to generate curves from the distance between two bones.
  */
 UCLASS(meta = (DisplayName = "Bone Distance"))
 class UAnimationModifier_BoneDistance : public UAnimationModifier
@@ -49,7 +49,7 @@ public:
 	/** Only animations with a path containing this filter as a case insensitive substring will be affected. Empty value matches all. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	FName PathFilter;
-	
+
 	/** An array specifying the distances that should be measured. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	TArray<FBonePair> BonePairs;

@@ -1,3 +1,5 @@
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+
 #include "DetailCustomizations/ExtCharacterMovementDetails.h"
 #include "PropertyEditing.h"
 #include "IDetailsView.h"
@@ -7,7 +9,7 @@
 #include "EditorCategoryUtils.h"
 #include "IPropertyUtilities.h"
 
-#define LOCTEXT_NAMESPACE "ExtCharacterMovementDetails" 
+#define LOCTEXT_NAMESPACE "ExtCharacterMovementDetails"
 
 DEFINE_LOG_CATEGORY_STATIC(LogExtCharacterMovementDetails, Log, All);
 

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -9,7 +9,7 @@
 #include "Bounds.generated.h"
 
 /**
- * Float bounds struct supported in blueprints. 
+ * Float bounds struct supported in blueprints.
  */
 USTRUCT(BlueprintType)
 struct TPCE_API FBounds
@@ -97,7 +97,7 @@ public:
 	{
 		LowerBound *= X;
 		UpperBound *= X;
-		
+
 		return *this;
 	}
 
@@ -153,14 +153,14 @@ public:
 	}
 
 	/** Returns the a reversed copy of these bounds. */
-	FORCEINLINE FBounds GetReversed() const 
-	{ 
+	FORCEINLINE FBounds GetReversed() const
+	{
 		return FBounds(UpperBound, LowerBound);
 	}
 
 	/** Expands this bounds to both sides by the specified amount. */
 	void Expand(float ExpandAmount);
-    
+
 	/** Expands this bounds if necessary to include the specified element. */
 	void Include(float Value);
 

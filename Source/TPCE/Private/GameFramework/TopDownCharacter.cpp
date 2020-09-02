@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "GameFramework/TopDownCharacter.h"
 #include "GameFramework/TopDownPlayerController.h"
@@ -71,7 +71,7 @@ void ATopDownCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	// PlayerInputComponent->BindAxis(LookRightInputName);
 	// PlayerInputComponent->BindAxis(LookUpInputName);
-	
+
 	PlayerInputComponent->BindAction(InteractInputName, IE_Pressed, this, &ThisClass::PlayerInputInteract);
 	PlayerInputComponent->BindAction(TauntInputName, IE_Pressed, this, &ThisClass::PlayerInputTaunt);
 }
@@ -110,7 +110,7 @@ void ATopDownCharacter::ProcessInput(float DeltaTime, bool bGamePaused)
 	if (!bGamePaused && Controller && Controller->IsLocalPlayerController() && InputComponent && InputEnabled())
 	{
 		// If we're using the mouse to look we should be either aiming and/or firing.
-		// Otherwise, we must be using an input controller (keyboard or gamepad) in which case the 
+		// Otherwise, we must be using an input controller (keyboard or gamepad) in which case the
 		// input itself is what triggers the aim.
 		if (bUseMouseToLook)
 		{
@@ -148,18 +148,18 @@ void ATopDownCharacter::ProcessInput(float DeltaTime, bool bGamePaused)
 			// 	{
 			// 		// X axis is forward, Y is right
 			// 		const FVector InputDirection(LookUpValue, LookRightValue, 0.0f);
-			// 
+			//
 			// 		FVector ViewPointLocation;
 			// 		FRotator ViewPointRotation;
-			// 
+			//
 			// 		APlayerController* const PC = CastChecked<APlayerController>(Controller);
 			// 		PC->GetPlayerViewPoint(ViewPointLocation, ViewPointRotation);
-			// 
+			//
 			// 		const FRotationMatrix RotationMatrix(FRotator(0.0f, -ViewPointRotation.Yaw, 0.0f));
 			// 		const FVector DesiredDirection = RotationMatrix.InverseTransformVector(InputDirection);
-			// 
+			//
 			// 		PlayerInputLook(DesiredDirection);
-			// 		
+			//
 			// 	}
 			// 	else
 			// 	{
@@ -230,17 +230,17 @@ void ATopDownCharacter::PlayerInputLook(const FVector& Direction)
 		const FRotator DesiredRotation = Direction.ToOrientationRotator();
 		const FRotator ControlRotation = GetControlRotation();
 
-		// As we want to strictly look in the given direction, a common approach would be to call 
-		// SetControlRotation(Direction.ToOrientationRotator()) BUT we also want the least ammount 
-		// of impact in the normal update process of the control rotation. For example, we still 
-		// want PlayerCameraManager->ProcessViewRotation to be called so that camera modifiers can 
-		// be applied; we want Pawn->FaceDirection to be called and do its job; and we still want 
-		// to honor PlayerController->IsLookInputIgnored. Our solution is to assign the rotation 
-		// input directly since it's public but it would be way better if there was a virtual method 
-		// in the PlayerController for this. It's stupid to have to call AddPitchInput, AddYawInput 
-		// and AddRollInput separately. Unfotunately the consequence is that derived classes can't 
-		// safely control how RotationInput is modified. For example, we had to be careful to check 
-		// IsLookInputIgnored here but we could have easily missed it. In reality, this 
+		// As we want to strictly look in the given direction, a common approach would be to call
+		// SetControlRotation(Direction.ToOrientationRotator()) BUT we also want the least ammount
+		// of impact in the normal update process of the control rotation. For example, we still
+		// want PlayerCameraManager->ProcessViewRotation to be called so that camera modifiers can
+		// be applied; we want Pawn->FaceDirection to be called and do its job; and we still want
+		// to honor PlayerController->IsLookInputIgnored. Our solution is to assign the rotation
+		// input directly since it's public but it would be way better if there was a virtual method
+		// in the PlayerController for this. It's stupid to have to call AddPitchInput, AddYawInput
+		// and AddRollInput separately. Unfotunately the consequence is that derived classes can't
+		// safely control how RotationInput is modified. For example, we had to be careful to check
+		// IsLookInputIgnored here but we could have easily missed it. In reality, this
 		// should be a concern of the PlayerController, not the caller.
 		const FRotator DesiredRotationInput = DesiredRotation - ControlRotation;
 		if (!DesiredRotationInput.IsNearlyZero())

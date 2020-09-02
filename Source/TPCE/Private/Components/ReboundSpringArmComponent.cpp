@@ -1,3 +1,4 @@
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "Components/ReboundSpringArmComponent.h"
 #include "CollisionQueryParams.h"
@@ -15,7 +16,6 @@ UReboundSpringArmComponent::UReboundSpringArmComponent()
 	bDoCollisionTest = true;
 	bEnableReboundLag = false;
 	ReboundLagSpeed = 5.0f;
-	
 }
 
 void UReboundSpringArmComponent::OnRegister()
@@ -44,7 +44,7 @@ FVector UReboundSpringArmComponent::CalcTargetArm(const FVector& Origin, const F
 
 			// Calculate socket offset in local space.
 			const FVector LocalOffset = FRotationMatrix(Rotation).TransformVector(SocketOffset);
-			// Calculate desired socket location. 
+			// Calculate desired socket location.
 			const FVector DesiredLoc = Origin - (Rotation.Vector() * TargetArmLength) + LocalOffset;
 			// Do a sweep to ensure we are not penetrating the world
 			const FCollisionQueryParams QueryParams(SCENE_QUERY_STAT(SpringArm), false, GetOwner());

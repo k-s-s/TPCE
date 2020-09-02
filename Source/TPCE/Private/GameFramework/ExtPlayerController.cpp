@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "GameFramework/ExtPlayerController.h"
 
@@ -10,7 +10,7 @@
 #include "Logging/LogMacros.h"
 #include "Kismet/Kismet.h"
 
-#include "ExtraMacros.h" 
+#include "ExtraMacros.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogExtPlayerController, Log, All);
 
@@ -18,7 +18,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogExtPlayerController, Log, All);
 
 AExtPlayerController::AExtPlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-{	
+{
 	bAutoManageActiveCameraTarget = true;	// Auto set view target when a pawn is possessed/unpossessed
 
 	AutoManagedCameraTransitionParams.BlendTime = 1.0f;

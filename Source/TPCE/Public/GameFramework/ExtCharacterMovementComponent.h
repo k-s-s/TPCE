@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -193,7 +193,7 @@ public: // Bitfields
 
 	/**
 	 * If true MaxAcceleration and GroundFriction will be dynamically adjusted when velocity and acceleration have opposing directions giving the character more "weight".
-	 * This provides time for the pivot turn animation to play before movement starts in the opposite direction. 
+	 * This provides time for the pivot turn animation to play before movement starts in the opposite direction.
 	 * @see PivotTurnSettings
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: PivotTurn")
@@ -296,10 +296,10 @@ public: // Variables
 	 * @see EnableAdaptiveRotationRate
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Rotation Settings)", meta = (editcondition = "bEnableAdaptiveRotationRate"), AdvancedDisplay)
-	FAdaptiveRotationSettings AdaptiveRotationSettings; 
+	FAdaptiveRotationSettings AdaptiveRotationSettings;
 
 	/**
-	 * Options used for pivot turning. 
+	 * Options used for pivot turning.
 	 * @see EnablePivotTurn
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: PivotTurn", meta = (editcondition = "bEnablePivotTurn", ClampMin = "0", UIMin = "0"))
@@ -491,7 +491,7 @@ public: // Methods
 	virtual float GetMaxBrakingDeceleration() const override;
 	virtual float GetBrakingFrictionFactor() const;
 
-	virtual FVector GetSimulatedAcceleration() const; 
+	virtual FVector GetSimulatedAcceleration() const;
 
 	virtual void SetReplicatedAcceleration(const FVector& Value);
 	virtual void SetReplicatedPivotTurn(bool bInIsPivotTurning);
@@ -522,7 +522,7 @@ public: // Methods
 	virtual bool CanTurnInPlaceInCurrentState() const;
 
 	virtual void ResetTurnInPlaceState();
-	virtual void ResetControllerDesireRotationState(); 
+	virtual void ResetControllerDesireRotationState();
 
 	virtual bool CanCrouchInCurrentState() const override;
 	virtual bool CanWalkOffLedges() const override;
@@ -645,7 +645,7 @@ class TPCE_API FSavedMove_ExtCharacter: public FSavedMove_Character
 public:
 
 	typedef FSavedMove_Character Super;
-	
+
 	enum
 	{
 		FLAG_WantsToWalkInsteadOfRun = Super::FLAG_Custom_0,

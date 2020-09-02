@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "AnimNodes/AnimNode_SpeedWarping.h"
 #include "GameFramework/WorldSettings.h"
@@ -124,7 +124,7 @@ void FAnimNode_SpeedWarping::EvaluateSkeletalControl_AnyThread(FComponentSpacePo
 		const FVector RelativeLimbLocation = SpeedWarpingRotation.RotateVector(IKFootRootCSTransform.InverseTransformPosition(LimbLocation));
 		const FVector RelativeNewIKFootLocation((RelativeOriginalIKFootLocation.X - RelativeLimbLocation.X) * SpeedScaling + RelativeLimbLocation.X, RelativeOriginalIKFootLocation.Y, RelativeOriginalIKFootLocation.Z);
 
-		
+
 		const FVector BaseLocation = LimbLocation + PelvisDelta;
 		const FVector CurrentLocation = OriginalLocation + PelvisDelta;
 		const FVector DesiredLocation = IKFootRootCSTransform.TransformPosition(SpeedWarpingRotation.UnrotateVector(RelativeNewIKFootLocation));
@@ -139,7 +139,7 @@ void FAnimNode_SpeedWarping::EvaluateSkeletalControl_AnyThread(FComponentSpacePo
 #if WITH_EDITOR
 		// Add foot info to the list
 		CachedIKFootInfo.Add(FIKFootInfo(OriginalLocation, DesiredLocation, ActualLocation));
-#endif		
+#endif
 	}
 
 	// Sort OutBoneTransforms so indices are in increasing order.
@@ -187,7 +187,7 @@ void FAnimNode_SpeedWarping::PreUpdate(const UAnimInstance* InAnimInstance)
 
 
 #if WITH_EDITOR
-// can't use World Draw functions because this is called from Render of viewport, AFTER ticking component, 
+// can't use World Draw functions because this is called from Render of viewport, AFTER ticking component,
 // which means LineBatcher already has ticked, so it won't render anymore
 // to use World Draw functions, we have to call this from tick of actor
 void FAnimNode_SpeedWarping::ConditionalDebugDraw(FPrimitiveDrawInterface* PDI, USkeletalMeshComponent* MeshComp) const

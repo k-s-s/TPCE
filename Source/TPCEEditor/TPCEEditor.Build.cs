@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 using UnrealBuildTool;
 
@@ -8,15 +8,15 @@ public class TPCEEditor: ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		bEnforceIWYU = true;
-        
+
 		PrivateIncludePaths.AddRange(
-			new string[] 
+			new string[]
 			{
 				"TPCEEditor/Private"
 			});
 
 		PublicDependencyModuleNames.AddRange(
-			new string[] 
+			new string[]
 			{
 				"Core",
 				"CoreUObject",
@@ -26,7 +26,7 @@ public class TPCEEditor: ModuleRules
 			});
 
 		PrivateDependencyModuleNames.AddRange(
-			new string[] 
+			new string[]
 			{
 				"Slate",
 				"SlateCore",

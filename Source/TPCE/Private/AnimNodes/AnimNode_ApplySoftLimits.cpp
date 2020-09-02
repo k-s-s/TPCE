@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "AnimNodes/AnimNode_ApplySoftLimits.h"
 
@@ -39,7 +39,7 @@ void FAnimNode_ApplySoftLimits::EvaluateSkeletalControl_AnyThread(FComponentSpac
 	// Convert to desired space and remove the reference pose
 	FAnimationRuntime::ConvertCSTransformToBoneSpace(ComponentTM, Output.Pose, BoneTM, BoneIndex, ControlSpace);
 	FRotator DeltaRot = (BoneRefTM.GetRotation().Inverse() * BoneTM.GetRotation()).Rotator();
-	
+
 	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SoftMin.X, HardMin.X);
 	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SoftMax.X, HardMax.X);
 	DeltaRot.Pitch = UKismetMathLibraryEx::SoftCap(DeltaRot.Pitch, SoftMin.Y, HardMin.Y);

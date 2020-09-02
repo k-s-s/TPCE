@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "Components/ActorWidgetComponent.h"
 #include "Blueprint/ActorWidget.h"
@@ -54,7 +54,7 @@ void UActorWidgetComponent::PostEditChangeProperty(struct FPropertyChangedEvent&
 				OnVisibilityChanged();
 	}
 
-	// Note: Any changes must be made before UActorComponent::PostEditChangeChainProperty is called because components will be reset when UActorComponent reruns construction scripts 
+	// Note: Any changes must be made before UActorComponent::PostEditChangeChainProperty is called because components will be reset when UActorComponent reruns construction scripts
 	Super::PostEditChangeProperty(e);
 }
 #endif

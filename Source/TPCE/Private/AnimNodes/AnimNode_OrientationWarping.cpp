@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "AnimNodes/AnimNode_OrientationWarping.h"
 #include "AnimationRuntime.h"
@@ -51,7 +51,7 @@ void FAnimMode_OrientationWarping::Evaluate_AnyThread(FPoseContext& Output)
 			return;
 
 		// Prepare convert Quat and BoneContainer.
-		
+
 		FComponentSpacePoseContext CSOutput(Output.AnimInstanceProxy);
 		CSOutput.Pose.InitPose(Output.Pose);
 

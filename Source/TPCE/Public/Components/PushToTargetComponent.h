@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -19,7 +19,7 @@ enum class EPushToTargetRotationType : uint8
 };
 
 /**
- * Updates the position of another component simulating an unrealistic attraction force towards a target. 
+ * Updates the position of another component simulating an unrealistic attraction force towards a target.
  * This 'force' becomes stronger with distance and ignores both inertia and gravity. Supports sliding over
  * surfaces and can simulate friction.
  *
@@ -30,7 +30,7 @@ class TPCE_API UPushToTargetComponent: public UMovementComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 
 	UPushToTargetComponent();
 
@@ -63,7 +63,7 @@ private:
 	bool bTargetLocationSet;
 
 protected:
-	
+
 	/** Minimum delta time considered when ticking. Delta times below this are not considered. This is a very small non-zero positive value to avoid potential divide-by-zero in simulation code. */
 	static const float MIN_TICK_TIME;
 
@@ -73,11 +73,11 @@ protected:
 	/** Return the target rotation considering the current rotation behavior. */
 	FRotator GetTargetRotation(const FVector& InCurrentLocation) const;
 
-	/** 
-	 * Return the location of the UpdatedComponent in world space to be used for this frame. 
+	/**
+	 * Return the location of the UpdatedComponent in world space to be used for this frame.
 	 * Default implementation simply returns the UpdatedComponent's location unmodified, but derived classes can override
-	 * this method to implement diferent rules depending on the state of the components involved, for example, producing 
-	 * a boost or a drag effect.  
+	 * this method to implement diferent rules depending on the state of the components involved, for example, producing
+	 * a boost or a drag effect.
 	 */
 	virtual FVector AdjustCurrentLocationToTarget(const FVector& InCurrentLocation, const FVector& InTargetLocation) const;
 
@@ -93,14 +93,14 @@ protected:
 	/** Interpolation method used for target rotation lag. */
 	virtual FRotator RInterpTo(const FRotator& Current, const FRotator& Target, float DeltaTime, float InterpSpeed);
 
-	/** 
-	 * Move the updated component accounting for initial penetration, blocking collisions and sliding surfaces. 
+	/**
+	 * Move the updated component accounting for initial penetration, blocking collisions and sliding surfaces.
 	 *
 	 * @return true if the movement could be performed and the involved components remain valid, otherwise false.
 	 */
 	virtual bool MoveUpdatedComponent(const FVector& Delta, const FQuat& NewRotation);
 
-public:	
+public:
 
 	/** Offset in local space of the targeted socket or component. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
@@ -121,14 +121,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
 	bool bEnableLag;
 
-	/** 
-	 * Controls how strong the attraction is, thus how quickly the updated component reaches the target. Low values are slower (more drag), high values are faster (less drag), while zero is instant (no drag). 
-	 * If the updated componet is simulating physics 
+	/**
+	 * Controls how strong the attraction is, thus how quickly the updated component reaches the target. Low values are slower (more drag), high values are faster (less drag), while zero is instant (no drag).
+	 * If the updated componet is simulating physics
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget, meta=(EditCondition="bEnableLag", ClampMin="0.0", ClampMax="10000.0", UIMin="0.0", UIMax="10000.0"))
 	float Speed;
 
-	/** 
+	/**
 	 * Controls rotation interpolation speed. Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget, meta=(EditCondition="bEnableLag", ClampMin="0.0", ClampMax="10000.0", UIMin="0.0", UIMax="10000.0"))

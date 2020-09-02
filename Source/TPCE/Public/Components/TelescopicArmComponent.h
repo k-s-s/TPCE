@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -50,7 +50,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Lag")
 	uint32 bEnableResizeLag : 1;
 
-	/** Controls how quickly the telescopic arm should reach its designated length. Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag). 
+	/** Controls how quickly the telescopic arm should reach its designated length. Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
 	 * @see bEnableResizeLag
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Lag", meta = (editcondition = "bEnableResizeLag", ClampMin = "0.0", ClampMax = "1000.0", UIMin = "0.0", UIMax = "1000.0"))

@@ -1,3 +1,5 @@
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+
 #include "ExtraTypes.h"
 
 const FName NAME_Spectator(TEXT("Spectator"));
@@ -103,7 +105,7 @@ bool SerializeQuantizedVector(FArchive& Ar, FVector& Vector, EVectorQuantization
 		return SerializePackedVector<10, 27>(Vector, Ar);
 	default:
 		return SerializePackedVector<1, 24>(Vector, Ar);
-		
+
 	}
 }
 

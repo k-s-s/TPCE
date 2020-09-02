@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -21,7 +21,7 @@ UCLASS(Abstract, ShowCategories=(Collision))
 class TPCE_API ATopDownPlayerController : public AExtPlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	ATopDownPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -57,23 +57,23 @@ public:
 	//  */
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag")
 	// uint32 bEnableCameraLag : 1;
-	// 
+	//
 	// /**
 	//  * If bUseCameraLagSubstepping is true, sub-step camera damping so that it handles fluctuating frame rates well (though this comes at a cost).
 	//  * @see CameraLagMaxTimeStep
 	//  */
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag", AdvancedDisplay)
 	// uint32 bUseCameraLagSubstepping : 1;
-	// 
+	//
 	// /** If bEnableCameraLag is true, controls how quickly camera reaches target position. Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag). */
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag", meta = (editcondition = "bEnableCameraLag", ClampMin = "0.0", ClampMax = "1000.0", UIMin = "0.0", UIMax = "1000.0"))
 	// float CameraLagSpeed;
-	// 
+	//
 	// /** Max time step used when sub-stepping camera lag. */
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag", AdvancedDisplay, meta = (editcondition = "bUseCameraLagSubstepping", ClampMin = "0.005", ClampMax = "0.5", UIMin = "0.005", UIMax = "0.5"))
 	// float CameraLagMaxTimeStep;
 
-	virtual void PostInitializeComponents() override; 
+	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
 	virtual bool HasActiveCameraComponent() const override;
@@ -90,7 +90,7 @@ public:
 
 	/** Camera settings. */
 	FORCEINLINE UCameraComponent* GetCamera() { return CameraComponent; }
-	
+
 	/** Camera tractor responsible for moving the camera mount towards the view target. */
 	FORCEINLINE UTopDownPushToTargetComponent* GetCameraTractor() { return CameraTractor; }
 

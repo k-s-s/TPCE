@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "Animation/ExtCharacterLocomotionAnimInstance.h"
 #include "Animation/AnimNode_StateMachine.h"
@@ -98,7 +98,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 
 		const FTransform& CharacterMeshTransform = CharacterOwnerMesh->GetComponentTransform();
 
-		
+
 		const FVector CharacterMeshLocation = CharacterOwnerMesh->GetComponentLocation();
 		const FVector CharacterMeshLocationDelta = (CharacterMeshLocation - LastCharacterMeshLocation).ProjectOnToNormal(CharacterOwnerMovement->Velocity.GetSafeNormal());
 		LastCharacterMeshLocation = CharacterMeshLocation;
@@ -147,7 +147,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 		// because we use a velocity that is calculated out of mesh displacement
 		const FRotator MeshOrientation = (RootBoneRotation * CharacterOwner->GetBaseRotationOffset().Inverse()).Rotator();
 		MovementDrift = FMath::FindDeltaAngleDegrees(MeshOrientation.Yaw, LastMovementVelocityRotation.Yaw);
-		
+
 		LookRotation = CharacterOwner->GetLookRotation();
 		LookDelta = (LookRotation - CharacterRotation).GetNormalized();
 		LookAtActor = CharacterOwner->GetLookAtActor();
@@ -167,7 +167,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 		{
 			if (MovementMode != MOVE_None && MovementMode != MOVE_Falling)
 			{
-				// Find if the ragdoll is facing up or down. 
+				// Find if the ragdoll is facing up or down.
 				const FQuat PelvisQuat = CharacterOwnerMesh->GetSocketQuaternion(CharacterOwner->GetPelvisBoneName());
 				// Pelvis bone is assumed to be oriented Y-Fwd/X-Up so the right vector is the actual forward.
 				bIsRagdollFacingDown = FVector::DotProduct(FVector::UpVector, PelvisQuat.GetRightVector()) < 0.0f;
@@ -193,7 +193,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 			if (!bIsGettingUp)
 			{
 				// Update root bone rotation smoothly.
-				{ 
+				{
 					if (RootBoneOffset.X < -AngleTolerance || RootBoneOffset.X > AngleTolerance)
 					{
 						RootBoneOffset.X = FMathEx::FInterpConstantAngleTo(RootBoneOffset.X, 0.0f, DeltaSeconds, 180.f);
@@ -292,7 +292,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateGaitScale(float DeltaSecon
 					const float Deviation = AnimSpeedScale - 1.0f;
 					const float PlayRateDeviation = FMath::Max(-0.15f, Deviation);
 					const float SpeedWarpDeviation = FMath::Max(-0.85f, Deviation - PlayRateDeviation);
-					
+
 					PlayRateWalk = 1.0f + PlayRateDeviation;
 					NewSpeedWarpScale = 1.0f + SpeedWarpDeviation;
 				}
@@ -621,7 +621,7 @@ float UExtCharacterLocomotionAnimInstance::FindCurveTimeFromValue(UAnimSequence*
 					return 0.f;
 				}
 
-				// Some assumptions: 
+				// Some assumptions:
 				// - keys have unique values, so for a given value, it maps to a single position on the timeline of the animation.
 				// - key values are sorted in increasing order.
 

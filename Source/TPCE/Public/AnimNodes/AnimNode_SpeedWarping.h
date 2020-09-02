@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -29,7 +29,7 @@ struct FIKFootInfo
 };
 
 USTRUCT(BlueprintType)
-struct FSpeedWarpingFootDefinition 
+struct FSpeedWarpingFootDefinition
 {
 	GENERATED_BODY()
 
@@ -47,7 +47,7 @@ struct FSpeedWarpingFootDefinition
 USTRUCT(BlueprintInternalUseOnly)
 struct TPCE_API FAnimNode_SpeedWarping : public FAnimNode_SkeletalControlBase
 {
-	GENERATED_BODY() 
+	GENERATED_BODY()
 
 public:
 	FAnimNode_SpeedWarping();
@@ -70,9 +70,9 @@ public:
 	/** Direction in the specified space. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinHiddenByDefault))
 	FVector Direction;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinShownByDefault))
-	float SpeedScaling;	
+	float SpeedScaling;
 
 	/** Offset applied to the pelvis scaled by SpeedScaling in the range [1.0f, 2.0f]. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinHidenByDefault))

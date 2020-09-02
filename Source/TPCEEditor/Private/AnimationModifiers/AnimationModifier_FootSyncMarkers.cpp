@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "AnimationModifiers/AnimationModifier_FootSyncMarkers.h"
 #include "Animation/AnimSequence.h"
@@ -147,7 +147,7 @@ void UAnimationModifier_FootSyncMarkers::OnApply_Implementation(UAnimSequence* A
 			const FName& CurrentBoneName = FootBone.BoneName;
 			const float CurrentBoneOffset = FootBone.Offset;
 
-			const FName& CurveName = CurrentBoneName;			
+			const FName& CurveName = CurrentBoneName;
 
 			if (bCreateCurve)
 			{
@@ -165,7 +165,7 @@ void UAnimationModifier_FootSyncMarkers::OnApply_Implementation(UAnimSequence* A
 			for (int32 Frame = 0; Frame <= NumFrames; ++Frame)
 			{
 				// Subtract a little time from the last frame to avoid errors
-				float Time = AnimationSequence->GetTimeAtFrame(Frame); 
+				float Time = AnimationSequence->GetTimeAtFrame(Frame);
 				if (Frame == NumFrames)
 					Time -= 0.001f;
 

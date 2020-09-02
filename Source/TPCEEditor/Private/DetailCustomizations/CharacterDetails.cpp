@@ -1,3 +1,5 @@
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
+
 #include "DetailCustomizations/CharacterDetails.h"
 #include "PropertyEditing.h"
 #include "IDetailsView.h"
@@ -6,7 +8,7 @@
 #include "UnrealEd.h"
 #include "EditorCategoryUtils.h"
 
-#define LOCTEXT_NAMESPACE "CharacterDetails" 
+#define LOCTEXT_NAMESPACE "CharacterDetails"
 
 DEFINE_LOG_CATEGORY_STATIC(LogCharacterDetails, Log, All);
 
@@ -20,7 +22,7 @@ void FCharacterDetails::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 	IDetailCategoryBuilder& CharacterCategory = DetailBuilder.EditCategory(TEXT("Character"), FText::GetEmpty(), ECategoryPriority::TypeSpecific);
 	IDetailCategoryBuilder& InputCategory = DetailBuilder.EditCategory(TEXT("Input"), FText::GetEmpty(), ECategoryPriority::TypeSpecific);
 	IDetailCategoryBuilder& CameraCategory = DetailBuilder.EditCategory(TEXT("Camera"), FText::GetEmpty(), ECategoryPriority::TypeSpecific);
-	
+
 	IDetailCategoryBuilder& ReplicationCategory = DetailBuilder.EditCategory(TEXT("Replication"), FText::GetEmpty(), ECategoryPriority::Default);
 	IDetailCategoryBuilder& RenderingCategory = DetailBuilder.EditCategory(TEXT("Rendering"), FText::GetEmpty(), ECategoryPriority::Default);
 	IDetailCategoryBuilder& LODCategory = DetailBuilder.EditCategory(TEXT("LOD"), FText::GetEmpty(), ECategoryPriority::Default);

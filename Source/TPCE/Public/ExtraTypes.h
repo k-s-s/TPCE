@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -161,7 +161,7 @@ bool TPCE_API SerializeQuantizedVector(FArchive& Ar, FVector& Vector, EVectorQua
 void TPCE_API SerializeQuantizedRotator(FArchive& Ar, FRotator& Rotator, ERotatorQuantization QuantizationLevel);
 
 /**
- * Replicated look rotation. 
+ * Replicated look rotation.
  * Struct used for configurable replication precision.
  */
 USTRUCT()
@@ -265,7 +265,7 @@ struct TPCE_API FRepExtMovement
 		, VelocityQuantizationLevel(EVectorQuantization::RoundWholeNumber)
 		, LocationQuantizationLevel(EVectorQuantization::RoundWholeNumber)
 		, RotationQuantizationLevel(ERotatorQuantization::ByteComponents)
-		
+
 	{}
 
 	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
@@ -281,7 +281,7 @@ struct TPCE_API FRepExtMovement
 		SerializeQuantizedRotator(Ar, Rotation, RotationQuantizationLevel);
 		bOutSuccess &= SerializeQuantizedVector(Ar, Velocity, VelocityQuantizationLevel);
 		bOutSuccess &= SerializeFixedVector<1, 16>(Acceleration, Ar);
-		
+
 		Ar << TurnInPlaceTargetYaw;
 
 		return true;

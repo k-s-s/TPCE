@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "GameFramework/ExtCharacterDebugWidgetBase.h"
 #include "GameFramework/ExtCharacter.h"
@@ -38,7 +38,7 @@ void UExtCharacterDebugWidgetBase::NativeTick(const FGeometry& MyGeometry, float
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	if (ExtCharacterOwner)
-		SetGroundSpeed(ExtCharacterOwner->GetVelocity().Size2D());		
+		SetGroundSpeed(ExtCharacterOwner->GetVelocity().Size2D());
 }
 
 void UExtCharacterDebugWidgetBase::OnWidgetComponentChanged(UActorWidgetComponent* OldWidgetComponent)
@@ -56,7 +56,7 @@ void UExtCharacterDebugWidgetBase::OnWidgetComponentChanged(UActorWidgetComponen
 	}
 
 	Super::OnWidgetComponentChanged(OldWidgetComponent);
-	
+
 	if (UActorWidgetComponent* NewWidgetComponent = GetActorWidgetComponent())
 	{
 		ExtCharacterOwner = Cast<AExtCharacter>(NewWidgetComponent->GetOwner());

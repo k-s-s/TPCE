@@ -1,4 +1,4 @@
-// Copyright (c) 2020 greisane <ggreisane@gmail.com>
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -25,8 +25,8 @@ UCLASS()
 class TPCE_API AFloaterActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	AFloaterActor();
 
 	// Begin AActor Interface

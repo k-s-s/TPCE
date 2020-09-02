@@ -1,4 +1,4 @@
-// Copyright (c) 2020 greisane <ggreisane@gmail.com>
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -52,7 +52,7 @@ public:
 	 */
 	virtual bool NativeProcessViewRotation(class AActor* ViewTarget, float DeltaTime, const FRotator& DeltaRot, FRotator& OutViewRotation);
 
-	/** 
+	/**
 	 * Called to give modifiers a chance to adjust view rotation updates before they are applied.
 	 * Scaling by Alpha happens after this in code, so no need to deal with that in the blueprint.
 	 *

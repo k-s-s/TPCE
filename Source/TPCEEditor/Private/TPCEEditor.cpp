@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "TPCEEditor.h"
 #include "PropertyEditorModule.h"
@@ -26,7 +26,7 @@
 #include "Editor.h"
 #include "AssetToolsModule.h"
 
-DEFINE_LOG_CATEGORY(LogTPCEEditor) 
+DEFINE_LOG_CATEGORY(LogTPCEEditor)
 
 #define LOCTEXT_NAMESPACE "TPCEEditor"
 
@@ -102,7 +102,7 @@ void FTPCEEditor::ShutdownModule()
 			GUnrealEd->UnregisterComponentVisualizer(ClassName);
 		}
 	}
-	else 
+	else
 	{
 //Error due to GUnrealEd being NULL causes packaging failure
 #if !UE_BUILD_SHIPPING && !UE_BUILD_DEVELOPMENT
@@ -111,7 +111,7 @@ void FTPCEEditor::ShutdownModule()
 	}
 
 	UnregisterAssetTools();
-	
+
 	// Remove Content Browser Menu Extenders
 	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
 	TArray<FContentBrowserMenuExtender_SelectedAssets>& CBMenuExtenderDelegates = ContentBrowserModule.GetAllAssetViewContextMenuExtenders();
@@ -253,7 +253,7 @@ void FTPCEEditor::CreateContentBrowserAssetMenu(FMenuBuilder& MenuBuilder, TArra
 			TEXT_CreateDistanceCurveTitle,
 			TEXT_CreateDistanceCurveTooltip,
 			FNewMenuDelegate::CreateLambda([Sequences, this](FMenuBuilder& SubMenuBuilder)
-			{ 
+			{
 				SubMenuBuilder.AddSubMenu(
 					TEXT_CreateRotationDistanceCurveTitle,
 					FText::GetEmpty(),

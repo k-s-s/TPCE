@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -25,7 +25,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FStateChangeHandler, class UState
  * StateMachineComponent is a simple actor component that stores and replicates a single variable representing its state.
  *
  * State changes are replicated to relevant clients and it's possible to distinguish when replication occurs right away
- * or later after the fact. 
+ * or later after the fact.
  *
  * Be mindful of setting new states from within ReceiveStateChange or OnStateChange event handlers as this
  * will immediately re-trigger the same event handlers potentially leading to a stack overflow. It's a well-known best practice to
@@ -36,7 +36,7 @@ class TPCE_API UStateMachineComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 
 	UStateMachineComponent();
 
@@ -81,7 +81,7 @@ protected:
 	void ReceiveStateChange(const uint8 PreviousState, const EStateChangeMode StateChangeMode);
 	virtual void ReceiveStateChange_Implementation(const uint8 PreviousState, const EStateChangeMode StateChangeMode);
 
-public:	
+public:
 
 	/** if true, will issue reliable RPC calls to update relevant clients on state changes. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ComponentReplication, AdvancedDisplay)

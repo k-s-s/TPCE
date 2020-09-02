@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -39,11 +39,11 @@ class FTPCEEditor : public IModuleInterface
 
 private:
 
-	TArray<FName> RegisteredClassNames; 
+	TArray<FName> RegisteredClassNames;
 	TArray<FName> RegisteredPropertyTypes;
 	TArray<FName> RegisteredComponentClassNames;
 	TArray<TSharedRef<IAssetTypeActions>> RegisteredAssetTypeActions;
-	
+
 	FDelegateHandle ContentBrowserAssetExtenderDelegateHandle;
 
 private:
@@ -57,7 +57,7 @@ private:
 	TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FAssetData>& SelectedAssets);
 	void CreateContentBrowserAssetMenu(FMenuBuilder& MenuBuilder, TArray<FAssetData> SelectedAssets);
 	void CreateDistanceCurveAssets(const TArray<TWeakObjectPtr<UAnimSequence>> AnimSequences, EDistanceCurveType DistanceCurveType);
-	
+
 	/** Creates a unique package and asset name taking the form InBasePackageName+InSuffix */
 	void CreateUniqueAssetName(const FString& InBasePackageName, const FString& InSuffix, FString& OutPackageName, FString& OutAssetName) const;
 

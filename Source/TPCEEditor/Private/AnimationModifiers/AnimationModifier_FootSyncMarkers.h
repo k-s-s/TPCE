@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -30,7 +30,7 @@ struct FBoneModifier
 };
 
 /**
- * Animation Modifier to automatically generate foot sync markers. 
+ * Animation Modifier to automatically generate foot sync markers.
  * C++ implementation based on the work of Giuseppe Portelli <https://github.com/gportelli/FootSyncMarkers>
  */
 UCLASS(meta=(DisplayName="Foot Sync Markers"))
@@ -55,7 +55,7 @@ public:
 	/** Only animations with a path containing this filter as a case insensitive substring will be affected. Empty value matches all. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	FName PathFilter;
-	
+
 	/** The name of the pelvis bone in your character's skeleton. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	FName PelvisBoneName;
@@ -63,7 +63,7 @@ public:
 	/**
 	 * Try to guess the correct axis from the animation name.
 	 * The full expression is (Fwd|Bwd|[LR][A-Z\d][a-z]|[LR]\d*$|\d{2,3}[LR])
-	 * 
+	 *
 	 * Some examples:
 	 * A_Idle -> Default (uses current settings)
 	 * A_RunLStart -> Left

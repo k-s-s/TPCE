@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -71,7 +71,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Lag")
 	bool bEnableReboundLag;
 
-	/** 
+	/**
 	 * Controls how quickly the spring arm should extend to its final length. Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag).
 	 * @see bEnableReboundLag
 	 */

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "AnimNodes/AnimNode_FootPlacement.h"
 #include "GameFramework/WorldSettings.h"
@@ -69,7 +69,7 @@ void FAnimNode_FootPlacement::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 
 	const USkeletalMeshComponent* SkelComp = Output.AnimInstanceProxy->GetSkelMeshComponent();
 	const FTransform& ComponentTransform = Output.AnimInstanceProxy->GetSkelMeshCompLocalToWorld();
-	
+
 	const FCompactPoseBoneIndex RootBoneIndex = BoneContainer.GetCompactPoseIndexFromSkeletonIndex(0);
 	check(RootBoneIndex != INDEX_NONE);
 
@@ -111,7 +111,7 @@ void FAnimNode_FootPlacement::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 
 		OutBoneTransforms.Add(FBoneTransform(IKFootBoneCompactPoseIndex, IKBoneCSTransform));
 
-#if ENABLE_ANIM_DEBUG && ENABLE_DRAW_DEBUG		
+#if ENABLE_ANIM_DEBUG && ENABLE_DRAW_DEBUG
 		const bool bShowDebug = (CVarAnimNodeFootPlacementDebug.GetValueOnAnyThread() != 0);
 		if (bShowDebug)
 		{
@@ -123,10 +123,10 @@ void FAnimNode_FootPlacement::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 		}
 #endif
 	}
-	
+
 	// Set new pelvis transform.
 	PelvisZOffset = FMath::FInterpTo(PelvisZOffset, MinFootOffsetZ * FMath::Clamp(PelvisAdjustmentAlpha, 0.f, 1.f), DeltaTime, 20.f);
-	FTransform PelvisBoneCSTransform = Output.Pose.GetComponentSpaceTransform(PelvisBoneCompactPoseIndex);	
+	FTransform PelvisBoneCSTransform = Output.Pose.GetComponentSpaceTransform(PelvisBoneCompactPoseIndex);
 	PelvisBoneCSTransform.AddToTranslation(ComponentTransform.InverseTransformVector(FVector(0.0f, 0.0f, PelvisZOffset)));
 	OutBoneTransforms.Add(FBoneTransform(PelvisBoneCompactPoseIndex, PelvisBoneCSTransform));
 

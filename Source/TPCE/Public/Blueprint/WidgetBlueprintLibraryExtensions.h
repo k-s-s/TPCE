@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -15,7 +15,7 @@ class TPCE_API UWidgetBlueprintLibraryEx : public UWidgetBlueprintLibrary
 
 public:
 
-	/** 
+	/**
 	 * Creates a Slate Brush from a TextureRenderTarget2D
 	 *
 	 * @param Width  When less than or equal to zero, the Width of the brush will default to the Width of the Texture

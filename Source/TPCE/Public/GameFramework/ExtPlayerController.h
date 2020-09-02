@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -49,7 +49,7 @@ struct TPCE_API FAutoManagedCameraTransitionParams
 
 /**
  * Base class for player controllers with extended functionality.
- * This class exists basically to modify (or fix) the base APlayerController implementation 
+ * This class exists basically to modify (or fix) the base APlayerController implementation
  * without having to patch the engine. It also supports IPawnControlInterface to provide
  * extra features for Pawns.
  *

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 greisane <ggreisane@gmail.com>
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "Components/ScalableWidgetComponent.h"
 
@@ -72,7 +72,7 @@ bool UScalableWidgetComponent::UpdateDrawSize()
 void UScalableWidgetComponent::DrawWidgetToRenderTarget(float DeltaTime)
 {
 	const FIntPoint PreviousDrawSize = CurrentDrawSize;
-	
+
 	if (!UpdateDrawSize())
 	{
 		return;

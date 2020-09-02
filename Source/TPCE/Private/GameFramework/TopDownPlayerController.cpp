@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "GameFramework/TopDownPlayerController.h"
 
@@ -20,7 +20,7 @@ ATopDownPlayerController::ATopDownPlayerController(const FObjectInitializer& Obj
 {
 	bShowMouseCursor = true;
 
-	// Create camera mout 
+	// Create camera mout
 	static const FName CameraMountName(TEXT("CameraMount"));
 	CameraMount = CreateDefaultSubobject<USphereComponent>(CameraMountName);
 	CameraMount->SetupAttachment(RootComponent);

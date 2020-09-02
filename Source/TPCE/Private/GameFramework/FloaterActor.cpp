@@ -1,4 +1,4 @@
-// Copyright (c) 2020 greisane <ggreisane@gmail.com>
+// This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "GameFramework/FloaterActor.h"
 
@@ -55,7 +55,7 @@ void AFloaterActor::BeginPlay()
 		PopInTimeline.SetTimelineFinishedFunc(OnTimelineFinishedDelegate);
 		PopInTimeline.SetLooping(false);
 	}
-	
+
 	ShowState = IsHidden() ? EFloaterShowState::Hidden : EFloaterShowState::Shown;
 	if (ShowState == EFloaterShowState::Shown)
 	{
