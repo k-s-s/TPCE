@@ -59,7 +59,7 @@ public:
 
 	/** Yaw difference at which linear interpolation kicks in, maximum pitch drop, etc. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
-	float BigYaw;
+	FBounds BigYaw;
 
 	/** Angle in degrees of the blind spot behind the character.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))

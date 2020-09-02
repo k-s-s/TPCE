@@ -16,7 +16,7 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 	MaxDistance = 200.0f;
 	DistanceInterpSpeed = 50.0f;
 
-	BigYaw = 120.0f;
+	BigYaw = FBounds(30.0f, 120.0f);
 	YawDeadzone = 20.0f;
 	YawStiffness = 42.0f;
 	YawDamping = 0.4f;
@@ -59,7 +59,9 @@ void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			// Clamp look yaw. While clamped, the sign is kept to prevent flip-flopping left and right
 			NewYaw = MaxYaw * FMath::Sign(LookOffset.X);
 		}
-		BigYawChange = FMath::Clamp(FMath::Abs(LookOffset.X - NewYaw) / BigYaw, 0.0f, 1.0f);
+
+		const float YawChange = FMath::Abs(FMath::FindDeltaAngleDegrees(LookOffset.X, NewYaw));
+		BigYawChange = FMath::GetMappedRangeValueClamped((FVector2D)BigYaw, FVector2D(0.f, 1.f), YawChange);
 		const float NewPitch = FMath::Clamp(AimOffset.Y, -75.0f, 75.0f) + BigYawChange * -PitchDrop;
 		const float NewDistance = FMath::Min(AimDistance, MaxDistance);
 
