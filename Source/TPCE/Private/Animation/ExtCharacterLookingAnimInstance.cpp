@@ -16,15 +16,15 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 	MaxDistance = 200.0f;
 	DistanceInterpSpeed = 50.0f;
 
-	BigYaw = FBounds(10.0f, 50.0f);
+	BigYaw = FBounds(20.0f, 60.0f);
 	YawDeadzone = 20.0f;
 	YawStiffness = 50.0f;
-	YawDamping = 0.6f;
+	YawDamping = 0.8f;
 	YawInterpSpeed = 8.0f;
 
 	PitchDrop = 20.0f;
-	PitchStiffness = 30.0f;
-	PitchDamping = 0.6f;
+	PitchStiffness = 40.0f;
+	PitchDamping = 1.0f;
 	PitchInterpSpeed = 6.0f;
 
 	HeadPitchOffset = 0.0f;
@@ -33,7 +33,8 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 	HeadYawInterpSpeed = 5.0f;
 	HeadPitchMultiplier = 1.0f;
 
-	MaxDeltaTime = 0.0f;
+	MaxDeltaTime = 0.2f;
+	SpeedScale = 1.0f;
 }
 
 void UExtCharacterLookingAnimInstance::NativeInitializeAnimation()
@@ -44,6 +45,8 @@ void UExtCharacterLookingAnimInstance::NativeInitializeAnimation()
 
 void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
+	DeltaSeconds *= SpeedScale;
+
 	if (IsValid(CharacterOwner)
 		&& IsValid(CharacterOwnerMesh)
 		&& DeltaSeconds > 0.0f)

@@ -117,6 +117,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float MaxDeltaTime;
 
+	/** Scales all interpolation speed. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	float SpeedScale;
+
 private:
 
 	/** */
