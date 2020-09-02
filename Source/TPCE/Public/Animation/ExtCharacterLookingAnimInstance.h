@@ -58,8 +58,12 @@ public:
 	float DistanceInterpSpeed;
 
 	/** Upper bound is the yaw difference at which linear interpolation kicks in, maximum pitch drop, etc. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking")
-	FBounds BigYaw;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking")
+	FBounds SwivelRange;
+
+	/** OnSwivel is fired once when SwivelScale passes this threshold, and won't be fired again until SwivelScale returns to zero. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0", ClampMax="1", UIMax="1"))
+	float SwivelEventThreshold;
 
 	/** Angle in degrees of the blind spot behind the character.*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
@@ -119,7 +123,7 @@ public:
 
 	/** Scales all interpolation speed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
-	float SpeedScale;
+	float GlobalSpeed;
 
 private:
 
@@ -160,7 +164,15 @@ protected:
 
 	/** Value representing the difference between the current and desired looking yaw. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category="Animation|Looking")
-	float BigYawChange;
+	float SwivelScale;
+
+	/** Indicates that a swivel event occurred. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category="Animation|Looking")
+	uint32 bSwivelFired : 1;
+
+	/** Called when look swivels, may be used to trigger a blink animation. */
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void OnSwivel();
 
 public:
 

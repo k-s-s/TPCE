@@ -9,32 +9,32 @@
 
 UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 {
-	EyeDivergence = 5.0f;
-	BodyTwistSoftMax = 20.0f;
-	BodyTwistHardMax = 60.0f;
+	EyeDivergence = 5.f;
+	BodyTwistSoftMax = 20.f;
+	BodyTwistHardMax = 60.f;
 
-	MaxDistance = 200.0f;
-	DistanceInterpSpeed = 50.0f;
+	MaxDistance = 200.f;
+	DistanceInterpSpeed = 50.f;
 
-	BigYaw = FBounds(20.0f, 60.0f);
-	YawDeadzone = 20.0f;
-	YawStiffness = 50.0f;
+	SwivelRange = FBounds(20.f, 60.f);
+	YawDeadzone = 20.f;
+	YawStiffness = 50.f;
 	YawDamping = 0.8f;
-	YawInterpSpeed = 8.0f;
+	YawInterpSpeed = 8.f;
 
-	PitchDrop = 20.0f;
-	PitchStiffness = 40.0f;
-	PitchDamping = 1.0f;
-	PitchInterpSpeed = 6.0f;
+	PitchDrop = 20.f;
+	PitchStiffness = 40.f;
+	PitchDamping = 1.f;
+	PitchInterpSpeed = 6.f;
 
-	HeadPitchOffset = 0.0f;
-	HeadDownLookingUp = 0.0f;
-	HeadUpLookingDown = 0.0f;
-	HeadYawInterpSpeed = 5.0f;
-	HeadPitchMultiplier = 1.0f;
+	HeadPitchOffset = 0.f;
+	HeadDownLookingUp = 0.f;
+	HeadUpLookingDown = 0.f;
+	HeadYawInterpSpeed = 5.f;
+	HeadPitchMultiplier = 1.f;
 
 	MaxDeltaTime = 0.2f;
-	SpeedScale = 1.0f;
+	GlobalSpeed = 1.f;
 }
 
 void UExtCharacterLookingAnimInstance::NativeInitializeAnimation()
@@ -45,11 +45,11 @@ void UExtCharacterLookingAnimInstance::NativeInitializeAnimation()
 
 void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-	DeltaSeconds *= SpeedScale;
+	DeltaSeconds *= GlobalSpeed;
 
 	if (IsValid(CharacterOwner)
 		&& IsValid(CharacterOwnerMesh)
-		&& DeltaSeconds > 0.0f)
+		&& DeltaSeconds > 0.f)
 	{
 		const float UseHeadlook = CharacterOwner->UseHeadlook;
 		const float UseBodylook = CharacterOwner->UseBodylook;
@@ -58,7 +58,7 @@ void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// This gives greater control over animation, as well as preventing weird behavior when turning to look at a point diametrically opposite
 		// Everything in component space unless otherwise specified
 		float NewYaw = AimOffset.X;
-		const float MaxYaw = 180.0f - YawDeadzone;
+		const float MaxYaw = 180.f - YawDeadzone;
 		if (FMath::Abs(NewYaw) > MaxYaw)
 		{
 			// Clamp look yaw. While clamped, the sign is kept to prevent flip-flopping left and right
@@ -66,21 +66,21 @@ void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		}
 
 		const float YawChange = FMath::Abs(FMath::FindDeltaAngleDegrees(LookOffset.X, NewYaw));
-		BigYawChange = FMath::GetMappedRangeValueClamped((FVector2D)BigYaw, FVector2D(0.f, 1.f), YawChange);
-		const float NewPitch = FMath::Clamp(AimOffset.Y, -75.0f, 75.0f) + BigYawChange * -PitchDrop;
+		SwivelScale = FMath::GetMappedRangeValueClamped((FVector2D)SwivelRange, FVector2D(0.f, 1.f), YawChange);
+		const float NewPitch = FMath::Clamp(AimOffset.Y, -75.f, 75.f) + SwivelScale * -PitchDrop;
 		const float NewDistance = FMath::Min(AimDistance, MaxDistance);
 
 		// Use a spring to move towards the targets because it gives a nice overshoot
 		// To prevent it from going overboard use normal interpolation when the difference is too big
 		// When the head is locked also prefer a more linear trajectory
 		const float ClampedDeltaSeconds = (MaxDeltaTime > 0.f) ? FMath::Min(DeltaSeconds, MaxDeltaTime) : DeltaSeconds;
-		const float UseLinearInterp = FMath::Lerp(1.0f, BigYawChange, CharacterOwner->UseHeadlook);
+		const float UseLinearInterp = FMath::Lerp(1.f, SwivelScale, CharacterOwner->UseHeadlook);
 		LookOffset.X = FMath::Lerp(
-			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.X, NewYaw, LookYawSpringState, YawStiffness, YawDamping, ClampedDeltaSeconds), -180.0f, 180.0f),
+			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.X, NewYaw, LookYawSpringState, YawStiffness, YawDamping, ClampedDeltaSeconds), -180.f, 180.f),
 			FMath::FInterpTo(LookOffset.X, NewYaw, DeltaSeconds, YawInterpSpeed),
 			UseLinearInterp);
 		LookOffset.Y = FMath::Lerp(
-			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.Y, NewPitch, LookPitchSpringState, PitchStiffness, PitchDamping, ClampedDeltaSeconds), -85.0f, 85.0f),
+			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.Y, NewPitch, LookPitchSpringState, PitchStiffness, PitchDamping, ClampedDeltaSeconds), -85.f, 85.f),
 			FMath::FInterpTo(LookOffset.Y, NewPitch, DeltaSeconds, PitchInterpSpeed),
 			UseLinearInterp);
 		LookOffset.Z = FMathEx::FSafeInterpTo(LookOffset.Z, NewDistance, DeltaSeconds, DistanceInterpSpeed);
@@ -91,16 +91,27 @@ void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		// Update headlook values
 		const float TotalLookWeight = UseHeadlook + UseBodylook;
-		const float HeadlookWeight = TotalLookWeight <= 1.0f ? UseHeadlook : (UseHeadlook / TotalLookWeight);
+		const float HeadlookWeight = TotalLookWeight <= 1.f ? UseHeadlook : (UseHeadlook / TotalLookWeight);
 		HeadAimOffset.X = FMath::FInterpTo(HeadAimOffset.X, FRotator::NormalizeAxis(LookOffset.X * HeadlookWeight), DeltaSeconds, HeadYawInterpSpeed);
 		HeadAimOffset.Y = LookOffset.Y * HeadPitchMultiplier + HeadPitchOffset;
-		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / 45.0f, 0.0f, 1.0f) * -HeadDownLookingUp;
-		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / -45.0f, 0.0f, 1.0f) * HeadUpLookingDown;
-		HeadAimOffset = HeadAimOffset.ClampAxes(-90.0f, 90.0f);
+		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / 45.f, 0.f, 1.f) * -HeadDownLookingUp;
+		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / -45.f, 0.f, 1.f) * HeadUpLookingDown;
+		HeadAimOffset = HeadAimOffset.ClampAxes(-90.f, 90.f);
 
 		// Update bodylook values
-		const float BodylookWeight = TotalLookWeight <= 1.0f ? UseBodylook : (UseBodylook / TotalLookWeight);
+		const float BodylookWeight = TotalLookWeight <= 1.f ? UseBodylook : (UseBodylook / TotalLookWeight);
 		const float TwistAmount = UKismetMathLibraryEx::SoftCap(FMath::Abs(LookOffset.X * BodylookWeight), BodyTwistSoftMax, BodyTwistHardMax);
-		SpineTwist = FRotator(0.0f, TwistAmount * FMath::Sign(LookOffset.X * BodylookWeight), 0.0f);
+		SpineTwist = FRotator(0.f, TwistAmount * FMath::Sign(LookOffset.X * BodylookWeight), 0.f);
+
+		// Raise events
+		if (SwivelScale > SwivelEventThreshold && !bSwivelFired)
+		{
+			bSwivelFired = true;
+			OnSwivel();
+		}
+		else if (SwivelScale <= 0.f && bSwivelFired)
+		{
+			bSwivelFired = false;
+		}
 	}
 }
