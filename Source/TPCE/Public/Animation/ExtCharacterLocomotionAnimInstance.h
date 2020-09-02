@@ -534,9 +534,13 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Foot IK", meta = (AllowPrivateAccess = "true"))
 	FRotator RagdollRightFootRotation;
 
-	/** Angular offset from character rotation to look rotation. X is Yaw, Y is Pitch. */
+	/** Current angular offset from character rotation to look rotation. X is Yaw, Y is Pitch. */
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Skeleton")
 	FVector2D AimOffset;
+
+	/** Target angular offset from character rotation to look rotation. X is Yaw, Y is Pitch. */
+	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Skeleton")
+	FVector2D TargetAimOffset;
 
 	/** Distance to the look target, defaults to AimDistanceDefault. */
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Skeleton")
