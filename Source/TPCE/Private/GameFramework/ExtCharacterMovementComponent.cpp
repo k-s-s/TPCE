@@ -1200,7 +1200,7 @@ void UExtCharacterMovementComponent::PhysicsRotation(float DeltaSeconds)
 					return;
 				}
 
-				const float TargetRateFactor = FMath::Clamp(FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TurnInPlaceTargetYaw)) / TurnInPlaceRotationRateSpeedCutoff, 0.f, 1.f);
+				const float TargetRateFactor = FMath::Clamp(FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TurnInPlaceTargetYaw)) / TurnInPlaceRotationRateSpeedCutoff, .1f, 1.f);
 				EasedTurnInPlaceRotationRate = FMathEx::RSafeInterpTo(EasedTurnInPlaceRotationRate, TurnInPlaceRotationRate * TargetRateFactor, DeltaSeconds, TurnInPlaceRotationRateSpeed);
 
 				DeltaRot.Pitch = CalculateConstantDeltaRotationAxis(CurrentRotation.Pitch, TargetRotation.Pitch, DeltaSeconds, EasedTurnInPlaceRotationRate.Pitch);

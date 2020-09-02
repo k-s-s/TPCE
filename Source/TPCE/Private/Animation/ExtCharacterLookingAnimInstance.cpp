@@ -17,6 +17,7 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 	DistanceInterpSpeed = 50.f;
 
 	SwivelRange = FBounds(20.f, 60.f);
+	SwivelEventThreshold = 0.25f;
 	YawDeadzone = 20.f;
 	YawStiffness = 50.f;
 	YawDamping = 0.8f;
