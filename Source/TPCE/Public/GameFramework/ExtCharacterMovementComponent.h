@@ -340,7 +340,7 @@ public: // Variables
 
 	/** Slow down turning in place when the yaw delta is less than this many degrees. Only used if TurnInPlaceRotationRateSpeed is > 0.0. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace", ClampMin = "0", UIMin = "0"))
-	float TurnInPlaceRotationRateSpeedCutoff;
+	float TurnInPlaceSlowThreshold;
 
 	/**   */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace && !bUseTurnInPlaceDelay", ClampMin = "0", UIMin = "0", ClampMax = "180", UIMax = "180"))
