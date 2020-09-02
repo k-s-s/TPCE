@@ -16,22 +16,24 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 	MaxDistance = 200.0f;
 	DistanceInterpSpeed = 50.0f;
 
-	BigYaw = FBounds(30.0f, 120.0f);
+	BigYaw = FBounds(10.0f, 50.0f);
 	YawDeadzone = 20.0f;
-	YawStiffness = 42.0f;
-	YawDamping = 0.4f;
+	YawStiffness = 50.0f;
+	YawDamping = 0.6f;
 	YawInterpSpeed = 8.0f;
 
 	PitchDrop = 20.0f;
-	PitchStiffness = 15.0f;
-	PitchDamping = 0.8f;
+	PitchStiffness = 30.0f;
+	PitchDamping = 0.6f;
 	PitchInterpSpeed = 6.0f;
 
 	HeadPitchOffset = 0.0f;
-	HeadDownLookingUp = 10.0f;
+	HeadDownLookingUp = 0.0f;
 	HeadUpLookingDown = 0.0f;
 	HeadYawInterpSpeed = 5.0f;
-	HeadPitchMultiplier = 2.0f;
+	HeadPitchMultiplier = 1.0f;
+
+	MaxDeltaTime = 0.0f;
 }
 
 void UExtCharacterLookingAnimInstance::NativeInitializeAnimation()
@@ -68,13 +70,14 @@ void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// Use a spring to move towards the targets because it gives a nice overshoot
 		// To prevent it from going overboard use normal interpolation when the difference is too big
 		// When the head is locked also prefer a more linear trajectory
+		const float ClampedDeltaSeconds = (MaxDeltaTime > 0.f) ? FMath::Min(DeltaSeconds, MaxDeltaTime) : DeltaSeconds;
 		const float UseLinearInterp = FMath::Lerp(1.0f, BigYawChange, CharacterOwner->UseHeadlook);
 		LookOffset.X = FMath::Lerp(
-			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.X, NewYaw, LookYawSpringState, YawStiffness, YawDamping, DeltaSeconds), -180.0f, 180.0f),
+			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.X, NewYaw, LookYawSpringState, YawStiffness, YawDamping, ClampedDeltaSeconds), -180.0f, 180.0f),
 			FMath::FInterpTo(LookOffset.X, NewYaw, DeltaSeconds, YawInterpSpeed),
 			UseLinearInterp);
 		LookOffset.Y = FMath::Lerp(
-			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.Y, NewPitch, LookPitchSpringState, PitchStiffness, PitchDamping, DeltaSeconds), -85.0f, 85.0f),
+			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.Y, NewPitch, LookPitchSpringState, PitchStiffness, PitchDamping, ClampedDeltaSeconds), -85.0f, 85.0f),
 			FMath::FInterpTo(LookOffset.Y, NewPitch, DeltaSeconds, PitchInterpSpeed),
 			UseLinearInterp);
 		LookOffset.Z = FMathEx::FSafeInterpTo(LookOffset.Z, NewDistance, DeltaSeconds, DistanceInterpSpeed);

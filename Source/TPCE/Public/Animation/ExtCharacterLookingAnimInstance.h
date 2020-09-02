@@ -30,88 +30,92 @@ public:
 	UExtCharacterLookingAnimInstance();
 
 	/** Input angular offset from character rotation to look rotation. X is Yaw, Y is Pitch. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Character", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Character")
 	FVector2D AimOffset;
 
 	/** Input distance to the look target. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Character", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Character")
 	float AimDistance;
 
 	/** Distance between the eyes individual targets when looking at a medium distance. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking")
 	float EyeDivergence;
 
 	/** Maximum spine twist angle in degrees. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float BodyTwistSoftMax;
 
 	/** Maximum spine twist angle in degrees. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float BodyTwistHardMax;
 
 	/** Maximum distance to the look target. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float MaxDistance;
 
 	/** How fast to reach the desired look distance. Use 0 for immediate. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float DistanceInterpSpeed;
 
-	/** Yaw difference at which linear interpolation kicks in, maximum pitch drop, etc. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	/** Upper bound is the yaw difference at which linear interpolation kicks in, maximum pitch drop, etc. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking")
 	FBounds BigYaw;
 
 	/** Angle in degrees of the blind spot behind the character.*/
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float YawDeadzone;
 
 	/** Stiffness when reaching the desired look yaw. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float YawStiffness;
 
 	/** Damping when reaching the desired look yaw. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float YawDamping;
 
-	/** How fast to reach the desired look yaw. Use 0 for immediate. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	/** How fast to reach the desired look yaw when not using spring. Use 0 for immediate. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float YawInterpSpeed;
 
 	/** Pitch drop at maximum yaw difference. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking")
 	float PitchDrop;
 
 	/** Stiffness when reaching the desired look pitch. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float PitchStiffness;
 
 	/** Damping when reaching the desired look pitch. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float PitchDamping;
 
-	/** How fast to reach the desired look pitch. Use 0 for immediate. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	/** How fast to reach the desired look pitch when not using spring. Use 0 for immediate. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float PitchInterpSpeed;
 
 	/** Constant head pitch offset. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking")
 	float HeadPitchOffset;
 
-	/** Downwards head pitch offset in degrees when looking up. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	/** Downwards head pitch offset when looking up. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking")
 	float HeadDownLookingUp;
 
-	/** Upwards head pitch offset in degrees when looking down. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	/** Upwards head pitch offset when looking down. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking")
 	float HeadUpLookingDown;
 
 	/** How fast to reach the desired head yaw. Use 0 for immediate. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true", ClampMin="0", UIMin="0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float HeadYawInterpSpeed;
 
 	/** How much to turn the head up and down when looking vertically. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(AllowPrivateAccess="true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking")
 	float HeadPitchMultiplier;
+
+	/** Maximum allowed delta time for springs. If 0 clamping is disabled. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	float MaxDeltaTime;
 
 private:
 
