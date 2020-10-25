@@ -1,6 +1,6 @@
 // This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
-#include "Animation/ExtCharacterLookingAnimInstance.h"
+#include "Animation/LookIKAnimInstance.h"
 
 #include "GameFramework/ExtCharacter.h"
 #include "Math/MathExtensions.h"
@@ -8,7 +8,7 @@
 #include "ExtraMacros.h"
 #include "ExtraTypes.h"
 
-UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
+ULookIKAnimInstance::ULookIKAnimInstance()
 {
 	SourceBoneName = FName(TEXT("Eyes"));
 
@@ -41,12 +41,12 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 	GlobalSpeed = 1.f;
 }
 
-void UExtCharacterLookingAnimInstance::NativeInitializeAnimation()
+void ULookIKAnimInstance::NativeInitializeAnimation()
 {
 	OwnerMesh = GetSkelMeshComponent();
 }
 
-void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void ULookIKAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	DeltaSeconds *= GlobalSpeed;
 

@@ -9,7 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "ExtraTypes.h"
 
-#include "ExtCharacterLookingAnimInstance.generated.h"
+#include "LookIKAnimInstance.generated.h"
 
 class USkeletalMeshComponent;
 class UAnimSequence;
@@ -21,13 +21,13 @@ class UExtCharacterMovementComponent;
  * AnimInstance class related to looking behavior.
  */
 UCLASS(abstract)
-class TPCE_API UExtCharacterLookingAnimInstance : public UAnimInstance
+class TPCE_API ULookIKAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
 public:
 
-	UExtCharacterLookingAnimInstance();
+	ULookIKAnimInstance();
 
 	/** Location in world space to look at. */
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Animation|Looking")

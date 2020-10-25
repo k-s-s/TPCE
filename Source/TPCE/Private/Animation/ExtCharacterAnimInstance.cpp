@@ -1,6 +1,6 @@
 // This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
-#include "Animation/ExtCharacterLocomotionAnimInstance.h"
+#include "Animation/ExtCharacterAnimInstance.h"
 #include "Animation/AnimNode_StateMachine.h"
 #include "Animation/BlendSpace.h"
 #include "GameFramework/ExtCharacter.h"
@@ -15,9 +15,9 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogExtCharacterAnimInstance, Log, All);
 
-const float UExtCharacterLocomotionAnimInstance::AngleTolerance = 1e-3f;
+const float UExtCharacterAnimInstance::AngleTolerance = 1e-3f;
 
-UExtCharacterLocomotionAnimInstance::UExtCharacterLocomotionAnimInstance()
+UExtCharacterAnimInstance::UExtCharacterAnimInstance()
 {
 	AimOffsetInterpSpeed = 10.0f;
 	AimOffsetResetInterpSpeed = 2.0f;
@@ -48,7 +48,7 @@ UExtCharacterLocomotionAnimInstance::UExtCharacterLocomotionAnimInstance()
 	SpeedWarpScale = 1.0f;
 }
 
-void UExtCharacterLocomotionAnimInstance::NativeInitializeAnimation()
+void UExtCharacterAnimInstance::NativeInitializeAnimation()
 {
 	CharacterOwner = Cast<AExtCharacter>(TryGetPawnOwner());
 	if (IsValid(CharacterOwner))
@@ -71,8 +71,8 @@ void UExtCharacterLocomotionAnimInstance::NativeInitializeAnimation()
 
 		// Ragdoll Event Handler
 		// Ensure delegate is bound (just once)
-		CharacterOwner->RagdollChangedDelegate.RemoveDynamic(this, &UExtCharacterLocomotionAnimInstance::HandleRagdollChanged);
-		CharacterOwner->RagdollChangedDelegate.AddDynamic(this, &UExtCharacterLocomotionAnimInstance::HandleRagdollChanged);
+		CharacterOwner->RagdollChangedDelegate.RemoveDynamic(this, &UExtCharacterAnimInstance::HandleRagdollChanged);
+		CharacterOwner->RagdollChangedDelegate.AddDynamic(this, &UExtCharacterAnimInstance::HandleRagdollChanged);
 
 		CharacterOwnerMesh = GetSkelMeshComponent();
 		if (IsValid(CharacterOwnerMesh))
@@ -86,7 +86,7 @@ void UExtCharacterLocomotionAnimInstance::NativeInitializeAnimation()
 
 /// Every Tick
 
-void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
+void UExtCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	if (IsValid(CharacterOwner)
 		&& IsValid(CharacterOwnerMovement)
@@ -220,7 +220,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 	}
 }
 
-void UExtCharacterLocomotionAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
+void UExtCharacterAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
 {
 	// Calculate GaitScale, WalkPlayRate and SpeedWarp. Gait Scale is a value in the range [0, 3] where
 	// 0 is fully stopped; 1 is fully walking; 2 is fully running; 3 is fully sprinting and values in between are blends.
@@ -312,7 +312,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateGaitScale(float DeltaSecon
 	}
 }
 
-void UExtCharacterLocomotionAnimInstance::NativeUpdatePivotTurn(const FVector& InLastVelocity, float DeltaSeconds)
+void UExtCharacterAnimInstance::NativeUpdatePivotTurn(const FVector& InLastVelocity, float DeltaSeconds)
 {
 	bool bIsPivotTurningInstantly = false;
 	bWasPivotTurning = bIsPivotTurning;
@@ -346,7 +346,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdatePivotTurn(const FVector& I
 	}
 }
 
-void UExtCharacterLocomotionAnimInstance::NativeUpdateTurnInPlace(float DeltaSeconds)
+void UExtCharacterAnimInstance::NativeUpdateTurnInPlace(float DeltaSeconds)
 {
 	bWasTurningInPlace = bIsTurningInPlace;
 	bWasTurningInPlaceRight = bIsTurningInPlaceRight;
@@ -465,7 +465,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateTurnInPlace(float DeltaSec
 	}
 }
 
-void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSeconds)
+void UExtCharacterAnimInstance::NativeUpdateAimOffset(float DeltaSeconds)
 {
 	if (MovementMode != MOVE_None && (MovementMode != MOVE_Falling || bIsJumping))
 	{
@@ -530,7 +530,7 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSecon
 	AimLocation = CharacterOwner->GetActorRotation().RotateVector(AimLocation) + CharacterOwner->GetPawnViewLocation();
 }
 
-void UExtCharacterLocomotionAnimInstance::RaiseEvents()
+void UExtCharacterAnimInstance::RaiseEvents()
 {
 	if (bHasMovementModeChanged)
 	{
@@ -564,7 +564,7 @@ void UExtCharacterLocomotionAnimInstance::RaiseEvents()
 
 /// Setters
 
-void UExtCharacterLocomotionAnimInstance::SetMovementMode(const EMovementMode Value, const uint8 CustomValue)
+void UExtCharacterAnimInstance::SetMovementMode(const EMovementMode Value, const uint8 CustomValue)
 {
 	if (MovementMode != Value || (Value == MOVE_Custom && CustomMovementMode != CustomValue))
 	{
@@ -574,7 +574,7 @@ void UExtCharacterLocomotionAnimInstance::SetMovementMode(const EMovementMode Va
 	}
 }
 
-void UExtCharacterLocomotionAnimInstance::SetCrouched(const bool Value)
+void UExtCharacterAnimInstance::SetCrouched(const bool Value)
 {
 	if (bIsCrouched != Value)
 	{
@@ -583,7 +583,7 @@ void UExtCharacterLocomotionAnimInstance::SetCrouched(const bool Value)
 	}
 }
 
-void UExtCharacterLocomotionAnimInstance::SetGait(const ECharacterGait Value)
+void UExtCharacterAnimInstance::SetGait(const ECharacterGait Value)
 {
 	if (Gait != Value)
 	{
@@ -592,7 +592,7 @@ void UExtCharacterLocomotionAnimInstance::SetGait(const ECharacterGait Value)
 	}
 }
 
-void UExtCharacterLocomotionAnimInstance::SetPerformingGenericAction(const bool Value)
+void UExtCharacterAnimInstance::SetPerformingGenericAction(const bool Value)
 {
 	if (bIsPerformingGenericAction != Value)
 	{
@@ -604,7 +604,7 @@ void UExtCharacterLocomotionAnimInstance::SetPerformingGenericAction(const bool 
 
 /// Handlers
 
-void UExtCharacterLocomotionAnimInstance::HandleRagdollChanged(AExtCharacter* Sender)
+void UExtCharacterAnimInstance::HandleRagdollChanged(AExtCharacter* Sender)
 {
 	if (!Sender->IsRagdoll())
 		OnRagdollEnded();
@@ -613,7 +613,7 @@ void UExtCharacterLocomotionAnimInstance::HandleRagdollChanged(AExtCharacter* Se
 
 /// Curve Utilities
 
-float UExtCharacterLocomotionAnimInstance::FindCurveTimeFromValue(UAnimSequence* InAnimSequence, const FName CurveName, const float Value) const
+float UExtCharacterAnimInstance::FindCurveTimeFromValue(UAnimSequence* InAnimSequence, const FName CurveName, const float Value) const
 {
 	if (InAnimSequence)
 		for (const FFloatCurve& Curve : InAnimSequence->GetCurveData().FloatCurves)
