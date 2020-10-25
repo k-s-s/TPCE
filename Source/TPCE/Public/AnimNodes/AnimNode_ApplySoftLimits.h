@@ -27,17 +27,33 @@ struct TPCE_API FAnimNode_ApplySoftLimits : public FAnimNode_SkeletalControlBase
 	UPROPERTY(EditAnywhere, Category=Angular)
 	TEnumAsByte<EBoneControlSpace> ControlSpace;
 
+	/** Minimum Yaw, Pitch and Roll. */
 	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
 	FVector HardMin;
 
+	/** Minimum Yaw, Pitch and Roll where decrement begins to taper off. */
 	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
 	FVector SoftMin;
 
+	/** Maximum Yaw, Pitch and Roll where increment begins to taper off. */
 	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
 	FVector SoftMax;
 
+	/** Maximum Yaw, Pitch and Roll. */
 	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
 	FVector HardMax;
+
+	/** Flip X limits. */
+	UPROPERTY(EditAnywhere, Category=Angular, meta=(DisplayName="X"))
+	bool bFlipX;
+
+	/** Flip Y limits. */
+	UPROPERTY(EditAnywhere, Category=Angular, meta=(DisplayName="Y"))
+	bool bFlipY;
+
+	/** Flip Z limits. */
+	UPROPERTY(EditAnywhere, Category=Angular, meta=(DisplayName="Z"))
+	bool bFlipZ;
 
 	// Begin FAnimNode_Base Interface
 	virtual void GatherDebugData(FNodeDebugData& DebugData) override;

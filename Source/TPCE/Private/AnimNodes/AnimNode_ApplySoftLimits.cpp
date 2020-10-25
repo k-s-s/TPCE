@@ -40,12 +40,17 @@ void FAnimNode_ApplySoftLimits::EvaluateSkeletalControl_AnyThread(FComponentSpac
 	FAnimationRuntime::ConvertCSTransformToBoneSpace(ComponentTM, Output.Pose, BoneTM, BoneIndex, ControlSpace);
 	FRotator DeltaRot = (BoneRefTM.GetRotation().Inverse() * BoneTM.GetRotation()).Rotator();
 
-	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SoftMin.X, HardMin.X);
-	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SoftMax.X, HardMax.X);
-	DeltaRot.Pitch = UKismetMathLibraryEx::SoftCap(DeltaRot.Pitch, SoftMin.Y, HardMin.Y);
-	DeltaRot.Pitch = UKismetMathLibraryEx::SoftCap(DeltaRot.Pitch, SoftMax.Y, HardMax.Y);
-	DeltaRot.Roll = UKismetMathLibraryEx::SoftCap(DeltaRot.Roll, SoftMin.Z, HardMin.Z);
-	DeltaRot.Roll = UKismetMathLibraryEx::SoftCap(DeltaRot.Roll, SoftMax.Z, HardMax.Z);
+	const FVector FlipFactor = FVector(bFlipX ? -1.f : 1.f, bFlipY ? -1.f : 1.f, bFlipZ ? -1.f : 1.f);
+	const FVector SSoftMin = (SoftMin * FlipFactor).ComponentMin(SoftMax * FlipFactor);
+	const FVector SSoftMax = (SoftMin * FlipFactor).ComponentMax(SoftMax * FlipFactor);
+	const FVector SHardMin = (HardMin * FlipFactor).ComponentMin(HardMax * FlipFactor);
+	const FVector SHardMax = (HardMin * FlipFactor).ComponentMax(HardMax * FlipFactor);
+	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SSoftMin.X, SHardMin.X);
+	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SSoftMax.X, SHardMax.X);
+	DeltaRot.Pitch = UKismetMathLibraryEx::SoftCap(DeltaRot.Pitch, SSoftMin.Y, SHardMin.Y);
+	DeltaRot.Pitch = UKismetMathLibraryEx::SoftCap(DeltaRot.Pitch, SSoftMax.Y, SHardMax.Y);
+	DeltaRot.Roll = UKismetMathLibraryEx::SoftCap(DeltaRot.Roll, SSoftMin.Z, SHardMin.Z);
+	DeltaRot.Roll = UKismetMathLibraryEx::SoftCap(DeltaRot.Roll, SSoftMax.Z, SHardMax.Z);
 
 	// Add the reference pose and back to component space
 	BoneTM.SetRotation(BoneRefTM.GetRotation() * DeltaRot.Quaternion());

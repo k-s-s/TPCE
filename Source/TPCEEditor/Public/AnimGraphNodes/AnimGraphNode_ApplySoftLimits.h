@@ -4,10 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
+#include "Layout/Visibility.h"
 #include "AnimGraphNode_SkeletalControlBase.h"
 #include "AnimNodes/AnimNode_ApplySoftLimits.h"
 
 #include "AnimGraphNode_ApplySoftLimits.generated.h"
+
+class IDetailCategoryBuilder;
+class IDetailLayoutBuilder;
+class IPropertyHandle;
 
 UCLASS()
 class TPCEEDITOR_API UAnimGraphNode_ApplySoftLimits : public UAnimGraphNode_SkeletalControlBase
@@ -23,9 +28,15 @@ public:
 	virtual FText GetTooltipText() const override;
 	// End of UEdGraphNode interface
 
+	// UAnimGraphNode_Base interface
+	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
+	// End of UAnimGraphNode_Base interface
+
 protected:
 	// UAnimGraphNode_SkeletalControlBase interface
 	virtual FText GetControllerDescription() const override;
 	virtual const FAnimNode_SkeletalControlBase* GetNode() const override { return &Node; }
 	// End of UAnimGraphNode_SkeletalControlBase interface
+
+	static void AddTripletPropertyRow(const FText& Name, const FText& Tooltip, IDetailCategoryBuilder& Category, TSharedRef<IPropertyHandle> PropertyHandle, const FName XPropertyName, const FName YPropertyName, const FName ZPropertyName, TAttribute<EVisibility> VisibilityAttribute);
 };
