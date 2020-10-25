@@ -6,9 +6,12 @@
 #include "Math/MathExtensions.h"
 #include "Kismet/Kismet.h"
 #include "ExtraMacros.h"
+#include "ExtraTypes.h"
 
 UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 {
+	SourceBoneName = FName(TEXT("Eyes"));
+
 	EyeDivergence = 5.f;
 	BodyTwistSoftMax = 20.f;
 	BodyTwistHardMax = 60.f;
@@ -40,69 +43,75 @@ UExtCharacterLookingAnimInstance::UExtCharacterLookingAnimInstance()
 
 void UExtCharacterLookingAnimInstance::NativeInitializeAnimation()
 {
-	CharacterOwner = Cast<AExtCharacter>(TryGetPawnOwner());
-	CharacterOwnerMesh = GetSkelMeshComponent();
+	OwnerMesh = GetSkelMeshComponent();
 }
 
 void UExtCharacterLookingAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	DeltaSeconds *= GlobalSpeed;
 
-	if (IsValid(CharacterOwner)
-		&& IsValid(CharacterOwnerMesh)
-		&& DeltaSeconds > 0.f)
+	if (DeltaSeconds > 0.f)
 	{
-		const float UseHeadlook = CharacterOwner->UseHeadlook;
-		const float UseBodylook = CharacterOwner->UseBodylook;
+		// Look in source bone space
+		FTransform SourceWorldTM = OwnerMesh->GetSocketTransform(SourceBoneName, RTS_World);
+		SourceWorldTM.RemoveScaling();
+		const FVector LookVector = SourceWorldTM.InverseTransformPositionNoScale(LookAtLocation);
+		const FRotator LookRotation = FRotationMatrix::MakeFromX(LookVector).Rotator();
 
 		// Break the look vector down into yaw pitch and distance, then make the components reach their targets individually
 		// This gives greater control over animation, as well as preventing weird behavior when turning to look at a point diametrically opposite
-		// Everything in component space unless otherwise specified
-		float NewYaw = AimOffset.X;
+		float NewYaw = LookRotation.Yaw;
 		const float MaxYaw = 180.f - YawDeadzone;
 		if (FMath::Abs(NewYaw) > MaxYaw)
 		{
 			// Clamp look yaw. While clamped, the sign is kept to prevent flip-flopping left and right
-			NewYaw = MaxYaw * FMath::Sign(LookOffset.X);
+			NewYaw = MaxYaw * FMath::Sign(LookAimOffset.X);
 		}
 
-		const float YawChange = FMath::Abs(FMath::FindDeltaAngleDegrees(LookOffset.X, NewYaw));
+		const float YawChange = FMath::Abs(FMath::FindDeltaAngleDegrees(LookAimOffset.X, NewYaw));
 		SwivelScale = FMath::GetMappedRangeValueClamped((FVector2D)SwivelRange, FVector2D(0.f, 1.f), YawChange);
-		const float NewPitch = FMath::Clamp(AimOffset.Y, -75.f, 75.f) + SwivelScale * -PitchDrop;
-		const float NewDistance = FMath::Min(AimDistance, MaxDistance);
+		const float NewPitch = FMath::Clamp(LookRotation.Pitch, -75.f, 75.f) + SwivelScale * -PitchDrop;
+		const float NewDistance = FMath::Min(LookVector.Size(), MaxDistance);
 
 		// Use a spring to move towards the targets because it gives a nice overshoot
 		// To prevent it from going overboard use normal interpolation when the difference is too big
 		// When the head is locked also prefer a more linear trajectory
 		const float ClampedDeltaSeconds = (MaxDeltaTime > 0.f) ? FMath::Min(DeltaSeconds, MaxDeltaTime) : DeltaSeconds;
-		const float UseLinearInterp = FMath::Lerp(1.f, SwivelScale, CharacterOwner->UseHeadlook);
-		LookOffset.X = FMath::Lerp(
-			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.X, NewYaw, LookYawSpringState, YawStiffness, YawDamping, ClampedDeltaSeconds), -180.f, 180.f),
-			FMath::FInterpTo(LookOffset.X, NewYaw, DeltaSeconds, YawInterpSpeed),
+		const float UseLinearInterp = FMath::Lerp(1.f, SwivelScale, UseHeadlook);
+		LookAimOffset.X = FMath::Lerp(
+			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookAimOffset.X, NewYaw, LookYawSpringState, YawStiffness, YawDamping, ClampedDeltaSeconds), -180.f, 180.f),
+			FMath::FInterpTo(LookAimOffset.X, NewYaw, DeltaSeconds, YawInterpSpeed),
 			UseLinearInterp);
-		LookOffset.Y = FMath::Lerp(
-			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookOffset.Y, NewPitch, LookPitchSpringState, PitchStiffness, PitchDamping, ClampedDeltaSeconds), -85.f, 85.f),
-			FMath::FInterpTo(LookOffset.Y, NewPitch, DeltaSeconds, PitchInterpSpeed),
+		LookAimOffset.Y = FMath::Lerp(
+			FMath::Clamp(UKismetMathLibrary::FloatSpringInterp(LookAimOffset.Y, NewPitch, LookPitchSpringState, PitchStiffness, PitchDamping, ClampedDeltaSeconds), -85.f, 85.f),
+			FMath::FInterpTo(LookAimOffset.Y, NewPitch, DeltaSeconds, PitchInterpSpeed),
 			UseLinearInterp);
-		LookOffset.Z = FMathEx::FSafeInterpTo(LookOffset.Z, NewDistance, DeltaSeconds, DistanceInterpSpeed);
+		LookAimOffset.Z = FMathEx::FSafeInterpTo(LookAimOffset.Z, NewDistance, DeltaSeconds, DistanceInterpSpeed);
 
-		// Reconstruct the look target in world space
-		LookTarget = UKismetMathLibrary::CreateVectorFromYawPitch(LookOffset.X, LookOffset.Y, LookOffset.Z);
-		LookTarget = CharacterOwner->GetActorRotation().RotateVector(LookTarget) + CharacterOwner->GetPawnViewLocation();
+		// Construct the new look at target in world space
+		// The new transform faces the source socket and is scaled according to distance
+		// So all the AnimGraph needs is individual LookAts for the eyes with an offset in the local space of this transform
+		const float LookTargetScale = UKismetMathLibrary::MapRangeClamped(LookAimOffset.Z, 10.f, 200.f, .3f, 1.f);
+		LookAtTarget = FTransform(
+			FRotator(LookAimOffset.Y, LookAimOffset.X, 0.f),
+			UKismetMathLibrary::CreateVectorFromYawPitch(LookAimOffset.X, LookAimOffset.Y, LookAimOffset.Z),
+			FVector(LookTargetScale))
+			* SourceWorldTM;
 
 		// Update headlook values
 		const float TotalLookWeight = UseHeadlook + UseBodylook;
 		const float HeadlookWeight = TotalLookWeight <= 1.f ? UseHeadlook : (UseHeadlook / TotalLookWeight);
-		HeadAimOffset.X = FMath::FInterpTo(HeadAimOffset.X, FRotator::NormalizeAxis(LookOffset.X * HeadlookWeight), DeltaSeconds, HeadYawInterpSpeed);
-		HeadAimOffset.Y = LookOffset.Y * HeadPitchMultiplier + HeadPitchOffset;
-		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / 45.f, 0.f, 1.f) * -HeadDownLookingUp;
-		HeadAimOffset.Y += FMath::Clamp(LookOffset.Y / -45.f, 0.f, 1.f) * HeadUpLookingDown;
+		HeadAimOffset.X = FMath::FInterpTo(HeadAimOffset.X, FRotator::NormalizeAxis(LookAimOffset.X * HeadlookWeight), DeltaSeconds, HeadYawInterpSpeed);
+		HeadAimOffset.Y = LookAimOffset.Y * HeadPitchMultiplier + HeadPitchOffset;
+		HeadAimOffset.Y += FMath::Clamp(LookAimOffset.Y / 45.f, 0.f, 1.f) * -HeadDownLookingUp;
+		HeadAimOffset.Y += FMath::Clamp(LookAimOffset.Y / -45.f, 0.f, 1.f) * HeadUpLookingDown;
 		HeadAimOffset = HeadAimOffset.ClampAxes(-90.f, 90.f);
 
 		// Update bodylook values
+		// Currently this only works left to right and hopes that the aim offset will impart some curve to the spine when looking up and down
 		const float BodylookWeight = TotalLookWeight <= 1.f ? UseBodylook : (UseBodylook / TotalLookWeight);
-		const float TwistAmount = UKismetMathLibraryEx::SoftCap(FMath::Abs(LookOffset.X * BodylookWeight), BodyTwistSoftMax, BodyTwistHardMax);
-		SpineTwist = FRotator(0.f, TwistAmount * FMath::Sign(LookOffset.X * BodylookWeight), 0.f);
+		const float TwistAmount = UKismetMathLibraryEx::SoftCap(FMath::Abs(LookAimOffset.X * BodylookWeight), BodyTwistSoftMax, BodyTwistHardMax);
+		SpineTwist = FRotator(0.f, TwistAmount * FMath::Sign(LookAimOffset.X * BodylookWeight), 0.f);
 
 		// Raise events
 		if (SwivelScale > SwivelEventThreshold && !bSwivelFired)

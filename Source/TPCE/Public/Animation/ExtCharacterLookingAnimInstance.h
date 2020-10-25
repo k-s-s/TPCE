@@ -29,16 +29,27 @@ public:
 
 	UExtCharacterLookingAnimInstance();
 
-	/** Input angular offset from character rotation to look rotation. X is Yaw, Y is Pitch. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Character")
-	FVector2D AimOffset;
+	/** Location in world space to look at. */
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Animation|Looking")
+	FVector LookAtLocation;
 
-	/** Input distance to the look target. */
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Transient, Category="Character")
-	float AimDistance;
+	/**
+	 * Name of the socket to treat as source. Normally this will be at eye level and parented to a spine bone.
+	 * X axis (red arrow) should point forward and Z axis (blue arrow) up.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking")
+	FName SourceBoneName;
+
+	/** Headlook weight. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0", ClampMax="1", UIMax="1"))
+	float UseHeadlook;
+
+	/** Bodylook weight. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0", ClampMax="1", UIMax="1"))
+	float UseBodylook;
 
 	/** Distance between the eyes individual targets when looking at a medium distance. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Settings|Looking")
 	float EyeDivergence;
 
 	/** Maximum spine twist angle in degrees. */
@@ -70,31 +81,31 @@ public:
 	float YawDeadzone;
 
 	/** Stiffness when reaching the desired look yaw. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float YawStiffness;
 
 	/** Damping when reaching the desired look yaw. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float YawDamping;
 
 	/** How fast to reach the desired look yaw when not using spring. Use 0 for immediate. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float YawInterpSpeed;
 
 	/** Pitch drop at maximum yaw difference. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking")
 	float PitchDrop;
 
 	/** Stiffness when reaching the desired look pitch. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float PitchStiffness;
 
 	/** Damping when reaching the desired look pitch. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float PitchDamping;
 
 	/** How fast to reach the desired look pitch when not using spring. Use 0 for immediate. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float PitchInterpSpeed;
 
 	/** Constant head pitch offset. */
@@ -110,30 +121,26 @@ public:
 	float HeadUpLookingDown;
 
 	/** How fast to reach the desired head yaw. Use 0 for immediate. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float HeadYawInterpSpeed;
 
 	/** How much to turn the head up and down when looking vertically. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking")
 	float HeadPitchMultiplier;
 
 	/** Maximum allowed delta time for springs. If 0 clamping is disabled. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float MaxDeltaTime;
 
 	/** Scales all interpolation speed. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float GlobalSpeed;
 
 private:
 
 	/** */
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category="References", meta=(AllowPrivateAccess="true"))
-	AExtCharacter* CharacterOwner;
-
-	/** */
-	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category="References", meta=(AllowPrivateAccess="true"))
-	USkeletalMeshComponent* CharacterOwnerMesh;
+	USkeletalMeshComponent* OwnerMesh;
 
 	UPROPERTY(Transient)
 	FFloatSpringState LookYawSpringState;
@@ -146,19 +153,19 @@ protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	/** Angular offset from character rotation to look rotation. X is Yaw, Y is Pitch, Z is Distance. */
+	/** Current look target in world space. Individual eye targets should be made relative to this transform to receive alignment and divergence. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category="Animation|Looking")
-	FVector LookOffset;
+	FTransform LookAtTarget;
 
-	/** Point in world space that the eyes should be looking at. */
+	/** Current angular offset from character rotation to look rotation. X is Yaw, Y is Pitch, Z is Distance. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category="Animation|Looking")
-	FVector LookTarget;
+	FVector LookAimOffset;
 
 	/** Angular offset from character rotation to head rotation. X is Yaw, Y is Pitch. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category="Animation|Looking")
 	FVector2D HeadAimOffset;
 
-	/** Spine twist. */
+	/** Current spine twist. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category="Animation|Looking")
 	FRotator SpineTwist;
 
@@ -176,7 +183,5 @@ protected:
 
 public:
 
-	FORCEINLINE AExtCharacter* GetCharacterOwner() const { return CharacterOwner; }
-
-	FORCEINLINE USkeletalMeshComponent* GetCharacterOwnerMesh() const { return CharacterOwnerMesh; }
+	FORCEINLINE USkeletalMeshComponent* GetOwnerMesh() const { return OwnerMesh; }
 };

@@ -154,6 +154,9 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAnimation(float DeltaSecon
 
 		GetUpDelay = CharacterOwner->GetUpDelay;
 
+		UseHeadlook = CharacterOwner->UseHeadlook;
+		UseBodylook = CharacterOwner->UseBodylook;
+
 		SetMovementMode(CharacterOwnerMovement->MovementMode, CharacterOwnerMovement->CustomMovementMode);
 		SetCrouched(CharacterOwner->bIsCrouched);
 		SetGait(CharacterOwner->GetGait());
@@ -522,6 +525,9 @@ void UExtCharacterLocomotionAnimInstance::NativeUpdateAimOffset(float DeltaSecon
 	{
 		AimOffset = AimOffset.ClampAxes(-AimOffsetMaxAngle, AimOffsetMaxAngle);
 	}
+
+	AimLocation = UKismetMathLibrary::CreateVectorFromYawPitch(AimOffset.X, AimOffset.Y, AimDistance);
+	AimLocation = CharacterOwner->GetActorRotation().RotateVector(AimLocation) + CharacterOwner->GetPawnViewLocation();
 }
 
 void UExtCharacterLocomotionAnimInstance::RaiseEvents()

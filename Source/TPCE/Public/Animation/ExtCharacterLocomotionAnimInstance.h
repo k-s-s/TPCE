@@ -332,13 +332,21 @@ private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	FVector LastMovementVelocity;
 
-	/** Any difference between course (velocity direction) and heading (characcter forward) in the XY plane. */
+	/** Any difference between course (velocity direction) and heading (character forward) in the XY plane. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	float MovementDrift;
 
 	/** How long should it take for the character to get up. This value is obtained from the character and determines the playrate of the get up animation. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	float GetUpDelay;
+
+	/** Headlook weight for look IK. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	float UseHeadlook;
+
+	/** Bodylook weight for look IK. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	float UseBodylook;
 
 	/** How fast Aim Offset should reach the desired look rotation. Use 0 for immediate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
@@ -545,6 +553,10 @@ protected:
 	/** Distance to the look target, defaults to AimDistanceDefault. */
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Skeleton")
 	float AimDistance;
+
+	/** Current aim location in world space. */
+	UPROPERTY(BlueprintReadWrite, Transient, Category = "Animation|Skeleton")
+	FVector AimLocation;
 
 	/** Angular offset of the root bone in relation to the mesh component rotation. X is Yaw, Y is Pitch. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Animation|Skeleton")
