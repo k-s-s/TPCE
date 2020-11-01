@@ -19,15 +19,18 @@ TAutoConsoleVariable<int32> CVarAnimFootPlacementEnable(TEXT("a.AnimNode.FootPla
 
 DECLARE_CYCLE_STAT(TEXT("FootPlacement Eval"), STAT_FootPlacement_Eval, STATGROUP_Anim);
 
-FAnimNode_FootPlacement::FAnimNode_FootPlacement():
-	TraceLengthAboveFoot(50.f),
-	TraceLengthBelowFoot(75.f),
-	MinZOffset(-30.f),
-	MaxZOffset(20.f),
-	MinAngle(-30.f),
-	MaxAngle(30.f),
-	PelvisAdjustmentAlpha(1.0f),
-	CollisionProfileName(UCollisionProfile::Pawn_ProfileName)
+FAnimNode_FootPlacement::FAnimNode_FootPlacement()
+	: TraceLengthAboveFoot(50.f)
+	, TraceLengthBelowFoot(75.f)
+	, TraceRadius(0.f)
+	, MinZOffset(-30.f)
+	, MaxZOffset(20.f)
+	, OffsetAdjustmentSpeed(15.f)
+	, MinAngle(-30.f)
+	, MaxAngle(30.f)
+	, PelvisAdjustmentAlpha(1.f)
+	, PelvisAdjustmentSpeed(20.f)
+	, CollisionProfileName(UCollisionProfile::Pawn_ProfileName)
 {
 }
 
@@ -125,7 +128,7 @@ void FAnimNode_FootPlacement::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 	}
 
 	// Set new pelvis transform.
-	PelvisZOffset = FMath::FInterpTo(PelvisZOffset, MinFootOffsetZ * FMath::Clamp(PelvisAdjustmentAlpha, 0.f, 1.f), DeltaTime, 20.f);
+	PelvisZOffset = FMath::FInterpTo(PelvisZOffset, MinFootOffsetZ * FMath::Clamp(PelvisAdjustmentAlpha, 0.f, 1.f), DeltaTime, PelvisAdjustmentSpeed);
 	FTransform PelvisBoneCSTransform = Output.Pose.GetComponentSpaceTransform(PelvisBoneCompactPoseIndex);
 	PelvisBoneCSTransform.AddToTranslation(ComponentTransform.InverseTransformVector(FVector(0.0f, 0.0f, PelvisZOffset)));
 	OutBoneTransforms.Add(FBoneTransform(PelvisBoneCompactPoseIndex, PelvisBoneCSTransform));
@@ -179,17 +182,38 @@ void FAnimNode_FootPlacement::CalculateFootPlacement(const USkeletalMeshComponen
 	const FCollisionQueryParams Params(TraceName, true, IgnoredActor);
 
 	FHitResult Hit(Start, End);
-	if (World && World->LineTraceSingleByProfile(Hit, Start, End, CollisionProfileName, Params))
+	FVector HitNormal = FVector::UpVector;
+	float HitZ = 0.f;
+	bool bHit = false;
+
+	// Use the foot height from a fat trace and the normal from the regular line trace. This helps reduce clipping on stairs
+	// Foot angle could be improved by shooting an additional vertical trace at the position of the toes, and averaging the two normals
+	if (World->LineTraceSingleByProfile(Hit, Start, End, CollisionProfileName, Params))
 	{
-		OutFootOffset.Roll = FMath::FInterpTo(OutFootOffset.Roll, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(Hit.Normal.Y, Hit.Normal.Z)), MinAngle, MaxAngle), DeltaTime, 15.0f);
-		OutFootOffset.Pitch = FMath::FInterpTo(OutFootOffset.Pitch, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(Hit.Normal.X, Hit.Normal.Z)) * -1.0f, MinAngle, MaxAngle), DeltaTime, 15.0f);
+		bHit = true;
+		HitZ = Hit.Location.Z;
+		HitNormal = Hit.Normal;
+	}
+
+	if (TraceRadius > 0.f && World->SweepSingleByProfile(Hit, Start, End, FQuat::Identity, CollisionProfileName, FCollisionShape::MakeSphere(TraceRadius), Params))
+	{
+		bHit = true;
+		HitZ = Hit.ImpactPoint.Z;
+	}
+
+	if (World && bHit)
+	{
+		OutFootOffset.Roll = FMath::FInterpTo(OutFootOffset.Roll, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(HitNormal.Y, HitNormal.Z)), MinAngle, MaxAngle), DeltaTime, OffsetAdjustmentSpeed);
+		OutFootOffset.Pitch = FMath::FInterpTo(OutFootOffset.Pitch, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(HitNormal.X, HitNormal.Z)) * -1.0f, MinAngle, MaxAngle), DeltaTime, OffsetAdjustmentSpeed);
 
 		// These are all in world space, not relative to the feet.
 		// The interpolation serves to smooth out the leg correction and avoid snaps on sudden level differences
 		// such as in staircases but it can cause perceivable penetration in the ground so we don't use it for ramps.
 		// TODO: find a way to handle staircases that does not require interpolation of the offset.
-		const float DeltaZ = Hit.Location.Z - BaseLocation.Z;
-		OutFootOffset.Z = (FMath::IsNearlyZero(OutFootOffset.Pitch, AngleTolerance) && FMath::IsNearlyZero(OutFootOffset.Roll, AngleTolerance)) ? FMath::FInterpTo(OutFootOffset.Z, FMath::Clamp(DeltaZ, MinZOffset, MaxZOffset), DeltaTime, 15.0f) : DeltaZ;
+		const float DeltaZ = HitZ - BaseLocation.Z;
+		// greisane: Always interpolate for now, a little clipping is better than constant snapping
+		//OutFootOffset.Z = (FMath::IsNearlyZero(OutFootOffset.Pitch, AngleTolerance) && FMath::IsNearlyZero(OutFootOffset.Roll, AngleTolerance)) ? FMath::FInterpTo(OutFootOffset.Z, FMath::Clamp(DeltaZ, MinZOffset, MaxZOffset), DeltaTime, OffsetAdjustmentSpeed) : DeltaZ;
+		OutFootOffset.Z = FMath::FInterpTo(OutFootOffset.Z, FMath::Clamp(DeltaZ, MinZOffset, MaxZOffset), DeltaTime, OffsetAdjustmentSpeed);
 	}
 	else
 	{
