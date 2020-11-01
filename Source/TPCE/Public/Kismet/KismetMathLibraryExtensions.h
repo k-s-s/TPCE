@@ -16,6 +16,25 @@ enum class EVectorComponent : uint8
 	Z,
 };
 
+USTRUCT(BlueprintType)
+struct TPCE_API FFloatExponentialMovingAverageState
+{
+	GENERATED_BODY()
+
+	float LastSample;
+	float LastTime;
+
+	FFloatExponentialMovingAverageState()
+		: LastSample(0.0f)
+		, LastTime(0.0f)
+	{}
+
+	void Reset()
+	{
+		LastSample = LastTime = 0.0f;
+	}
+};
+
 UCLASS(meta = (BlueprintThreadSafe))
 class TPCE_API UKismetMathLibraryEx : public UKismetMathLibrary
 {
@@ -139,6 +158,20 @@ public:
 	/** Returns 1-Value. */
 	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "1-x", Keywords = "- subtract minus"), Category = "Math|Float")
 	static float OneMinus(float Value);
+
+	/** 
+	 * Calculates a moving average for an irregular time series.
+	 *
+	 * @param CurrentSample - The value to blend with the previous sample to get a new weighted value.
+	 * @param PreviousSample - The last value from the series.
+	 * @param PreviousAverage - Result of the last call to this function.
+	 * @param DeltaTime - The time passed in seconds.
+	 * @param Alpha - A larger alpha results in a longer moving average (smoother, but less reactive to new samples)
+	 *
+	 * @return The next value in the series.
+	*/
+	UFUNCTION(BlueprintPure, Category="Math|Smoothing", meta=(DisplayName="Exponential Moving Average Float"))
+	static float ExponentialMovingAverage_Float(float CurrentSample, float PreviousSample, float PreviousAverage, float DeltaTime, float Alpha);
 
 	//
 	// Vector (3D) functions.

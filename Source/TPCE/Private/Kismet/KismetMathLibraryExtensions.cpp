@@ -200,3 +200,17 @@ FTransform UKismetMathLibraryEx::Transform_Identity()
 {
 	return FTransform();
 }
+
+float UKismetMathLibraryEx::ExponentialMovingAverage_Float(float CurrentSample, float PreviousSample, float PreviousAverage, float DeltaTime, float Alpha)
+{
+	// From Exponential Moving Averages for Irregular Time Series at https://oroboro.com/irregular-ema/
+	if (DeltaTime <= 0.f || Alpha <= 0.f)
+	{
+		return CurrentSample;
+	}
+	float a = DeltaTime / Alpha;
+	float u = FMath::Exp(-a);
+	float v = (1.f - u) / a;
+	float WAvg = (u * PreviousAverage) + ((v - u) * PreviousSample) + ((1.f - v) * CurrentSample);
+	return WAvg;
+}
