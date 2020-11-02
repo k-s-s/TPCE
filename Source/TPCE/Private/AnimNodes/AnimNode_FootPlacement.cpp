@@ -25,7 +25,8 @@ FAnimNode_FootPlacement::FAnimNode_FootPlacement()
 	, TraceRadius(0.f)
 	, MinZOffset(-30.f)
 	, MaxZOffset(20.f)
-	, OffsetAdjustmentSpeed(15.f)
+	, ZOffsetUpSpeed(15.f)
+	, ZOffsetDownSpeed(15.f)
 	, MinAngle(-30.f)
 	, MaxAngle(30.f)
 	, PelvisAdjustmentAlpha(1.f)
@@ -203,17 +204,19 @@ void FAnimNode_FootPlacement::CalculateFootPlacement(const USkeletalMeshComponen
 
 	if (World && bHit)
 	{
-		OutFootOffset.Roll = FMath::FInterpTo(OutFootOffset.Roll, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(HitNormal.Y, HitNormal.Z)), MinAngle, MaxAngle), DeltaTime, OffsetAdjustmentSpeed);
-		OutFootOffset.Pitch = FMath::FInterpTo(OutFootOffset.Pitch, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(HitNormal.X, HitNormal.Z)) * -1.0f, MinAngle, MaxAngle), DeltaTime, OffsetAdjustmentSpeed);
+		const float DeltaZ = HitZ - BaseLocation.Z;
+		const float OffsetInterpSpeed = DeltaZ >= 0.f ? ZOffsetUpSpeed : ZOffsetDownSpeed;
+
+		OutFootOffset.Roll = FMath::FInterpTo(OutFootOffset.Roll, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(HitNormal.Y, HitNormal.Z)), MinAngle, MaxAngle), DeltaTime, OffsetInterpSpeed);
+		OutFootOffset.Pitch = FMath::FInterpTo(OutFootOffset.Pitch, FMath::Clamp(FMath::RadiansToDegrees(FMath::Atan2(HitNormal.X, HitNormal.Z)) * -1.0f, MinAngle, MaxAngle), DeltaTime, OffsetInterpSpeed);
 
 		// These are all in world space, not relative to the feet.
 		// The interpolation serves to smooth out the leg correction and avoid snaps on sudden level differences
 		// such as in staircases but it can cause perceivable penetration in the ground so we don't use it for ramps.
 		// TODO: find a way to handle staircases that does not require interpolation of the offset.
-		const float DeltaZ = HitZ - BaseLocation.Z;
 		// greisane: Always interpolate for now, a little clipping is better than constant snapping
-		//OutFootOffset.Z = (FMath::IsNearlyZero(OutFootOffset.Pitch, AngleTolerance) && FMath::IsNearlyZero(OutFootOffset.Roll, AngleTolerance)) ? FMath::FInterpTo(OutFootOffset.Z, FMath::Clamp(DeltaZ, MinZOffset, MaxZOffset), DeltaTime, OffsetAdjustmentSpeed) : DeltaZ;
-		OutFootOffset.Z = FMath::FInterpTo(OutFootOffset.Z, FMath::Clamp(DeltaZ, MinZOffset, MaxZOffset), DeltaTime, OffsetAdjustmentSpeed);
+		//OutFootOffset.Z = (FMath::IsNearlyZero(OutFootOffset.Pitch, AngleTolerance) && FMath::IsNearlyZero(OutFootOffset.Roll, AngleTolerance)) ? FMath::FInterpTo(OutFootOffset.Z, FMath::Clamp(DeltaZ, MinZOffset, MaxZOffset), DeltaTime, OffsetInterpSpeed) : DeltaZ;
+		OutFootOffset.Z = FMath::FInterpTo(OutFootOffset.Z, FMath::Clamp(DeltaZ, MinZOffset, MaxZOffset), DeltaTime, OffsetInterpSpeed);
 	}
 	else
 	{

@@ -89,7 +89,10 @@ public:
 	float MaxZOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinHiddenByDefault))
-	float OffsetAdjustmentSpeed;
+	float ZOffsetUpSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, meta = (PinHiddenByDefault))
+	float ZOffsetDownSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings)
 	float MinAngle;
