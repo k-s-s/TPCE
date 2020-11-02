@@ -214,3 +214,9 @@ float UKismetMathLibraryEx::ExponentialMovingAverage_Float(float CurrentSample, 
 	float WAvg = (u * PreviousAverage) + ((v - u) * PreviousSample) + ((1.f - v) * CurrentSample);
 	return WAvg;
 }
+
+KISMET_MATH_FORCEINLINE
+float UKismetMathLibraryEx::RandomFloatVariance(float Base, float Variance)
+{
+	return FMath::FRandRange(Base - Variance * .5f, Base + Variance * .5f);
+}

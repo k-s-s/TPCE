@@ -192,4 +192,12 @@ public:
 	/** Identity transform constant. */
 	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "0", ScriptConstant = "Identity", ScriptConstantHost = "Transform"), Category = "Math|Transform")
 	static FTransform Transform_Identity();
+
+	//
+	// Random functions
+	//
+
+	/** Generate a random number between Base-Variance/2 and Base+Variance/2 */
+	UFUNCTION(BlueprintPure, Category="Math|Random", meta=(NotBlueprintThreadSafe))
+	static float RandomFloatVariance(float Base, float Variance);
 };
