@@ -472,6 +472,18 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking", meta = (AllowPrivateAccess = "true"))
 	float AnimRunSpeedCrouched;
 
+	/**
+	 * Multiplier to animation speed when walking on slopes. This factor scales with the slope angle.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
+	float SlopeWalkSpeedScale;
+
+	/**
+	 * Multiplier to animation speed when running on slopes. This factor scales with the slope angle.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
+	float SlopeRunSpeedScale;
+
 protected:
 
 	/** Numeric representation of the current gait (walk/run/sprint) in the range [0, 3] according to the configured speeds. **/

@@ -39,6 +39,9 @@ UExtCharacterAnimInstance::UExtCharacterAnimInstance()
 	AnimWalkSpeedCrouched = 150.f;
 	AnimRunSpeedCrouched = 150.f;
 
+	SlopeWalkSpeedScale = 1.0f;
+	SlopeRunSpeedScale = 1.0f;
+
 	GaitScale = 0.f;
 	GaitScaleCrouched = 0.f;
 
@@ -229,6 +232,7 @@ void UExtCharacterAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
 		if (MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking)
 		{
 			float NewSpeedWarpScale;
+			float SlopeSpeedScale;
 			if (bIsCrouched)
 			{
 				float AnimSpeedScale;
@@ -236,17 +240,20 @@ void UExtCharacterAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
 				{
 					GaitScaleCrouched = FMath::GetRangePct(FVector2D(0.f, WalkSpeedCrouched), GroundSpeed);
 					AnimSpeedScale = GroundSpeed / AnimWalkSpeedCrouched;
+					SlopeSpeedScale = SlopeWalkSpeedScale;
 				}
 				else if (GroundSpeed <= RunSpeedCrouched)
 				{
 					const float Alpha = FMath::GetRangePct(FVector2D(WalkSpeedCrouched, RunSpeedCrouched), GroundSpeed);
 					GaitScaleCrouched = 1.0f + Alpha;
 					AnimSpeedScale = GroundSpeed / FMath::Lerp(AnimWalkSpeedCrouched, AnimRunSpeedCrouched, Alpha);
+					SlopeSpeedScale = SlopeRunSpeedScale;
 				}
 				else
 				{
 					GaitScaleCrouched = 2.0f;
 					AnimSpeedScale = GroundSpeed / AnimRunSpeedCrouched;
+					SlopeSpeedScale = SlopeRunSpeedScale;
 				}
 
 				if (AnimSpeedScale < 1.0f)
@@ -271,12 +278,14 @@ void UExtCharacterAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
 				{
 					GaitScale = FMath::GetRangePct(FVector2D(0.f, WalkSpeed), GroundSpeed);
 					AnimSpeedScale = GroundSpeed / AnimWalkSpeed;
+					SlopeSpeedScale = SlopeWalkSpeedScale;
 				}
 				else if (GroundSpeed <= RunSpeed)
 				{
 					const float Alpha = FMath::GetRangePct(FVector2D(WalkSpeed, RunSpeed), GroundSpeed);
 					GaitScale = 1.0f + Alpha;
 					AnimSpeedScale = GroundSpeed / FMath::Lerp(AnimWalkSpeed, AnimRunSpeed, Alpha);
+					SlopeSpeedScale = SlopeRunSpeedScale;
 				}
 				else if (GroundSpeed <= SprintSpeed)
 				{
@@ -288,6 +297,7 @@ void UExtCharacterAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
 				{
 					GaitScale = 3.0f;
 					AnimSpeedScale = GroundSpeed / AnimSprintSpeed;
+					SlopeSpeedScale = SlopeRunSpeedScale;
 				}
 
 				if (AnimSpeedScale < 1.0f)
@@ -304,6 +314,21 @@ void UExtCharacterAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
 					PlayRateWalk = 0.2f * AnimSpeedScale + 0.8f;
 					NewSpeedWarpScale = 0.8f * AnimSpeedScale + 0.2f;
 				}
+			}
+
+			// Apply slope speed scale
+			const FHitResult& RampHit = CharacterOwnerMovement->CurrentFloor.HitResult;
+			const FVector FloorNormal = RampHit.ImpactNormal;
+			const FVector ContactNormal = RampHit.Normal;
+			const bool bHitFromLineTrace = CharacterOwnerMovement->CurrentFloor.bLineTrace;
+
+			if (FloorNormal.Z < (1.f - KINDA_SMALL_NUMBER)
+				&& FloorNormal.Z > KINDA_SMALL_NUMBER
+				&& ContactNormal.Z > KINDA_SMALL_NUMBER
+				&& !bHitFromLineTrace
+				&& CharacterOwnerMovement->IsWalkable(RampHit))
+			{
+				PlayRateWalk *= FMath::Lerp(SlopeSpeedScale, 1.f, FloorNormal.Z);
 			}
 
 			// Interpolation produces a little bit of foot sliding but improves leg/feet blending dramaticaly, specially when running.
