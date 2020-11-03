@@ -141,6 +141,3 @@ void ATopDownPlayerController::SetCameraTargetComponent(USceneComponent* NewTarg
 	if (CameraTractor)
 		CameraTractor->SetTargetComponent(NewTargetComponent, SocketName);
 }
-
-
-

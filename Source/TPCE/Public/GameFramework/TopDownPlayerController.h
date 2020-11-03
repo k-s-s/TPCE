@@ -51,28 +51,6 @@ protected:
 
 public:
 
-	// /**
-	//  * If true, camera lags behind target position to smooth its movement.
-	//  * @see CameraLagSpeed
-	//  */
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag")
-	// uint32 bEnableCameraLag : 1;
-	//
-	// /**
-	//  * If bUseCameraLagSubstepping is true, sub-step camera damping so that it handles fluctuating frame rates well (though this comes at a cost).
-	//  * @see CameraLagMaxTimeStep
-	//  */
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag", AdvancedDisplay)
-	// uint32 bUseCameraLagSubstepping : 1;
-	//
-	// /** If bEnableCameraLag is true, controls how quickly camera reaches target position. Low values are slower (more lag), high values are faster (less lag), while zero is instant (no lag). */
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag", meta = (editcondition = "bEnableCameraLag", ClampMin = "0.0", ClampMax = "1000.0", UIMin = "0.0", UIMax = "1000.0"))
-	// float CameraLagSpeed;
-	//
-	// /** Max time step used when sub-stepping camera lag. */
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera|Lag", AdvancedDisplay, meta = (editcondition = "bUseCameraLagSubstepping", ClampMin = "0.005", ClampMax = "0.5", UIMin = "0.005", UIMax = "0.5"))
-	// float CameraLagMaxTimeStep;
-
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
 	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
@@ -80,6 +58,7 @@ public:
 	virtual bool HasActivePawnControlCameraComponent() const override;
 	virtual void PlayerTick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category="Camera")
 	void SetCameraTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName = NAME_None);
 
 	/** Camera mount used to support the camera boom and be moved by the camera trator. */
