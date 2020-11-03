@@ -200,4 +200,20 @@ public:
 	/** Generate a random number between Base-Variance/2 and Base+Variance/2 */
 	UFUNCTION(BlueprintPure, Category="Math|Random", meta=(NotBlueprintThreadSafe))
 	static float RandomFloatVariance(float Base, float Variance);
+
+	//
+	// Matrix functions
+	//
+
+	/**
+	 * Returns a non-centered projection matrix.
+	 * @param Pivot The normalized pivot point for applying rotation and scale to the image. The x and y values are normalized to the range 0-1 where 1 represents the full width and height of the image.
+	 * @param Translation The translation to apply to the image.  The x and y values are normalized to the range 0-1 where 1 represents the full width and height of the image.
+	 * @param RotationAngle The anti clockwise rotation to apply to the image in degrees.
+	 * @param Scale The scale to apply to the image.
+	 * @param HorizontalFOVAngle The desired horizontal FOV in degrees.
+	 * @param AspectRatio The desired aspect ratio.
+	 */
+	UFUNCTION(BlueprintPure, Category="Math|Matrix")
+	static void GetProjectionMatrix(FVector2D Pivot, FVector2D Translation, float RotationAngle, float Scale, float HorizontalFOVAngle, float AspectRatio, FMatrix& ProjectionMatrix);
 };

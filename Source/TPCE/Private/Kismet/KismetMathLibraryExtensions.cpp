@@ -220,3 +220,59 @@ float UKismetMathLibraryEx::RandomFloatVariance(float Base, float Variance)
 {
 	return FMath::FRandRange(Base - Variance * .5f, Base + Variance * .5f);
 }
+
+void UKismetMathLibraryEx::GetProjectionMatrix(FVector2D Pivot, FVector2D Translation, float RotationAngle, float Scale, float HorizontalFOVAngle, float AspectRatio, FMatrix& ProjectionMatrix)
+{
+	// Taken from FComposurePostMoveSettings::GetProjectionMatrix
+	float HalfFOV = 0.5 * FMath::DegreesToRadians(HorizontalFOVAngle);
+
+	FMatrix OriginalProjectionMatrix = FReversedZPerspectiveMatrix(
+		HalfFOV,
+		HalfFOV,
+		/* XAxisMultiplier =*/ 1.0,
+		/* YAxisMultiplier =*/ AspectRatio,
+		GNearClippingPlane,
+		GNearClippingPlane);
+
+	FVector2D NormalizedViewRect = FMath::Tan(HalfFOV) * FVector2D(1, 1 / AspectRatio);
+	FVector2D NormalizedPostMoveTranslation = 2.0 * NormalizedViewRect * Translation;
+	FVector2D NormalizedPivot = NormalizedViewRect * (Pivot - 0.5) * FVector2D(2, 2);
+
+	FMatrix ScaleMatrix(
+		FPlane(Scale, 0, 0, 0),
+		FPlane(0, Scale, 0, 0),
+		FPlane(0, 0, 1, 0),
+		FPlane(0, 0, 0, 1));
+
+	FMatrix PreRotationMatrix(
+		FPlane(1, 0, 0, 0),
+		FPlane(0, 1, 0, 0),
+		FPlane(-NormalizedPivot.X, -NormalizedPivot.Y, 1, 0),
+		FPlane(0, 0, 0, 1));
+
+	float Rotation = FMath::DegreesToRadians(RotationAngle);
+	FMatrix RotationMatrix(
+		FPlane(FMath::Cos(Rotation), FMath::Sin(Rotation), 0, 0),
+		FPlane(-FMath::Sin(Rotation), FMath::Cos(Rotation), 0, 0),
+		FPlane(0, 0, 1, 0),
+		FPlane(0, 0, 0, 1));
+
+	FMatrix PostRotationMatrix(
+		FPlane(1, 0, 0, 0),
+		FPlane(0, 1, 0, 0),
+		FPlane(NormalizedPivot.X, NormalizedPivot.Y, 1, 0),
+		FPlane(0, 0, 0, 1));
+
+	FMatrix TranslateMatrix(
+		FPlane(1, 0, 0, 0),
+		FPlane(0, 1, 0, 0),
+		FPlane(NormalizedPostMoveTranslation.X, NormalizedPostMoveTranslation.Y, 1, 0),
+		FPlane(0, 0, 0, 1));
+
+	ProjectionMatrix = PreRotationMatrix
+		* ScaleMatrix
+		* RotationMatrix
+		* PostRotationMatrix
+		* TranslateMatrix
+		* OriginalProjectionMatrix;
+}
