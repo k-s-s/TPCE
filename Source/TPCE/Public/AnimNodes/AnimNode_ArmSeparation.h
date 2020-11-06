@@ -36,6 +36,10 @@ struct TPCE_API FAnimNode_ArmSeparation : public FAnimNode_SkeletalControlBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=ArmSeparation, meta=(PinHiddenByDefault))
 	float EndEffectorRadius;
 
+	/** Move the end effector independently of the pivot. Useful if you are moving an IK bone that isn't parented to the pivot. */
+	UPROPERTY(EditAnywhere, Category=ArmSeparation)
+	bool bMoveEndEffector;
+
 	/** Name of bone to attach the collider. */
 	UPROPERTY(EditAnywhere, Category=ArmSeparation)
 	FBoneReference ColliderBone;

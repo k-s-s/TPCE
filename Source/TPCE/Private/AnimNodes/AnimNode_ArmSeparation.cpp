@@ -8,6 +8,7 @@
 
 FAnimNode_ArmSeparation::FAnimNode_ArmSeparation()
 	: EndEffectorRadius(10.f)
+	, bMoveEndEffector(false)
 	, CapsuleOffset(0.f, 0.f, 0.f)
 	, CapsuleRotation(0.f, 90.f, 0.f)
 	, CapsuleRadius(30.f)
@@ -74,7 +75,7 @@ void FAnimNode_ArmSeparation::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 	const FCompactPoseBoneIndex EndEffectorBoneIndex = EndEffectorBone.GetCompactPoseIndex(BoneContainer);
 	const FCompactPoseBoneIndex ColliderBoneIndex = ColliderBone.GetCompactPoseIndex(BoneContainer);
 	FTransform PivotBoneTM = Output.Pose.GetComponentSpaceTransform(PivotBoneIndex);
-	const FTransform EndEffectorBoneTM = Output.Pose.GetComponentSpaceTransform(EndEffectorBoneIndex);
+	FTransform EndEffectorBoneTM = Output.Pose.GetComponentSpaceTransform(EndEffectorBoneIndex);
 	const FTransform ColliderBoneTM = Output.Pose.GetComponentSpaceTransform(ColliderBoneIndex);
 	const FVector EndEffectorLocation = EndEffectorBoneTM.GetLocation();
 
@@ -95,10 +96,20 @@ void FAnimNode_ArmSeparation::EvaluateSkeletalControl_AnyThread(FComponentSpaceP
 
 		const FVector PivotLocation = PivotBoneTM.GetLocation();
 		const FQuat DeltaRotation = FQuat::FindBetween(PivotLocation - EndEffectorLocation, PivotLocation - TargetPosition);
+		EndEffectorBoneTM.SetToRelativeTransform(PivotBoneTM);
 		PivotBoneTM.ConcatenateRotation(FQuat::SlerpFullPath(FQuat::Identity, DeltaRotation, DisplacementAlpha));
+		EndEffectorBoneTM = EndEffectorBoneTM * PivotBoneTM;
 
 		OutBoneTransforms.Add(FBoneTransform(PivotBoneIndex, PivotBoneTM));
+
+		if (bMoveEndEffector)
+		{
+			OutBoneTransforms.Add(FBoneTransform(EndEffectorBoneIndex, EndEffectorBoneTM));
+		}
 	}
+
+	// Sort OutBoneTransforms so indices are in increasing order
+	OutBoneTransforms.Sort(FCompareBoneTransformIndex());
 
 #if !UE_BUILD_SHIPPING
 	CachedDisplacementAlpha = DisplacementAlpha;
