@@ -136,6 +136,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float GlobalSpeed;
 
+	/** 
+	 * Called per tick to allow Blueprint to modify the look at location. 
+	 * @param	DeltaTime				Change in time since last update
+	 * @param	InLookAtLocation		The look at location that was passed in.
+	 * @param	NewLookAtLocation		(out) The modified look at location.
+	 */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Looking")
+	void ModifyLookAtLocation(float DeltaTime, FVector InLookAtLocation, FVector& NewLookAtLocation);
+
 private:
 
 	/** */

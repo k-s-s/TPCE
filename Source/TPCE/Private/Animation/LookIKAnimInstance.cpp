@@ -52,10 +52,14 @@ void ULookIKAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if (DeltaSeconds > 0.f)
 	{
+		// Allow blueprint to modify the look at location
+		FVector NewLookAtLocation = LookAtLocation;
+		ModifyLookAtLocation(DeltaSeconds, LookAtLocation, NewLookAtLocation);
+
 		// Look in source bone space
 		FTransform SourceWorldTM = OwnerMesh->GetSocketTransform(SourceBoneName, RTS_World);
 		SourceWorldTM.RemoveScaling();
-		const FVector LookVector = SourceWorldTM.InverseTransformPositionNoScale(LookAtLocation);
+		const FVector LookVector = SourceWorldTM.InverseTransformPositionNoScale(NewLookAtLocation);
 		const FRotator LookRotation = FRotationMatrix::MakeFromX(LookVector).Rotator();
 
 		// Break the look vector down into yaw pitch and distance, then make the components reach their targets individually
