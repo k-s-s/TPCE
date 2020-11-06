@@ -136,28 +136,33 @@ float UKismetMathLibraryEx::SoftCap(float Value, float Start, float End)
 {
 	const float t = FMath::GetRangePct(Start, End, Value);
 
-	if (t < 0.0f)
+	if (t < 0.f)
 	{
 		return Value;
 	}
-	else if (t <= 1.0f)
+	else if (t <= 1.f)
 	{
-		return Start + (t - t*t * 0.5) * (End - Start);
+		return Start + (t - t*t * .5f) * (End - Start);
 	}
 	else
 	{
-		return (Start + End) * 0.5;
+		return (Start + End) * .5f;
 	}
 }
 
 float UKismetMathLibraryEx::Saturate(float Value)
 {
-	return FMath::Clamp(Value, 0.0f, 1.0f);
+	return FMath::Clamp(Value, 0.f, 1.f);
 }
 
 float UKismetMathLibraryEx::OneMinus(float Value)
 {
-	return 1.0f - Value;
+	return 1.f - Value;
+}
+
+float UKismetMathLibraryEx::EaseSinusoidal(float Value)
+{
+	return .5f * (1.f - FMath::Cos(Value * PI));
 }
 
 float UKismetMathLibraryEx::GetVectorComponent(const FVector& A, const EVectorComponent Select)
@@ -175,7 +180,7 @@ float UKismetMathLibraryEx::GetVectorComponent(const FVector& A, const EVectorCo
 		return A.Z;
 	}
 
-	return 0.0f;
+	return 0.f;
 }
 
 FVector UKismetMathLibraryEx::SetVectorComponent(const FVector& A, const EVectorComponent Select, const float& Value)

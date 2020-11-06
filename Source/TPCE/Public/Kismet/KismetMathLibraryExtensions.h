@@ -159,6 +159,10 @@ public:
 	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "1-x", Keywords = "- subtract minus"), Category = "Math|Float")
 	static float OneMinus(float Value);
 
+	/** Use to smooth out an interpolant value. */
+	UFUNCTION(BlueprintPure, Category = "Math|Float")
+	static float EaseSinusoidal(float Value);
+
 	/** 
 	 * Calculates a moving average for an irregular time series.
 	 *
