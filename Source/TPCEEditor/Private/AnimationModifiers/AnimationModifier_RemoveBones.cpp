@@ -89,6 +89,39 @@ void UAnimationModifier_RemoveBones::OnApply_Implementation(UAnimSequence* Anima
 			}
 		}
 
+		// Copy curve filters with or without case
+		TArray<FWildcardString> CurveWildcards;
+		CurveWildcards.Reserve(CurveFilters.Num());
+		for (const FString& CurveFilter : CurveFilters)
+		{
+			CurveWildcards.Add(bCaseInsensitive ? CurveFilter.ToLower() : CurveFilter);
+		}
+
+		// Collect names of curves to be removed
+		TArray<FName> CurveNamesToRemove;
+		for (const FFloatCurve& Curve : AnimationSequence->RawCurveData.FloatCurves)
+		{
+			FString CurveName = Curve.Name.DisplayName.ToString();
+			if (bCaseInsensitive)
+			{
+				CurveName.ToLowerInline();
+			}
+
+			for (const FWildcardString& Wildcard : CurveWildcards)
+			{
+				if (Wildcard.IsMatch(CurveName))
+				{
+					CurveNamesToRemove.Add(Curve.Name.DisplayName);
+					break;
+				}
+			}
+		}
+
+		for (const FName& CurveName : CurveNamesToRemove)
+		{
+			UAnimationBlueprintLibrary::RemoveCurve(AnimationSequence, CurveName);
+		}
+
 		UAnimationBlueprintLibrary::FinalizeBoneAnimation(AnimationSequence);
 	}
 }

@@ -36,6 +36,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	TArray<FString> BoneFilters;
 
+	/**
+	 * An array of filters specifying the curves that should be removed.
+	 * Wildcards '?' and '*' are allowed.
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
+	TArray<FString> CurveFilters;
+
 	/** If True, bone filters ignore case. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	bool bCaseInsensitive;
