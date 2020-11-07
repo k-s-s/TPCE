@@ -27,7 +27,7 @@ void UAnimationModifier_RemoveBones::OnApply_Implementation(UAnimSequence* Anima
 	BoneWildcards.Reserve(NumFilters);
 	for (const FString& BoneFilter : BoneFilters)
 	{
-		const FString NoPrefix = BoneFilter.StartsWith(TEXT("+")) ? BoneFilter.RightChop(1) : BoneFilter;
+		const FString NoPrefix = BoneFilter.StartsWith(TEXT("+")) || BoneFilter.StartsWith(TEXT("-")) ? BoneFilter.RightChop(1) : BoneFilter;
 		BoneWildcards.Add(bCaseInsensitive ? NoPrefix.ToLower() : NoPrefix);
 	}
 
@@ -44,30 +44,47 @@ void UAnimationModifier_RemoveBones::OnApply_Implementation(UAnimSequence* Anima
 
 		for (int32 BoneIndex = 0; BoneIndex < NumBones; BoneIndex++)
 		{
-			const int32 ParentBoneIndex = RefSkeleton.GetParentIndex(BoneIndex);
-			if (bool* bWithChildren = MatchingBones.Find(ParentBoneIndex))
-			{
-				if (*bWithChildren)
-				{
-					// Parent bone matched and included children, so add this and include subsequent children
-					MatchingBones.Add(BoneIndex, true);
-					continue;
-				}
-			}
-
 			FString BoneName = RefSkeleton.GetBoneName(BoneIndex).ToString();
 			if (bCaseInsensitive)
 			{
 				BoneName.ToLowerInline();
 			}
 
+			const int32 ParentBoneIndex = RefSkeleton.GetParentIndex(BoneIndex);
+			if (bool* bWithChildren = MatchingBones.Find(ParentBoneIndex))
+			{
+				if (*bWithChildren)
+				{
+					bool bExcludeChildren = false;
+					for (int32 FilterIndex = 0; FilterIndex < NumFilters; FilterIndex++)
+					{
+						if (BoneWildcards[FilterIndex].IsMatch(BoneName))
+						{
+							bExcludeChildren = BoneFilters[FilterIndex].StartsWith(TEXT("-"));
+							if (bExcludeChildren)
+							{
+								// No need to keep matching
+								break;
+							}
+						}
+					}
+
+					if (!bExcludeChildren)
+					{
+						// Parent bone matched and included children, so add this and include subsequent children
+						MatchingBones.Add(BoneIndex, true);
+						continue;
+					}
+				}
+			}
+
 			for (int32 FilterIndex = 0; FilterIndex < NumFilters; FilterIndex++)
 			{
-				if (BoneWildcards[FilterIndex].IsMatch(BoneName))
+				if (BoneWildcards[FilterIndex].IsMatch(BoneName) && !BoneFilters[FilterIndex].StartsWith(TEXT("-")))
 				{
-					bool bIncludesChildren = BoneFilters[FilterIndex].StartsWith(TEXT("+"));
-					MatchingBones.Add(BoneIndex, bIncludesChildren);
-					if (bIncludesChildren)
+					bool bIncludeChildren = BoneFilters[FilterIndex].StartsWith(TEXT("+"));
+					MatchingBones.Add(BoneIndex, bIncludeChildren);
+					if (bIncludeChildren)
 					{
 						// No need to keep matching
 						break;

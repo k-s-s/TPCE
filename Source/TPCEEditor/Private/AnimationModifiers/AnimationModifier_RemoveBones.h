@@ -29,9 +29,9 @@ public:
 
 	/**
 	 * An array of filters specifying the bones that should be removed.
-	 * Wildcards '?' and '*' are allowed. Prefix with '+' to include children.
+	 * Wildcards '?' and '*' are allowed. Prefix with '+' to include children, or '-' to exclude children.
 	 *
-	 * Examples: "+head", "hair_*", "twist_??_L"
+	 * Examples: "+head", "hair_*", "twist_??_L", "-eye_L"
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Settings)
 	TArray<FString> BoneFilters;
