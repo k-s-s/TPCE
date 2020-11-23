@@ -44,10 +44,22 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* CameraComponent;
 
+	/** Returns the corners of the view frustum intersection with the ground plane. */
+	UFUNCTION(BlueprintCallable)
+	bool GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const;
+
 protected:
 
 	/** Force scene component to use absolute coordinates */
 	void ForceAbsolute(USceneComponent* SceneComponent);
+
+	void UpdateViewExtents();
+
+	FVector ViewCorners[4];
+	FVector ViewExtentsMin;
+	FVector ViewExtentsMax;
+	bool bViewExtentsValid;
+	FMatrix OverlayTransform;
 
 public:
 
