@@ -40,13 +40,17 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UArmComponent* CameraBoom;
 
-	/** Camera settings */
+	/** Camera settings. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* CameraComponent;
 
 	/** Returns the corners of the view frustum intersection with the ground plane. */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = Camera)
 	bool GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const;
+
+	/** Draw debug helpers. */
+	UPROPERTY(EditDefaultsOnly, Category = Camera, AdvancedDisplay)
+	bool bDebugCamera;
 
 protected:
 

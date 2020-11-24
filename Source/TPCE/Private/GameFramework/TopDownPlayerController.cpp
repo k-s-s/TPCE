@@ -137,6 +137,20 @@ void ATopDownPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	UpdateViewExtents();
+
+#if ENABLE_DRAW_DEBUG
+	if (bDebugCamera && bViewExtentsValid)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			const float LineThickness = 2.f;
+			DrawDebugLine(World, ViewCorners[0], ViewCorners[1], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
+			DrawDebugLine(World, ViewCorners[1], ViewCorners[2], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
+			DrawDebugLine(World, ViewCorners[2], ViewCorners[3], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
+			DrawDebugLine(World, ViewCorners[3], ViewCorners[0], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
+		}
+	}
+#endif
 }
 
 void ATopDownPlayerController::SetCameraTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName)
