@@ -180,31 +180,35 @@ void ATopDownPlayerController::UpdateViewExtents()
 		FVector ViewLocation;
 		FRotator ViewRotation;
 		FSceneView* SceneView = LocalPlayer->CalcSceneView(&ViewFamily, /*out*/ ViewLocation, /*out*/ ViewRotation, LocalPlayer->ViewportClient->Viewport);
-		const FIntRect ViewRect = SceneView->UnconstrainedViewRect;
-		const FMatrix ViewProjInvMatrix = SceneView->ViewMatrices.GetInvViewProjectionMatrix();
-		const FPlane GroundPlane(CameraMount->GetComponentLocation(), FVector::UpVector);
 
-		auto DeprojectScreenPositionToPlane = [&](float ScreenX, float ScreenY, FVector& WorldLocation) -> bool
+		if (SceneView)
 		{
-			const FVector2D ScreenXY = FVector2D(ScreenX, ScreenY);
-			FVector Location, Direction;
-			FSceneView::DeprojectScreenToWorld(ScreenXY, ViewRect, ViewProjInvMatrix, /*out*/ Location, /*out*/ Direction);
-			float T;  // Ignored
-			return UKismetMathLibraryEx::RayPlaneIntersection(Location, Direction, GroundPlane, T, WorldLocation);
-		};
+			const FIntRect ViewRect = SceneView->UnconstrainedViewRect;
+			const FMatrix ViewProjInvMatrix = SceneView->ViewMatrices.GetInvViewProjectionMatrix();
+			const FPlane GroundPlane(CameraMount->GetComponentLocation(), FVector::UpVector);
 
-		bViewExtentsValid = true;
-		bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Min.X, ViewRect.Min.Y, /*out*/ ViewCorners[0]);
-		bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Max.X, ViewRect.Min.Y, /*out*/ ViewCorners[1]);
-		bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Max.X, ViewRect.Max.Y, /*out*/ ViewCorners[2]);
-		bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Min.X, ViewRect.Max.Y, /*out*/ ViewCorners[3]);
+			auto DeprojectScreenPositionToPlane = [&](float ScreenX, float ScreenY, FVector& WorldLocation) -> bool
+			{
+				const FVector2D ScreenXY = FVector2D(ScreenX, ScreenY);
+				FVector Location, Direction;
+				FSceneView::DeprojectScreenToWorld(ScreenXY, ViewRect, ViewProjInvMatrix, /*out*/ Location, /*out*/ Direction);
+				float T;  // Ignored
+				return UKismetMathLibraryEx::RayPlaneIntersection(Location, Direction, GroundPlane, T, WorldLocation);
+			};
 
-		ViewExtentsMin = ViewCorners[0];
-		ViewExtentsMax = ViewCorners[0];
-		for (int32 ViewCornerIdx = 1; ViewCornerIdx < 4; ViewCornerIdx++)
-		{
-			ViewExtentsMin = ViewExtentsMin.ComponentMin(ViewCorners[ViewCornerIdx]);
-			ViewExtentsMax = ViewExtentsMax.ComponentMax(ViewCorners[ViewCornerIdx]);
+			bViewExtentsValid = true;
+			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Min.X, ViewRect.Min.Y, /*out*/ ViewCorners[0]);
+			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Max.X, ViewRect.Min.Y, /*out*/ ViewCorners[1]);
+			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Max.X, ViewRect.Max.Y, /*out*/ ViewCorners[2]);
+			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Min.X, ViewRect.Max.Y, /*out*/ ViewCorners[3]);
+
+			ViewExtentsMin = ViewCorners[0];
+			ViewExtentsMax = ViewCorners[0];
+			for (int32 ViewCornerIdx = 1; ViewCornerIdx < 4; ViewCornerIdx++)
+			{
+				ViewExtentsMin = ViewExtentsMin.ComponentMin(ViewCorners[ViewCornerIdx]);
+				ViewExtentsMax = ViewExtentsMax.ComponentMax(ViewCorners[ViewCornerIdx]);
+			}
 		}
 	}
 }
