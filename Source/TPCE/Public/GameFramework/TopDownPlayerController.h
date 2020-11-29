@@ -44,26 +44,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* CameraComponent;
 
-	/** Returns the corners of the view frustum intersection with the ground plane. */
-	UFUNCTION(BlueprintCallable, Category = Camera)
-	bool GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const;
-
-	/** Draw debug helpers. */
-	UPROPERTY(EditDefaultsOnly, Category = Camera, AdvancedDisplay)
-	bool bDebugCamera;
-
 protected:
 
 	/** Force scene component to use absolute coordinates */
 	void ForceAbsolute(USceneComponent* SceneComponent);
-
-	void UpdateViewExtents();
-
-	FVector ViewCorners[4];
-	FVector ViewExtentsMin;
-	FVector ViewExtentsMax;
-	bool bViewExtentsValid;
-	FMatrix OverlayTransform;
 
 public:
 
@@ -72,7 +56,6 @@ public:
 	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
 	virtual bool HasActiveCameraComponent() const override;
 	virtual bool HasActivePawnControlCameraComponent() const override;
-	virtual void PlayerTick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category="Camera")
 	void SetCameraTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName = NAME_None);

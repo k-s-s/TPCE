@@ -70,6 +70,7 @@ public:
 
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void AutoManageActiveCameraTarget(AActor* SuggestedTarget) override;
+	virtual void PlayerTick(float DeltaTime) override;
 
 	/** Convert current mouse 2D position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectMouseLocationOnToPlane", Keywords = "deproject"))
@@ -78,4 +79,22 @@ public:
 	/** Convert 2D screen position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectScreenLocationOnToPlane", Keywords = "deproject"))
 	bool DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation, const FPlane& Plane) const;
+
+	/** Returns the corners of the view frustum intersection with the ground plane. */
+	UFUNCTION(BlueprintCallable, Category = Camera)
+	bool GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const;
+
+	/** Draw debug helpers. */
+	UPROPERTY(EditDefaultsOnly, Category = Camera, AdvancedDisplay)
+	bool bDebugCamera;
+
+protected:
+
+	void UpdateViewExtents();
+
+	FVector ViewCorners[4];
+	FVector ViewExtentsMin;
+	FVector ViewExtentsMax;
+	bool bViewExtentsValid;
+	FMatrix OverlayTransform;
 };

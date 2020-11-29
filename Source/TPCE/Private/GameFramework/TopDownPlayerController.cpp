@@ -11,8 +11,6 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/World.h"
 #include "Engine/CollisionProfile.h"
-#include "Engine/LocalPlayer.h"
-#include "Kismet/KismetMathLibraryExtensions.h"
 #include "DrawDebugHelpers.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogTopDownPlayerController, Log, All);
@@ -132,97 +130,8 @@ bool ATopDownPlayerController::HasActivePawnControlCameraComponent() const
 	return (CameraComponent->IsActive() && CameraComponent->bUsePawnControlRotation);
 }
 
-void ATopDownPlayerController::PlayerTick(float DeltaTime)
-{
-	Super::PlayerTick(DeltaTime);
-
-	UpdateViewExtents();
-
-#if ENABLE_DRAW_DEBUG
-	if (bDebugCamera && bViewExtentsValid)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			const float LineThickness = 2.f;
-			DrawDebugLine(World, ViewCorners[0], ViewCorners[1], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
-			DrawDebugLine(World, ViewCorners[1], ViewCorners[2], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
-			DrawDebugLine(World, ViewCorners[2], ViewCorners[3], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
-			DrawDebugLine(World, ViewCorners[3], ViewCorners[0], FColor::Yellow, false, 0.f, SDPG_Foreground, LineThickness);
-		}
-	}
-#endif
-}
-
 void ATopDownPlayerController::SetCameraTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName)
 {
 	if (CameraTractor)
 		CameraTractor->SetTargetComponent(NewTargetComponent, SocketName);
-}
-
-bool ATopDownPlayerController::GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const
-{
-	if (!bViewExtentsValid)
-	{
-		TopLeft = TopRight = BottomRight = BottomLeft = Min = Max = FVector::ZeroVector;
-		return false;
-	}
-
-	TopLeft = ViewCorners[0];
-	TopRight = ViewCorners[1];
-	BottomRight = ViewCorners[2];
-	BottomLeft = ViewCorners[3];
-	Min = ViewExtentsMin;
-	Max = ViewExtentsMax;
-	return true;
-}
-
-void ATopDownPlayerController::UpdateViewExtents()
-{
-	bViewExtentsValid = false;
-
-	ULocalPlayer* LocalPlayer = GetLocalPlayer();
-	if (LocalPlayer && LocalPlayer->ViewportClient && LocalPlayer->ViewportClient->Viewport)
-	{
-		// Create a view family for the game viewport
-		FSceneViewFamilyContext ViewFamily(FSceneViewFamily::ConstructionValues(
-			LocalPlayer->ViewportClient->Viewport,
-			GetWorld()->Scene,
-			LocalPlayer->ViewportClient->EngineShowFlags)
-			.SetRealtimeUpdate(true));
-
-		// Calculate player view
-		FVector ViewLocation;
-		FRotator ViewRotation;
-		FSceneView* SceneView = LocalPlayer->CalcSceneView(&ViewFamily, /*out*/ ViewLocation, /*out*/ ViewRotation, LocalPlayer->ViewportClient->Viewport);
-
-		if (SceneView)
-		{
-			const FIntRect ViewRect = SceneView->UnconstrainedViewRect;
-			const FMatrix ViewProjInvMatrix = SceneView->ViewMatrices.GetInvViewProjectionMatrix();
-			const FPlane GroundPlane(CameraMount->GetComponentLocation(), FVector::UpVector);
-
-			auto DeprojectScreenPositionToPlane = [&](float ScreenX, float ScreenY, FVector& WorldLocation) -> bool
-			{
-				const FVector2D ScreenXY = FVector2D(ScreenX, ScreenY);
-				FVector Location, Direction;
-				FSceneView::DeprojectScreenToWorld(ScreenXY, ViewRect, ViewProjInvMatrix, /*out*/ Location, /*out*/ Direction);
-				float T;  // Ignored
-				return UKismetMathLibraryEx::RayPlaneIntersection(Location, Direction, GroundPlane, T, WorldLocation);
-			};
-
-			bViewExtentsValid = true;
-			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Min.X, ViewRect.Min.Y, /*out*/ ViewCorners[0]);
-			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Max.X, ViewRect.Min.Y, /*out*/ ViewCorners[1]);
-			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Max.X, ViewRect.Max.Y, /*out*/ ViewCorners[2]);
-			bViewExtentsValid = bViewExtentsValid && DeprojectScreenPositionToPlane(ViewRect.Min.X, ViewRect.Max.Y, /*out*/ ViewCorners[3]);
-
-			ViewExtentsMin = ViewCorners[0];
-			ViewExtentsMax = ViewCorners[0];
-			for (int32 ViewCornerIdx = 1; ViewCornerIdx < 4; ViewCornerIdx++)
-			{
-				ViewExtentsMin = ViewExtentsMin.ComponentMin(ViewCorners[ViewCornerIdx]);
-				ViewExtentsMax = ViewExtentsMax.ComponentMax(ViewCorners[ViewCornerIdx]);
-			}
-		}
-	}
 }
