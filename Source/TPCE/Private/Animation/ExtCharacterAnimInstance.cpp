@@ -293,6 +293,7 @@ void UExtCharacterAnimInstance::NativeUpdateGaitScale(float DeltaSeconds)
 					const float Alpha = FMath::GetRangePct(FVector2D(RunSpeed, SprintSpeed), GroundSpeed);
 					GaitScale = 2.0f + Alpha;
 					AnimSpeedScale = GroundSpeed / FMath::Lerp(AnimRunSpeed, AnimSprintSpeed, Alpha);
+					SlopeSpeedScale = SlopeRunSpeedScale;
 				}
 				else
 				{
