@@ -460,6 +460,10 @@ public:		// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation, meta = (ClampMin = "0", UIMin = "0", ClampMax = "1", UIMax = "1"))
 	float UseBodylook;
 
+	/** Look in the direction of controller rotation even when the rotation mode is OrientToMovement. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	bool bUseLookInputInMovement;
+
 public: // Dynamic Multicast Delegates
 
 	UPROPERTY(BlueprintAssignable, Category = Character)

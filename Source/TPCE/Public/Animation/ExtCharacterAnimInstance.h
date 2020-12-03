@@ -348,6 +348,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	float UseBodylook;
 
+	/** Look in the direction of controller rotation even when the rotation mode is OrientToMovement. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	bool bUseLookInputInMovement;
+
 	/** How fast Aim Offset should reach the desired look rotation. Use 0 for immediate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
 	float AimOffsetInterpSpeed;
