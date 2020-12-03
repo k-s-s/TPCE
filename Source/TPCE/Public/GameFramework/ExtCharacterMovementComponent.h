@@ -437,7 +437,7 @@ public: // Variables
 
 	/**
 	 * Allows soft collision between characters by pushing ourselves away from other ECC_Pawn capsules.
-	 * Make sure collision response is set to overlap.
+	 * Make sure collision response is set to overlap, and note that braking/friction values might cause the force to be negated.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
 	bool bPushAwayFromPawns;
