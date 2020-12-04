@@ -397,6 +397,12 @@ FRotator UPushToTargetComponent::GetTargetRotation(const FVector& InCurrentLocat
 	return NewTargetRotation;
 }
 
+void UPushToTargetComponent::GetDesiredLocationAndRotation(FVector& OutLocation, FRotator& OutRotation) const
+{
+	OutLocation = GetTargetLocation();
+	OutRotation = GetTargetRotation(UpdatedComponent ? UpdatedComponent->GetComponentLocation() : FVector::ZeroVector);
+}
+
 FVector UPushToTargetComponent::AdjustCurrentLocationToTarget(const FVector& InCurrentLocation, const FVector& InTargetLocation) const
 {
 	return InCurrentLocation;

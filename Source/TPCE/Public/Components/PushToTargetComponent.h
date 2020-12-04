@@ -67,6 +67,12 @@ protected:
 	/** Minimum delta time considered when ticking. Delta times below this are not considered. This is a very small non-zero positive value to avoid potential divide-by-zero in simulation code. */
 	static const float MIN_TICK_TIME;
 
+	/** Return the target location considering the socket name if any. */
+	FVector GetTargetLocation() const;
+
+	/** Return the target rotation considering the current rotation behavior. */
+	FRotator GetTargetRotation(const FVector& InCurrentLocation) const;
+
 	/**
 	 * Return the location of the UpdatedComponent in world space to be used for this frame.
 	 * Default implementation simply returns the UpdatedComponent's location unmodified, but derived classes can override
@@ -189,11 +195,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
 	void SnapToTarget();
 
-	/** Return the target location considering the socket name if any. */
-	FVector GetTargetLocation() const;
-
-	/** Return the target rotation considering the current rotation behavior. */
-	FRotator GetTargetRotation(const FVector& InCurrentLocation) const;
+	UFUNCTION(BlueprintCallable, Category="Game|Components|PushToTarget")
+	void GetDesiredLocationAndRotation(FVector& OutLocation, FRotator& OutRotation) const;
 
 	FORCEINLINE USceneComponent* GetTargetComponent() { return TargetComponent.Get(); }
 
