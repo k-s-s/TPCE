@@ -13,8 +13,7 @@ ULookIKAnimInstance::ULookIKAnimInstance()
 	SourceBoneName = FName(TEXT("Eyes"));
 
 	EyeDivergence = 5.f;
-	BodyTwistSoftMax = 20.f;
-	BodyTwistHardMax = 60.f;
+	BodyTwistMax = 40.f;
 
 	MaxDistance = 200.f;
 	DistanceInterpSpeed = 50.f;
@@ -114,8 +113,8 @@ void ULookIKAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// Update bodylook values
 		// Currently this only works left to right and hopes that the aim offset will impart some curve to the spine when looking up and down
 		const float BodylookWeight = TotalLookWeight <= 1.f ? UseBodylook : (UseBodylook / TotalLookWeight);
-		const float TwistAmount = UKismetMathLibraryEx::SoftCap(FMath::Abs(LookAimOffset.X * BodylookWeight), BodyTwistSoftMax, BodyTwistHardMax);
-		SpineTwist = FRotator(0.f, TwistAmount * FMath::Sign(LookAimOffset.X * BodylookWeight), 0.f);
+		const float TwistAmount = FMathEx::SoftClipRange(LookAimOffset.X * BodylookWeight, -BodyTwistMax, BodyTwistMax, BodyTwistMax * .5f);
+		SpineTwist = FRotator(0.f, TwistAmount, 0.f);
 
 		// Raise events
 		if (SwivelScale > SwivelEventThreshold && !bSwivelFired)

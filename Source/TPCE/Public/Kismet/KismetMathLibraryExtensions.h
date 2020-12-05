@@ -147,9 +147,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Math|Orientation")
 	static ECardinalDirection CalculateCardinalDirection(float Angle, ECardinalDirection CurrentCardinalDirection, const float NorthSegmentHalfWidth, float Buffer);
 
-	/** Applies a function that is linear until Start, then caps at (Start+End)/2 when Value moves towards End. */
+	/**
+	 * Applies a soft clip function so that the value tapers off then stops as it reaches either Low or High.
+	 * Input domain is [Low-Knee..High+Knee]
+	 */
 	UFUNCTION(BlueprintPure, Category = "Math|Float")
-	static float SoftCap(float Value, float Start, float End);
+	static float SoftClipRange(float Value, float Low, float High, float Knee);
 
 	/** Returns Value clamped between 0 and 1 (inclusive). */
 	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "[0..1]"), Category = "Math|Float")
@@ -163,7 +166,7 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Math|Float")
 	static float EaseSinusoidal(float Value);
 
-	/** 
+	/**
 	 * Calculates a moving average for an irregular time series.
 	 *
 	 * @param CurrentSample - The value to blend with the previous sample to get a new weighted value.

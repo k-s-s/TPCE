@@ -5,7 +5,7 @@
 #include "AnimationCoreLibrary.h"
 #include "Animation/AnimInstanceProxy.h"
 #include "AnimationRuntime.h"
-#include "Kismet/Kismet.h"
+#include "Math/MathExtensions.h"
 
 FAnimNode_ApplySoftLimits::FAnimNode_ApplySoftLimits()
 	: ControlSpace(BCS_ParentBoneSpace)
@@ -45,12 +45,12 @@ void FAnimNode_ApplySoftLimits::EvaluateSkeletalControl_AnyThread(FComponentSpac
 	const FVector SSoftMax = (SoftMin * FlipFactor).ComponentMax(SoftMax * FlipFactor);
 	const FVector SHardMin = (HardMin * FlipFactor).ComponentMin(HardMax * FlipFactor);
 	const FVector SHardMax = (HardMin * FlipFactor).ComponentMax(HardMax * FlipFactor);
-	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SSoftMin.X, SHardMin.X);
-	DeltaRot.Yaw = UKismetMathLibraryEx::SoftCap(DeltaRot.Yaw, SSoftMax.X, SHardMax.X);
-	DeltaRot.Pitch = UKismetMathLibraryEx::SoftCap(DeltaRot.Pitch, SSoftMin.Y, SHardMin.Y);
-	DeltaRot.Pitch = UKismetMathLibraryEx::SoftCap(DeltaRot.Pitch, SSoftMax.Y, SHardMax.Y);
-	DeltaRot.Roll = UKismetMathLibraryEx::SoftCap(DeltaRot.Roll, SSoftMin.Z, SHardMin.Z);
-	DeltaRot.Roll = UKismetMathLibraryEx::SoftCap(DeltaRot.Roll, SSoftMax.Z, SHardMax.Z);
+	DeltaRot.Yaw = FMathEx::SoftClip(DeltaRot.Yaw, SSoftMin.X, SHardMin.X);
+	DeltaRot.Yaw = FMathEx::SoftClip(DeltaRot.Yaw, SSoftMax.X, SHardMax.X);
+	DeltaRot.Pitch = FMathEx::SoftClip(DeltaRot.Pitch, SSoftMin.Y, SHardMin.Y);
+	DeltaRot.Pitch = FMathEx::SoftClip(DeltaRot.Pitch, SSoftMax.Y, SHardMax.Y);
+	DeltaRot.Roll = FMathEx::SoftClip(DeltaRot.Roll, SSoftMin.Z, SHardMin.Z);
+	DeltaRot.Roll = FMathEx::SoftClip(DeltaRot.Roll, SSoftMax.Z, SHardMax.Z);
 
 	// Add the reference pose and back to component space
 	BoneTM.SetRotation(BoneRefTM.GetRotation() * DeltaRot.Quaternion());

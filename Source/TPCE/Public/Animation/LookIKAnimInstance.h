@@ -54,11 +54,7 @@ public:
 
 	/** Maximum spine twist angle in degrees. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
-	float BodyTwistSoftMax;
-
-	/** Maximum spine twist angle in degrees. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
-	float BodyTwistHardMax;
+	float BodyTwistMax;
 
 	/** Maximum distance to the look target. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
@@ -136,8 +132,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Settings|Looking", meta=(ClampMin="0", UIMin="0"))
 	float GlobalSpeed;
 
-	/** 
-	 * Called per tick to allow Blueprint to modify the look at location. 
+	/**
+	 * Called per tick to allow Blueprint to modify the look at location.
 	 * @param	DeltaTime				Change in time since last update
 	 * @param	InLookAtLocation		The look at location that was passed in.
 	 * @param	NewLookAtLocation		(out) The modified look at location.

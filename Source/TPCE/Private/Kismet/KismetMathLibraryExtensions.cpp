@@ -132,22 +132,14 @@ ECardinalDirection UKismetMathLibraryEx::CalculateCardinalDirection(float Angle,
 	return FMathEx::FindCardinalDirection(Angle, CurrentCardinalDirection, NorthSegmentHalfWidth, Buffer);
 }
 
-float UKismetMathLibraryEx::SoftCap(float Value, float Start, float End)
+float UKismetMathLibraryEx::SoftClipRange(float Value, float Low, float High, float Knee)
 {
-	const float t = FMath::GetRangePct(Start, End, Value);
+	if (Low > High)
+	{
+		Swap(Low, High);
+	}
 
-	if (t < 0.f)
-	{
-		return Value;
-	}
-	else if (t <= 1.f)
-	{
-		return Start + (t - t*t * .5f) * (End - Start);
-	}
-	else
-	{
-		return (Start + End) * .5f;
-	}
+	return FMathEx::SoftClipRange(Value, Low, High, Knee);
 }
 
 float UKismetMathLibraryEx::Saturate(float Value)

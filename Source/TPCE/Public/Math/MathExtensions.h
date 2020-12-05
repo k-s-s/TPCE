@@ -90,4 +90,18 @@ struct FMathEx : public FMath
 	/** Find the cardinal direction for an angle given the current cardinal direction, the half angle width of the north segment and a buffer for tolerance */
 	static TPCE_API ECardinalDirection FindCardinalDirection(float Angle, const ECardinalDirection CurrentCardinalDirection, const float NorthSegmentHalfWidth = 60.f, const float Buffer = 5.0f);
 
+
+
+	/**
+	 * Applies a soft clip function. Output same as input until Start, then it smoothly tapers off.
+	 * There should be at least a small difference between Start and End to determine the direction of the clipping.
+	 * [0..Start..End..Inf] -> [0..Start..(Start+End)/2..(Start+End)/2]
+	 */
+	static TPCE_API float SoftClip(float Value, float Start, float End);
+
+	/**
+	 * Applies a soft clip function so that the value tapers off then stops as it reaches either Low or High.
+	 * Input domain is [Low-Knee..High+Knee]
+	 */
+	static TPCE_API float SoftClipRange(float Value, float Low, float High, float Knee);
 };

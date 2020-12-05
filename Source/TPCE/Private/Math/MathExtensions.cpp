@@ -390,7 +390,6 @@ FRotator FMathEx::RSmoothInterpTo(const FRotator& Current, const FRotator& Targe
 	).GetNormalized();
 }
 
-
 FORCEINLINE static bool CheckCardinalDirection(const float Angle, const bool bIsCurrentCardinalDirection, const float Min, const float Max, const float Buffer)
 {
 	return bIsCurrentCardinalDirection ? (Angle >= (Min - Buffer) && Angle <= (Max + Buffer))
@@ -409,4 +408,58 @@ ECardinalDirection FMathEx::FindCardinalDirection(float Angle, const ECardinalDi
 		return ECardinalDirection::West;
 
 	return ECardinalDirection::South;
+}
+
+float FMathEx::SoftClip(float Value, float Start, float End)
+{
+	if (Start < End)
+	{
+		const float t = FMath::GetRangePct(Start, End, Value);
+		if (t < 0.f)
+		{
+			return Value;
+		}
+		else if (t <= 1.f)
+		{
+			return Start + (t - t * t * .5f) * (End - Start);
+		}
+		else
+		{
+			return (Start + End) * .5f;
+		}
+	}
+	else
+	{
+		Start = -Start;
+		End = -End;
+		Value = -Value;
+		const float t = FMath::GetRangePct(Start, End, Value);
+		if (t < 0.f)
+		{
+			return -(Value);
+		}
+		else if (t <= 1.f)
+		{
+			return -(Start + (t - t * t * .5f) * (End - Start));
+		}
+		else
+		{
+			return -((Start + End) * .5f);
+		}
+	}
+}
+
+float FMathEx::SoftClipRange(float Value, float Low, float High, float Knee)
+{
+	Knee = FMath::Clamp(Knee, .001f, (High - Low) * .5f);
+
+	const float LowStart = Low - Knee;
+	const float LowEnd = Low * 2.f - LowStart;
+	Value = FMathEx::SoftClip(Value, LowEnd, LowStart);
+
+	const float HighStart = High - Knee;
+	const float HighEnd = High * 2.f - HighStart;
+	Value = FMathEx::SoftClip(Value, HighStart, HighEnd);
+
+	return Value;
 }
