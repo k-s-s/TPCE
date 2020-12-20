@@ -29,6 +29,7 @@ public:
 	// End of UEdGraphNode interface
 
 	// UAnimGraphNode_Base interface
+	virtual void Draw(FPrimitiveDrawInterface* PDI, USkeletalMeshComponent* SkelMeshComp) const override;
 	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
 	// End of UAnimGraphNode_Base interface
 

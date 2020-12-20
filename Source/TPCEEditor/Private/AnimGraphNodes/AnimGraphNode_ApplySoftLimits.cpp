@@ -27,6 +27,17 @@ FText UAnimGraphNode_ApplySoftLimits::GetNodeTitle(ENodeTitleType::Type TitleTyp
 	return GetControllerDescription();
 }
 
+void UAnimGraphNode_ApplySoftLimits::Draw(FPrimitiveDrawInterface* PDI, USkeletalMeshComponent* SkelMeshComp) const
+{
+	if (SkelMeshComp)
+	{
+		if (FAnimNode_ApplySoftLimits* ActiveNode = GetActiveInstanceNode<FAnimNode_ApplySoftLimits>(SkelMeshComp->GetAnimInstance()))
+		{
+			ActiveNode->ConditionalDebugDraw(PDI, SkelMeshComp);
+		}
+	}
+}
+
 void UAnimGraphNode_ApplySoftLimits::CustomizeDetails(IDetailLayoutBuilder& DetailBuilder)
 {
 	Super::CustomizeDetails(DetailBuilder);

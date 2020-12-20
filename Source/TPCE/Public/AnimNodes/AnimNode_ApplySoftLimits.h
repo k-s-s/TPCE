@@ -28,20 +28,16 @@ struct TPCE_API FAnimNode_ApplySoftLimits : public FAnimNode_SkeletalControlBase
 	TEnumAsByte<EBoneControlSpace> ControlSpace;
 
 	/** Minimum Yaw, Pitch and Roll. */
-	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
-	FVector HardMin;
-
-	/** Minimum Yaw, Pitch and Roll where decrement begins to taper off. */
-	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
-	FVector SoftMin;
-
-	/** Maximum Yaw, Pitch and Roll where increment begins to taper off. */
-	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
-	FVector SoftMax;
+	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"), meta=(PinHiddenByDefault))
+	FVector LimitMin;
 
 	/** Maximum Yaw, Pitch and Roll. */
-	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"))
-	FVector HardMax;
+	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="-180", UIMax="180", ClampMin="-180", ClampMax="180"), meta=(PinHiddenByDefault))
+	FVector LimitMax;
+
+	/** Maximum Yaw, Pitch and Roll. */
+	UPROPERTY(EditAnywhere, Category=Angular, meta=(UIMin="0", UIMax="180", ClampMin="0", ClampMax="180"), meta=(PinHiddenByDefault))
+	FVector Knee;
 
 	/** Flip X limits. */
 	UPROPERTY(EditAnywhere, Category=Angular, meta=(DisplayName="X"))
@@ -65,8 +61,33 @@ struct TPCE_API FAnimNode_ApplySoftLimits : public FAnimNode_SkeletalControlBase
 	virtual bool IsValidToEvaluate(const USkeleton* Skeleton, const FBoneContainer& RequiredBones) override;
 	// End FAnimNode_SkeletalControlBase Interface
 
+#if WITH_EDITOR
+	void ConditionalDebugDraw(FPrimitiveDrawInterface* PDI, USkeletalMeshComponent* MeshComp) const;
+
+	/**
+	 * Draws an arc using lines.
+	 *
+	 * @param	Base			Center of the circle.
+	 * @param	X				Normalized axis from one point to the center.
+	 * @param	Y				Normalized axis from other point to the center.
+	 * @param   MinAngle        The minimum angle.
+	 * @param   MaxAngle        The maximum angle.
+	 * @param   Radius          Radius of the arc.
+	 * @param	Sections		Numbers of sides that the circle has.
+	 * @param	Color			Color of the circle.
+	 * @param	DepthPriority	Depth priority for the circle.
+	 */
+	void DrawDebugArc(FPrimitiveDrawInterface* PDI, const FVector Base, const FVector& X, const FVector& Y, const float MinAngle, const float MaxAngle,
+		const float Radius, const int32 Sections, const FColor& Color, uint8 DepthPriority = 0, float Thickness = 0.f) const;
+#endif // WITH_EDITOR
+
 private:
 	// Begin FAnimNode_SkeletalControlBase Interface
 	virtual void InitializeBoneReferences(const FBoneContainer& RequiredBones) override;
 	// End FAnimNode_SkeletalControlBase Interface
+
+#if !UE_BUILD_SHIPPING
+	/** Debug draw cached data. */
+	FTransform CachedBoneTM;
+#endif
 };
