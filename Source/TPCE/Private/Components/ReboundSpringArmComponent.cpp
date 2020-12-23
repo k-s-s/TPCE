@@ -35,37 +35,38 @@ void UReboundSpringArmComponent::InitializeComponent()
 
 FVector UReboundSpringArmComponent::CalcTargetArm(const FVector& Origin, const FRotator& Rotation, float DeltaTime)
 {
-	float MaxTargetArmLength = TargetArmLength;
-	if (!FMath::IsNearlyZero(TargetArmLength))
+	// Calculate socket offset in local space.
+	const FVector LocalOffset = FRotationMatrix(Rotation).TransformVector(SocketOffset);
+	const FVector DesiredArmVector = Rotation.Vector() * TargetArmLength - LocalOffset;
+	float MaxTargetArmLength = DesiredArmVector.Size();
+
+	if (!FMath::IsNearlyZero(MaxTargetArmLength))
 	{
 		if (bDoCollisionTest)
 		{
 			bIsCameraFixed = true;
 
-			// Calculate socket offset in local space.
-			const FVector LocalOffset = FRotationMatrix(Rotation).TransformVector(SocketOffset);
 			// Calculate desired socket location.
-			const FVector DesiredLoc = Origin - (Rotation.Vector() * TargetArmLength) + LocalOffset;
+			const FVector DesiredLoc = Origin - DesiredArmVector;
 			// Do a sweep to ensure we are not penetrating the world
 			const FCollisionQueryParams QueryParams(SCENE_QUERY_STAT(SpringArm), false, GetOwner());
 			FHitResult Hit;
 			if (GetWorld()->SweepSingleByChannel(Hit, Origin, DesiredLoc, FQuat::Identity, ProbeChannel, FCollisionShape::MakeSphere(ProbeSize), QueryParams))
 			{
-				// Subtract the local offset to find the actual endpoint and compute the obtained arm length
-				const FVector ArmEndpoint = Hit.Location - LocalOffset;
-				const FVector DesiredTargetArm = Origin - ArmEndpoint;
-				MaxTargetArmLength = FMath::Sign(TargetArmLength) * DesiredTargetArm.Size();
+				const FVector FixedArmVector = Origin - Hit.Location;
+				MaxTargetArmLength = FMath::Sign(TargetArmLength) * FixedArmVector.Size();
 				if (FMath::Abs(MaxTargetArmLength) < FMath::Abs(PreviousTargetArmLength))
 				{
-					PreviousTargetArmLength =  MaxTargetArmLength;
-					return DesiredTargetArm;
+					PreviousTargetArmLength = MaxTargetArmLength;
 				}
 			}
 		}
+
+		PreviousTargetArmLength = bEnableReboundLag ? FMathEx::FSafeInterpTo(PreviousTargetArmLength, MaxTargetArmLength, DeltaTime, ReboundLagSpeed) : MaxTargetArmLength;
+		return Rotation.Vector() * PreviousTargetArmLength - LocalOffset * (PreviousTargetArmLength / DesiredArmVector.Size());
 	}
 
-	PreviousTargetArmLength = bEnableReboundLag ? FMathEx::FSafeInterpTo(PreviousTargetArmLength, MaxTargetArmLength, DeltaTime, ReboundLagSpeed) : MaxTargetArmLength;
-	return Rotation.Vector() * PreviousTargetArmLength;
+	return -LocalOffset;
 }
 
 FVector UReboundSpringArmComponent::GetUnfixedCameraPosition() const
