@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/ExtPlayerCameraManager.h"
 #include "Interfaces/PawnControlInterface.h"
 
 #include "Logging/LogMacros.h"
@@ -20,6 +21,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogExtPlayerController, Log, All);
 AExtPlayerController::AExtPlayerController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	PlayerCameraManagerClass = AExtPlayerCameraManager::StaticClass();
 	bAutoManageActiveCameraTarget = true;	// Auto set view target when a pawn is possessed/unpossessed
 
 	AutoManagedCameraTransitionParams.BlendTime = 1.0f;
@@ -106,6 +108,14 @@ void AExtPlayerController::PlayerTick(float DeltaTime)
 
 	UpdateViewExtents();
 
+	if (PendingFadeViewTarget && PlayerCameraManager && PlayerCameraManager->FadeTimeRemaining <= 0.f)
+	{
+		// Camera fade from SetViewTargetWithFade complete, switch to new view target and fade back in
+		PlayerCameraManager->SetViewTarget(PendingFadeViewTarget);
+		PlayerCameraManager->StartCameraFade(1.f, 0.f, PlayerCameraManager->FadeTime, PlayerCameraManager->FadeColor, PlayerCameraManager->bFadeAudio, false);
+		PendingFadeViewTarget = nullptr;
+	}
+
 #if ENABLE_DRAW_DEBUG
 	if (bDebugCamera && bViewExtentsValid)
 	{
@@ -186,6 +196,15 @@ void AExtPlayerController::UpdateViewExtents()
 				ViewExtentsMax = ViewExtentsMax.ComponentMax(ViewCorners[ViewCornerIdx]);
 			}
 		}
+	}
+}
+
+void AExtPlayerController::SetViewTargetWithFade(AActor* NewViewTarget, float BlendTime, FLinearColor Color, bool bShouldFadeAudio)
+{
+	if (PlayerCameraManager)
+	{
+		PendingFadeViewTarget = NewViewTarget;
+		PlayerCameraManager->StartCameraFade(0.f, 1.f, BlendTime * .5f, Color, bShouldFadeAudio, true);
 	}
 }
 
