@@ -47,11 +47,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Floater, meta=(ClampMin=0))
 	float AnimationRate;
 
-	/** Scale animation when the actor is shown. Alpha is currently unused. */
+	/** Animation for the actor appearing. RGB is scale, A is vertical offset. */
 	UPROPERTY(EditDefaultsOnly, Category=Floater, AdvancedDisplay)
 	class UCurveLinearColor* PopUpCurve;
 
-	/** Scale animation when the actor is shown. Alpha is currently unused. */
+	/** Animation for the actor disappearing. RGB is scale, A is vertical offset. */
 	UPROPERTY(EditDefaultsOnly, Category=Floater, AdvancedDisplay)
 	class UCurveLinearColor* PopInCurve;
 

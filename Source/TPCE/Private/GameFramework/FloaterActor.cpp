@@ -136,6 +136,7 @@ void AFloaterActor::Hide()
 void AFloaterActor::OnTimelineProgress(FLinearColor Value)
 {
 	SetActorRelativeScale3D(FVector(Value));
+	PushToTarget->WorldOffset.Z = Value.A;
 }
 
 void AFloaterActor::OnTimelineFinished()
