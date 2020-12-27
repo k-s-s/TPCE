@@ -114,6 +114,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
 	FVector ControllerRelativeOffset;
 
+	/** Offset in world space. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=PushToTarget)
+	FVector WorldOffset;
+
 	/**
 	 * If true, the updated component lags behind the target to smooth its movement.
 	 * @see Speed

@@ -325,7 +325,8 @@ FVector UPushToTargetComponent::GetTargetLocation() const
 
 		FVector NewTargetLocation = SocketTransform.GetLocation()
 			+ SocketTransform.TransformVector(SocketRelativeOffset)
-			+ ActorTransform.TransformVector(ActorRelativeOffset);
+			+ ActorTransform.TransformVector(ActorRelativeOffset)
+			+ WorldOffset;
 
 		if (APawn* TargetPawn = Cast<APawn>(TargetComponent->GetOwner()))
 		{
