@@ -16,9 +16,11 @@ struct TPCE_API FAutoManagedCameraTransitionParams
 	GENERATED_USTRUCT_BODY()
 
 	FAutoManagedCameraTransitionParams()
-	: BlendTime(0.f),
-  	  BlendFunction(VTBlend_Cubic),
-	  BlendExp(2.f)
+		: BlendTime(0.f)
+  		, BlendFunction(VTBlend_Cubic)
+		, BlendExp(2.f)
+		, bFadeToBlack(false)
+		, bShouldFadeAudio(false)
 	{}
 
 
@@ -33,6 +35,14 @@ struct TPCE_API FAutoManagedCameraTransitionParams
 	/** Exponent, used by certain blend functions to control the shape of the curve. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ViewTargetTransitionParams)
 	float BlendExp;
+
+	/** Fade to black instead of interpolating the view. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ViewTargetTransitionParams)
+	bool bFadeToBlack;
+
+	/** Lower audio volume while fading to black. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ViewTargetTransitionParams)
+	bool bShouldFadeAudio;
 
 	operator FViewTargetTransitionParams() const
 	{
@@ -65,11 +75,15 @@ public:
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = Camera)
+	/** A set of parameters to describe how to transition between view targets. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	FAutoManagedCameraTransitionParams AutoManagedCameraTransitionParams;
 
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void AutoManageActiveCameraTarget(AActor* SuggestedTarget) override;
+	virtual void BeginPlay() override;
+	virtual class AActor* GetViewTarget() const override;
+	virtual void SetViewTarget(class AActor* NewViewTarget, FViewTargetTransitionParams TransitionParams = FViewTargetTransitionParams()) override;
 	virtual void PlayerTick(float DeltaTime) override;
 
 	/** Convert current mouse 2D position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
@@ -98,12 +112,18 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Camera, AdvancedDisplay)
 	bool bDebugCamera;
 
-	UPROPERTY(Transient)
-	AActor* PendingFadeViewTarget;
-
 protected:
 
 	void UpdateViewExtents();
+
+	UPROPERTY(Transient)
+	AActor* PendingFadeViewTarget;
+
+	UPROPERTY(Transient)
+	AActor* OldViewTarget;
+
+	UPROPERTY(Transient)
+	bool bBeganPlaying;
 
 	FVector ViewCorners[4];
 	FVector ViewExtentsMin;

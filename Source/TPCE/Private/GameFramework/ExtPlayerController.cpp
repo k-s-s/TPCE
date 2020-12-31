@@ -29,6 +29,33 @@ AExtPlayerController::AExtPlayerController(const FObjectInitializer& ObjectIniti
 	AutoManagedCameraTransitionParams.BlendExp = 2.0f;
 }
 
+void AExtPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	bBeganPlaying = true;
+}
+
+AActor* AExtPlayerController::GetViewTarget() const
+{
+	// If fading to another view target, return that one first
+	if (PendingFadeViewTarget)
+	{
+		return PendingFadeViewTarget;
+	}
+
+	return Super::GetViewTarget();
+}
+
+void AExtPlayerController::SetViewTarget(class AActor* NewViewTarget, struct FViewTargetTransitionParams TransitionParams)
+{
+	// Possessing a pawn will first set the view target to the player controller
+	// When auto managed camera is set to fade to black we will want to undo this change
+	OldViewTarget = Super::GetViewTarget();
+
+	Super::SetViewTarget(NewViewTarget, TransitionParams);
+}
+
 void AExtPlayerController::AutoManageActiveCameraTarget(AActor* SuggestedTarget)
 {
 	// Full override to support smooth transitions when changing view target
@@ -36,7 +63,7 @@ void AExtPlayerController::AutoManageActiveCameraTarget(AActor* SuggestedTarget)
 
 	if (bAutoManageActiveCameraTarget)
 	{
-	// See if there is a CameraActor with an auto-activate index that matches us.
+		// See if there is a CameraActor with an auto-activate index that matches us.
 		if (GetNetMode() == NM_Client)
 		{
 			// Clients don't know their own index on the server, so they have to trust that if they use a camera with an auto-activate index, that's their own index.
@@ -54,15 +81,50 @@ void AExtPlayerController::AutoManageActiveCameraTarget(AActor* SuggestedTarget)
 		{
 			// See if there is a CameraActor in the level that auto-activates for this PC.
 			ACameraActor* AutoCameraTarget = GetAutoActivateCameraForPlayer();
-			if (AutoCameraTarget)
+			if (AutoCameraTarget && AutoCameraTarget != GetViewTarget())
 			{
-				SetViewTarget(AutoCameraTarget, AutoManagedCameraTransitionParams);
+				if (!bBeganPlaying)
+				{
+					// Don't blend into the view target when entering playing state
+					SetViewTarget(AutoCameraTarget);
+				}
+				else if (AutoManagedCameraTransitionParams.bFadeToBlack)
+				{
+					if (OldViewTarget != this)
+					{
+						SetViewTarget(OldViewTarget);
+					}
+					SetViewTargetWithFade(AutoCameraTarget, AutoManagedCameraTransitionParams.BlendTime, FLinearColor::Black, AutoManagedCameraTransitionParams.bShouldFadeAudio);
+				}
+				else
+				{
+					SetViewTarget(AutoCameraTarget, AutoManagedCameraTransitionParams);
+				}
 				return;
 			}
 		}
 
 		// No auto-activate CameraActor, so use the suggested target.
-		SetViewTarget(SuggestedTarget, AutoManagedCameraTransitionParams);
+		if (SuggestedTarget != GetViewTarget())
+		{
+			if (!bBeganPlaying)
+			{
+				// Don't blend into the view target when entering playing state
+				SetViewTarget(SuggestedTarget);
+			}
+			else if (AutoManagedCameraTransitionParams.bFadeToBlack)
+			{
+				if (OldViewTarget != this)
+				{
+					SetViewTarget(OldViewTarget);
+				}
+				SetViewTargetWithFade(SuggestedTarget, AutoManagedCameraTransitionParams.BlendTime, FLinearColor::Black, AutoManagedCameraTransitionParams.bShouldFadeAudio);
+			}
+			else
+			{
+				SetViewTarget(SuggestedTarget, AutoManagedCameraTransitionParams);
+			}
+		}
 	}
 }
 
@@ -203,8 +265,11 @@ void AExtPlayerController::SetViewTargetWithFade(AActor* NewViewTarget, float Bl
 {
 	if (PlayerCameraManager)
 	{
+		if (!PendingFadeViewTarget)
+		{
+			PlayerCameraManager->StartCameraFade(0.f, 1.f, BlendTime * .5f, Color, bShouldFadeAudio, true);
+		}
 		PendingFadeViewTarget = NewViewTarget;
-		PlayerCameraManager->StartCameraFade(0.f, 1.f, BlendTime * .5f, Color, bShouldFadeAudio, true);
 	}
 }
 
