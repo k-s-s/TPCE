@@ -99,6 +99,13 @@ public:
 	bool GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const;
 
 	/**
+	 * Event when the view fades to black after SetViewTargetWithFade is called, before setting the new view target.
+	 * Set PendingFadeViewTarget to None to prevent the transition from occurring.
+	*/
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="On Fade To Black"))
+	void ReceiveFadeToBlack(AActor* NewViewTarget);
+
+	/**
 	 * Set the view target with a camera fade to a solid color.
 	 * @param NewViewTarget - New actor to set as view target.
 	 * @param BlendTime - How long the fade should take, in seconds.
@@ -108,6 +115,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Game|Player", meta=(Keywords="Camera"))
 	virtual void SetViewTargetWithFade(AActor* NewViewTarget, float BlendTime, FLinearColor Color, bool bShouldFadeAudio = false);
 
+	/** Pending view target after camera fades. */
+	UPROPERTY(Transient, BlueprintReadWrite)
+	AActor* PendingFadeViewTarget;
+
 	/** Draw debug helpers. */
 	UPROPERTY(EditDefaultsOnly, Category = Camera, AdvancedDisplay)
 	bool bDebugCamera;
@@ -115,9 +126,6 @@ public:
 protected:
 
 	void UpdateViewExtents();
-
-	UPROPERTY(Transient)
-	AActor* PendingFadeViewTarget;
 
 	UPROPERTY(Transient)
 	AActor* OldViewTarget;

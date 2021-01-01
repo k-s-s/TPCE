@@ -172,10 +172,16 @@ void AExtPlayerController::PlayerTick(float DeltaTime)
 
 	if (PendingFadeViewTarget && PlayerCameraManager && PlayerCameraManager->FadeTimeRemaining <= 0.f)
 	{
-		// Camera fade from SetViewTargetWithFade complete, switch to new view target and fade back in
-		PlayerCameraManager->SetViewTarget(PendingFadeViewTarget);
-		PlayerCameraManager->StartCameraFade(1.f, 0.f, PlayerCameraManager->FadeTime, PlayerCameraManager->FadeColor, PlayerCameraManager->bFadeAudio, false);
-		PendingFadeViewTarget = nullptr;
+		// Camera fade from SetViewTargetWithFade complete. First allow blueprint to stop the transition
+		ReceiveFadeToBlack(PendingFadeViewTarget);
+
+		if (PendingFadeViewTarget)
+		{
+			// Switch to new view target and fade back in
+			PlayerCameraManager->SetViewTarget(PendingFadeViewTarget);
+			PlayerCameraManager->StartCameraFade(1.f, 0.f, PlayerCameraManager->FadeTime, PlayerCameraManager->FadeColor, PlayerCameraManager->bFadeAudio, false);
+			PendingFadeViewTarget = nullptr;
+		}
 	}
 
 #if ENABLE_DRAW_DEBUG
