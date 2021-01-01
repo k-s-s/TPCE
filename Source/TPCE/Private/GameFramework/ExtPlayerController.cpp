@@ -263,12 +263,19 @@ void AExtPlayerController::UpdateViewExtents()
 
 void AExtPlayerController::SetViewTargetWithFade(AActor* NewViewTarget, float BlendTime, FLinearColor Color, bool bShouldFadeAudio)
 {
+	if (NewViewTarget == nullptr)
+	{
+		// Make sure view target is valid
+		NewViewTarget = this;
+	}
+
 	if (PlayerCameraManager)
 	{
 		if (!PendingFadeViewTarget)
 		{
 			PlayerCameraManager->StartCameraFade(0.f, 1.f, BlendTime * .5f, Color, bShouldFadeAudio, true);
 		}
+
 		PendingFadeViewTarget = NewViewTarget;
 	}
 }
