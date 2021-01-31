@@ -110,6 +110,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	FAutoManagedCameraTransitionParams AutoManagedCameraTransitionParams;
 
+	virtual void SetupInputComponent() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void AutoManageActiveCameraTarget(AActor* SuggestedTarget) override;
 	virtual void BeginPlay() override;

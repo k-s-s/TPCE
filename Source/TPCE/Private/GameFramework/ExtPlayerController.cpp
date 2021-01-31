@@ -30,6 +30,15 @@ AExtPlayerController::AExtPlayerController(const FObjectInitializer& ObjectIniti
 	AutoManagedCameraTransitionParams.BlendExp = 2.0f;
 }
 
+void AExtPlayerController::SetupInputComponent()
+{
+	if (InputComponent == NULL)
+	{
+		InputComponent = NewObject<UExtInputComponent>(this, TEXT("PC_InputComponent0"));
+		InputComponent->RegisterComponent();
+	}
+}
+
 void AExtPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
