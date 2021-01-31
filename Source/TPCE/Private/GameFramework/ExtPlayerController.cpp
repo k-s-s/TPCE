@@ -7,6 +7,7 @@
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/ExtPlayerCameraManager.h"
+#include "Components/ExtInputComponent.h"
 #include "Interfaces/PawnControlInterface.h"
 
 #include "Logging/LogMacros.h"
@@ -123,6 +124,99 @@ void AExtPlayerController::AutoManageActiveCameraTarget(AActor* SuggestedTarget)
 			else
 			{
 				SetViewTarget(SuggestedTarget, AutoManagedCameraTransitionParams);
+			}
+		}
+	}
+}
+
+
+void AExtPlayerController::PushInputComponent(UInputComponent* InInputComponent)
+{
+	Super::PushInputComponent(InInputComponent);
+
+	if (InInputComponent)
+	{
+		OnInputStackChanged.Broadcast();
+	}
+}
+
+bool AExtPlayerController::PopInputComponent(UInputComponent* InInputComponent)
+{
+	if (Super::PopInputComponent(InInputComponent))
+	{
+		OnInputStackChanged.Broadcast();
+		return true;
+	}
+	return false;
+}
+
+EPlayerControllerInputDevices AExtPlayerController::GetKeyInputDevices(FKey Key)
+{
+	if (Key.IsGamepadKey())
+	{
+		return EPlayerControllerInputDevices::Gamepad;
+	}
+	else if (Key.IsMouseButton())
+	{
+		return EPlayerControllerInputDevices::Mouse;
+	}
+	else if (Key.IsTouch())
+	{
+		return EPlayerControllerInputDevices::Touch;
+	}
+	else
+	{
+		return EPlayerControllerInputDevices::Keyboard;
+	}
+}
+
+void AExtPlayerController::GetInputBindingDescriptions(TArray<FInputBindingDescription>& OutInputBindingDescriptions)
+{
+	OutInputBindingDescriptions.Empty();
+
+	TArray<UInputComponent*> InputComponentStack;
+	BuildInputStack(InputComponentStack);
+
+	// Walk the stack, top to bottom
+	int32 StackIndex = InputComponentStack.Num() - 1;
+	for (; StackIndex >= 0; --StackIndex)
+	{
+		if (const UExtInputComponent* KkIC = Cast<UExtInputComponent>(InputComponentStack[StackIndex]))
+		{
+			// Go through bindings and get the key mappings that have an user provided description
+			const int32 NumActionBindings = KkIC->GetNumActionBindings();
+			for (int32 ActionBindingIndex = 0; ActionBindingIndex < NumActionBindings; ActionBindingIndex++)
+			{
+				FText Text;
+				if (KkIC->GetActionBindingDescription(ActionBindingIndex, Text))
+				{
+					FInputActionBinding& ActionBinding = KkIC->GetActionBinding(ActionBindingIndex);
+					const TArray<FInputActionKeyMapping>& KeysForAction = PlayerInput->GetKeysForAction(ActionBinding.GetActionName());
+					for (const FInputActionKeyMapping& KeyMapping : KeysForAction)
+					{
+						if (EnumHasAnyFlags(GetKeyInputDevices(KeyMapping.Key), (EPlayerControllerInputDevices)InputDevices))
+						{
+							// Find an element with the same description or add a new one
+							FInputBindingDescription* InputBindingDescription = OutInputBindingDescriptions.FindByPredicate([&](FInputBindingDescription El)
+								{
+									return El.Text.EqualTo(Text);
+								});
+							if (!InputBindingDescription)
+							{
+								InputBindingDescription = &OutInputBindingDescriptions.Emplace_GetRef();
+							}
+
+							InputBindingDescription->Text = Text;
+							InputBindingDescription->KeyMappings.Add(KeyMapping);
+						}
+					}
+				}
+			}
+
+			if (KkIC->bBlockInput)
+			{
+				// Stop traversing the stack, all input has been consumed by this InputComponent
+				break;
 			}
 		}
 	}

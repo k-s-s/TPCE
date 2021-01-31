@@ -6,8 +6,11 @@
 #include "UObject/Interface.h"
 #include "UObject/ObjectMacros.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerInput.h"
 
 #include "ExtPlayerController.generated.h"
+
+class UInputComponent;
 
 /** A set of parameters to describe how to transition between view targets. */
 USTRUCT(BlueprintType)
@@ -56,6 +59,34 @@ struct TPCE_API FAutoManagedCameraTransitionParams
 	}
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInputStackChangedSignature);
+
+/** Collected key mappings that share the same description. */
+USTRUCT(BlueprintType)
+struct TPCE_API FInputBindingDescription
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Mapping between an action and key. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FInputActionKeyMapping> KeyMappings;
+
+	/** User provided description. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FText Text;
+};
+
+/** Specifies sets of device types. */
+UENUM(BlueprintType, meta=(Bitflags, UseEnumValuesAsMaskValuesInEditor="true"))
+enum class EPlayerControllerInputDevices : uint8
+{
+	None = 0x00 UMETA(Hidden),
+	Keyboard = 0x01,
+	Mouse = 0x02,
+	Gamepad = 0x04,
+	Touch = 0x08,
+};
+ENUM_CLASS_FLAGS(EPlayerControllerInputDevices);
 
 /**
  * Base class for player controllers with extended functionality.
@@ -85,6 +116,20 @@ public:
 	virtual class AActor* GetViewTarget() const override;
 	virtual void SetViewTarget(class AActor* NewViewTarget, FViewTargetTransitionParams TransitionParams = FViewTargetTransitionParams()) override;
 	virtual void PlayerTick(float DeltaTime) override;
+	virtual void PushInputComponent(UInputComponent* Input) override;
+	virtual bool PopInputComponent(UInputComponent* Input) override;
+
+	/** Collect key mappings for bindings that have an user provided description. Set InputDevices to filter the result. */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	void GetInputBindingDescriptions(TArray<FInputBindingDescription>& OutInputBindingDescriptions);
+
+	/** Occurs when the input stack is changed. */
+	UPROPERTY(BlueprintAssignable, Category="Input")
+	FInputStackChangedSignature OnInputStackChanged;
+
+	/** Specified set of input devices. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Input", meta=(Bitmask, BitmaskEnum="EPlayerControllerInputDevices"))
+	int32 InputDevices;
 
 	/** Convert current mouse 2D position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectMouseLocationOnToPlane", Keywords = "deproject"))
@@ -125,6 +170,7 @@ public:
 
 protected:
 
+	EPlayerControllerInputDevices GetKeyInputDevices(FKey Key);
 	void UpdateViewExtents();
 
 	UPROPERTY(Transient)
