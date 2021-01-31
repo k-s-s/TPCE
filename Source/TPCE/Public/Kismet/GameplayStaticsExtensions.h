@@ -25,4 +25,8 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Utilities|Transformation", meta=(Keywords="Bone"))
 	static FString GetSocketTag(class USceneComponent* Target, FName InSocketName);
+
+	/** Set the Source Cubemap Angle of a Skylight Component. */
+	UFUNCTION(BlueprintCallable, Category="Light")
+	static void SetSourceCubemapAngle(class USkyLightComponent* SkyLightComponent, float NewSourceCubemapAngle);
 };

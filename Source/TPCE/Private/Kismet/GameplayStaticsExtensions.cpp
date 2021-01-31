@@ -2,6 +2,7 @@
 
 #include "Kismet/GameplayStaticsExtensions.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkyLightComponent.h"
 #include "Engine/StaticMeshSocket.h"
 
 UGameplayStaticsEx::UGameplayStaticsEx(const FObjectInitializer& ObjectInitializer)
@@ -26,4 +27,10 @@ FString UGameplayStaticsEx::GetSocketTag(class USceneComponent* Target, FName In
 	}
 
 	return FString();
+}
+
+void UGameplayStaticsEx::SetSourceCubemapAngle(class USkyLightComponent* SkyLightComponent, float NewSourceCubemapAngle)
+{
+	SkyLightComponent->SourceCubemapAngle = NewSourceCubemapAngle;
+	SkyLightComponent->SetCaptureIsDirty();
 }
