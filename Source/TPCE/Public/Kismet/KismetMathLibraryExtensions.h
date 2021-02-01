@@ -197,6 +197,14 @@ public:
 	static FVector SetVectorComponent(const FVector& A, const EVectorComponent Select, const float& Value);
 
 	//
+	// Vector (2D) functions.
+	//
+
+	/** Linearly interpolates between A and B based on Alpha (100% of A when Alpha=0 and 100% of B when Alpha=1) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "Lerp (Vector2D)", ScriptMethod = "LerpTo"), Category="Math|Vector2D")
+	static FVector2D V2Lerp(FVector2D A, FVector2D B, float Alpha);
+
+	//
 	// Transform functions
 	//
 

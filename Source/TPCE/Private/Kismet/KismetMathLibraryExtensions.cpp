@@ -198,6 +198,12 @@ FVector UKismetMathLibraryEx::SetVectorComponent(const FVector& A, const EVector
 	return A;
 }
 
+KISMET_MATH_FORCEINLINE
+FVector2D UKismetMathLibraryEx::V2Lerp(FVector2D A, FVector2D B, float V)
+{
+	return A + V * (B - A);
+}
+
 FTransform UKismetMathLibraryEx::Transform_Identity()
 {
 	return FTransform();
