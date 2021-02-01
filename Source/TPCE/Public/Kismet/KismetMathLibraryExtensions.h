@@ -162,6 +162,10 @@ public:
 	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "1-x", Keywords = "- subtract minus"), Category = "Math|Float")
 	static float OneMinus(float Value);
 
+	/** Takes an input value, adds a bias value to it, and then multiplies it by a scaling. To convert the input data from [-1,1] to [0,1] you would use a bias of 1.0 and scale of 0.5. */
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "Bias", Category = "Math|Float"))
+	static float ConstantBiasScale(float Value, float Bias, float Scale);
+
 	/** Use to smooth out an interpolant value. */
 	UFUNCTION(BlueprintPure, Category = "Math|Float")
 	static float EaseSinusoidal(float Value);

@@ -152,6 +152,11 @@ float UKismetMathLibraryEx::OneMinus(float Value)
 	return 1.f - Value;
 }
 
+float UKismetMathLibraryEx::ConstantBiasScale(float Value, float Bias, float Scale)
+{
+	return (Value + Bias) * Scale;
+}
+
 float UKismetMathLibraryEx::EaseSinusoidal(float Value)
 {
 	return .5f * (1.f - FMath::Cos(Value * PI));
