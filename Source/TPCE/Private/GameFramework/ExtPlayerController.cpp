@@ -37,6 +37,8 @@ void AExtPlayerController::SetupInputComponent()
 		InputComponent = NewObject<UExtInputComponent>(this, TEXT("PC_InputComponent0"));
 		InputComponent->RegisterComponent();
 	}
+
+	Super::SetupInputComponent();
 }
 
 void AExtPlayerController::BeginPlay()
