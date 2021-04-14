@@ -132,17 +132,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Input", meta=(Bitmask, BitmaskEnum="EPlayerControllerInputDevices"))
 	int32 InputDevices;
 
-	/** Convert current mouse 2D position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
+	/** Convert current mouse 2D position to World Space 3D position projected on to the ground plane. Returns false if unable to determine value. **/
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectMouseLocationOnToPlane", Keywords = "deproject"))
-	bool DeprojectMousePositionToPlane(FVector& WorldLocation, const FPlane& Plane) const;
+	bool DeprojectMousePositionToPlane(FVector& WorldLocation) const;
 
-	/** Convert 2D screen position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
+	/** Convert 2D screen position to World Space 3D position projected on to the ground plane. Returns false if unable to determine value. **/
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectScreenLocationOnToPlane", Keywords = "deproject"))
-	bool DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation, const FPlane& Plane) const;
+	bool DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation) const;
 
 	/** Returns the corners of the view frustum intersection with the ground plane. */
 	UFUNCTION(BlueprintCallable, Category = Camera)
 	bool GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const;
+
+	/** Returns the ground plane used for view extents and other functions. */
+	virtual FPlane GetGroundPlane() const;
 
 	/**
 	 * Event when the view fades to black after SetViewTargetWithFade is called, before setting the new view target.

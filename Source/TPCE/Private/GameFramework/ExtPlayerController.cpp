@@ -233,30 +233,35 @@ void AExtPlayerController::GetInputBindingDescriptions(TArray<FInputBindingDescr
 	}
 }
 
-bool AExtPlayerController::DeprojectMousePositionToPlane(FVector& WorldLocation, const FPlane& Plane = FPlane(FVector::UpVector, 0.0f)) const
+bool AExtPlayerController::DeprojectMousePositionToPlane(FVector& WorldLocation) const
 {
 	FVector Location, Direction;
 
 	if (DeprojectMousePositionToWorld(Location, Direction))
 	{
 		float T; // ignored
-		return Kismet::Math::RayPlaneIntersection(Location, Direction, Plane, T, WorldLocation);
+		return Kismet::Math::RayPlaneIntersection(Location, Direction, GetGroundPlane(), T, WorldLocation);
 	}
 
 	return false;
 }
 
-bool AExtPlayerController::DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation, const FPlane& Plane = FPlane(FVector::UpVector, 0.0f)) const
+bool AExtPlayerController::DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation) const
 {
 	FVector Location, Direction;
 
 	if (DeprojectScreenPositionToWorld(ScreenX, ScreenY, Location, Direction))
 	{
 		float T; // ignored
-		return Kismet::Math::RayPlaneIntersection(Location, Direction, Plane, T, WorldLocation);
+		return Kismet::Math::RayPlaneIntersection(Location, Direction, GetGroundPlane(), T, WorldLocation);
 	}
 
 	return false;
+}
+
+FPlane AExtPlayerController::GetGroundPlane() const
+{
+	return FPlane(RootComponent->GetComponentLocation(), FVector::UpVector);
 }
 
 void AExtPlayerController::PostProcessInput(const float DeltaTime, const bool bGamePaused)
@@ -344,7 +349,7 @@ void AExtPlayerController::UpdateViewExtents()
 		{
 			const FIntRect ViewRect = SceneView->UnconstrainedViewRect;
 			const FMatrix ViewProjInvMatrix = SceneView->ViewMatrices.GetInvViewProjectionMatrix();
-			const FPlane GroundPlane(RootComponent->GetComponentLocation(), FVector::UpVector);
+			const FPlane GroundPlane = GetGroundPlane();
 
 			auto DeprojectScreenPositionToPlane = [&](float ScreenX, float ScreenY, FVector& WorldLocation) -> bool
 			{
