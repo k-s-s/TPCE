@@ -1,7 +1,9 @@
 // This source code is licensed under the MIT license found in the LICENSE file in the root directory of this source tree.
 
 #include "TPCEEditor.h"
+
 #include "PropertyEditorModule.h"
+#include "SCopyAdditiveLayerTracksWindow.h"
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -22,6 +24,7 @@
 
 #include "Curves/CurveFloat.h"
 #include "Factories/DistanceCurveFactory.h"
+#include "Animation/AnimSequence.h"
 
 #include "Editor.h"
 #include "AssetToolsModule.h"
@@ -239,6 +242,8 @@ void FTPCEEditor::CreateContentBrowserAssetMenu(FMenuBuilder& MenuBuilder, TArra
 	static const FText TEXT_CreateDistanceCurveFromXAxisTitle = LOCTEXT("CreateDistanceCurveFromXAxisTitle", "X Axis");
 	static const FText TEXT_CreateDistanceCurveFromYAxisTitle = LOCTEXT("CreateDistanceCurveFromYAxisTitle", "Y Axis");
 	static const FText TEXT_CreateDistanceCurveFromZAxisTitle = LOCTEXT("CreateDistanceCurveFromZAxisTitle", "Z Axis");
+	static const FText TEXT_CopyAdditiveLayerTracksTitle = LOCTEXT("CopyAdditiveLayerTracksTitle", "Copy Additive Layer Tracks");
+	static const FText TEXT_CopyAdditiveLayerTracksTooltip = LOCTEXT("CopyAdditiveLayerTracksTooltip", "Copy additive layer tracks from the current anim sequence to all other selected anim sequences");
 
 	MenuBuilder.BeginSection("GetAssetCustomActions", TEXT_SectionHeading);
 
@@ -315,6 +320,13 @@ void FTPCEEditor::CreateContentBrowserAssetMenu(FMenuBuilder& MenuBuilder, TArra
 			false,
 			FSlateIcon(FEditorStyle::GetStyleSetName(), "ClassIcon.CurveBase")
 		);
+
+		MenuBuilder.AddMenuEntry(
+			TEXT_CopyAdditiveLayerTracksTitle,
+			TEXT_CopyAdditiveLayerTracksTooltip,
+			FSlateIcon(),
+			FUIAction(FExecuteAction::CreateRaw(this, &FTPCEEditor::ShowCopyAdditiveLayerTracksWindow, Sequences))
+		);
 	}
 }
 
@@ -372,6 +384,25 @@ void FTPCEEditor::CreateDistanceCurveAssets(const TArray<TWeakObjectPtr<UAnimSeq
 			ContentBrowserModule.Get().SyncBrowserToAssets(ObjectsToSync, /*bAllowLockedBrowsers=*/true);
 		}
 	}
+}
+
+void FTPCEEditor::ShowCopyAdditiveLayerTracksWindow(const TArray<TWeakObjectPtr<UAnimSequence>> AnimSequences)
+{
+	TSharedPtr<SCopyAdditiveLayerTracksWindow> WindowContent;
+
+	TSharedRef<SWindow> Window = SNew(SWindow)
+		.Title(LOCTEXT("WindowTitle", "Copy Additive Layer Tracks"))
+		.SizingRule(ESizingRule::Autosized);
+		//.ClientSize(FVector2D(500, 500));
+
+	Window->SetContent
+	(
+		SAssignNew(WindowContent, SCopyAdditiveLayerTracksWindow)
+		.WidgetWindow(Window)
+		.AnimSequences(AnimSequences)
+	);
+
+	GEditor->EditorAddModalWindow(Window);
 }
 
 void FTPCEEditor::CreateUniqueAssetName(const FString& InBasePackageName, const FString& InSuffix, FString& OutPackageName, FString& OutAssetName) const

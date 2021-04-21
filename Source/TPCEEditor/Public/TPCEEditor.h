@@ -57,6 +57,7 @@ private:
 	TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FAssetData>& SelectedAssets);
 	void CreateContentBrowserAssetMenu(FMenuBuilder& MenuBuilder, TArray<FAssetData> SelectedAssets);
 	void CreateDistanceCurveAssets(const TArray<TWeakObjectPtr<UAnimSequence>> AnimSequences, EDistanceCurveType DistanceCurveType);
+	void ShowCopyAdditiveLayerTracksWindow(const TArray<TWeakObjectPtr<UAnimSequence>> AnimSequences);
 
 	/** Creates a unique package and asset name taking the form InBasePackageName+InSuffix */
 	void CreateUniqueAssetName(const FString& InBasePackageName, const FString& InSuffix, FString& OutPackageName, FString& OutAssetName) const;
@@ -67,6 +68,7 @@ protected:
 	void RegisterComponentVisualizers();
 	void RegisterAssetTools(IAssetTools& AssetTools);
 	void RegisterContentBrowserExtenders();
+
 
 public:
 	virtual void StartupModule() override;
