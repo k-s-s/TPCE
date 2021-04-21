@@ -180,7 +180,7 @@ public:
 protected:	// Bitfields
 
 	/** */
-	UPROPERTY(EditAnywhere, Category = Debug)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Debug)
 	uint32 bEnableDebugDraw : 1;
 
 	/** If true character is in ragdoll mode. */
