@@ -4,6 +4,7 @@
 
 #include "Widgets/SOverlay.h"
 #include "Widgets/SBoxPanel.h"
+#include "Widgets/Text/STextBlock.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Layout/SUniformGridPanel.h"
 #include "PropertyCustomizationHelpers.h"
@@ -58,6 +59,17 @@ void SCopyAdditiveLayerTracksWindow::Construct(const FArguments& InArgs)
 				.OnShouldFilterAsset(this, &SCopyAdditiveLayerTracksWindow::ShouldFilterAsset)
 				.ObjectPath(this, &SCopyAdditiveLayerTracksWindow::GetSourceAnimationSequence)
 				.ThumbnailPool(AssetThumbnailPool.ToSharedRef())
+			]
+
+			// TODO Will crash if the selected animation is open in Persona and the tracks are cleared
+			// Not sure how to address this, so just warn the user for now
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			.HAlign(HAlign_Right)
+			.Padding(2)
+			[
+				SNew(STextBlock)
+				.Text(LOCTEXT("CopyAdditiveLayerTracksWindow_Warning", "Please make sure Persona is closed before proceeding."))
 			]
 
 			+ SVerticalBox::Slot()
@@ -173,7 +185,11 @@ void SCopyAdditiveLayerTracksWindow::CopyAdditiveLayerTracks(UAnimSequence* Anim
 	USkeleton* CurrentSkeleton = AnimSequence->GetSkeleton();
 	check(CurrentSkeleton);
 
-	AnimSequence->RawCurveData.DeleteAllCurveData(ERawCurveTrackTypes::RCT_Transform);
+	if (AnimSequence->DoesContainTransformCurves())
+	{
+		AnimSequence->RawCurveData.DeleteAllCurveData(ERawCurveTrackTypes::RCT_Transform);
+		AnimSequence->bNeedsRebake = true;
+	}
 
 	if (SourceAnimSequence.IsValid())
 	{
