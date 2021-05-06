@@ -132,13 +132,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Input", meta=(Bitmask, BitmaskEnum="EPlayerControllerInputDevices"))
 	int32 InputDevices;
 
-	/** Convert current mouse 2D position to World Space 3D position projected on to the ground plane. Returns false if unable to determine value. **/
+	/** Convert current mouse 2D position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
 	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectMouseLocationOnToPlane", Keywords = "deproject"))
-	bool DeprojectMousePositionToPlane(FVector& WorldLocation) const;
+	bool DeprojectMousePositionToPlane(FVector& WorldLocation, const FPlane& Plane) const;
+
+	/** Convert current mouse 2D position to World Space 3D position projected on to the ground plane. Returns false if unable to determine value. **/
+	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectMouseLocationOnToGround", Keywords = "deproject"))
+	bool DeprojectMousePositionToGround(FVector& WorldLocation) const;
+
+	/** Convert 2D screen position to World Space 3D position projected on to a plane. Returns false if unable to determine value. **/
+	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectScreenLocationOnToPlane", Keywords = "deproject"))
+	bool DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation, const FPlane& Plane) const;
 
 	/** Convert 2D screen position to World Space 3D position projected on to the ground plane. Returns false if unable to determine value. **/
-	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectScreenLocationOnToPlane", Keywords = "deproject"))
-	bool DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation) const;
+	UFUNCTION(BlueprintCallable, Category = "Game|Player", meta = (DisplayName = "ProjectScreenLocationOnToGround", Keywords = "deproject"))
+	bool DeprojectScreenPositionToGround(float ScreenX, float ScreenY, FVector& WorldLocation) const;
 
 	/** Returns the corners of the view frustum intersection with the ground plane. */
 	UFUNCTION(BlueprintCallable, Category = Camera)

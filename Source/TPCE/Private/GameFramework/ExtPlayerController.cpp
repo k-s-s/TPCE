@@ -233,30 +233,40 @@ void AExtPlayerController::GetInputBindingDescriptions(TArray<FInputBindingDescr
 	}
 }
 
-bool AExtPlayerController::DeprojectMousePositionToPlane(FVector& WorldLocation) const
+bool AExtPlayerController::DeprojectMousePositionToPlane(FVector& WorldLocation, const FPlane& Plane = FPlane(FVector::UpVector, 0.0f)) const
 {
 	FVector Location, Direction;
 
 	if (DeprojectMousePositionToWorld(Location, Direction))
 	{
 		float T; // ignored
-		return Kismet::Math::RayPlaneIntersection(Location, Direction, GetGroundPlane(), T, WorldLocation);
+		return Kismet::Math::RayPlaneIntersection(Location, Direction, Plane, T, WorldLocation);
 	}
 
 	return false;
 }
 
-bool AExtPlayerController::DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation) const
+bool AExtPlayerController::DeprojectMousePositionToGround(FVector& WorldLocation) const
+{
+	return DeprojectMousePositionToPlane(WorldLocation, GetGroundPlane());
+}
+
+bool AExtPlayerController::DeprojectScreenPositionToPlane(float ScreenX, float ScreenY, FVector& WorldLocation, const FPlane& Plane = FPlane(FVector::UpVector, 0.0f)) const
 {
 	FVector Location, Direction;
 
 	if (DeprojectScreenPositionToWorld(ScreenX, ScreenY, Location, Direction))
 	{
 		float T; // ignored
-		return Kismet::Math::RayPlaneIntersection(Location, Direction, GetGroundPlane(), T, WorldLocation);
+		return Kismet::Math::RayPlaneIntersection(Location, Direction, Plane, T, WorldLocation);
 	}
 
 	return false;
+}
+
+bool AExtPlayerController::DeprojectScreenPositionToGround(float ScreenX, float ScreenY, FVector& WorldLocation) const
+{
+	return DeprojectScreenPositionToPlane(ScreenX, ScreenY, WorldLocation, GetGroundPlane());
 }
 
 FPlane AExtPlayerController::GetGroundPlane() const
