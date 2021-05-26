@@ -13,6 +13,7 @@
 #include "Engine/NetworkObjectList.h"
 #include "PhysicsEngine/ConstraintInstance.h"
 #include "Curves/CurveFloat.h"
+#include "GenericTeamAgentInterface.h"
 
 #include "Math/MathExtensions.h"
 #include "Kismet/Kismet.h"
@@ -143,10 +144,11 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 
 	// Pawn Interaction
 	bPushAwayFromPawns = false;
-	MinPushAwayForce = 5000.0f;
-	MaxPushAwayForce = 300000.0f;
-	bPushAwayForceIgnoresMass = false;
-	PushAwayDistanceExp = 3.0f;
+	MinPushAway = 0.0f;
+	MaxPushAway = 5.0f;
+	EnemyPushAway = 2.0f;
+	PushAwayDistanceExp = 1.0f;
+	PushAwayRealVelocityFraction = 0.3f;
 
 	// Avoidance
 	AvoidanceRadius = 0.0f;
@@ -313,49 +315,281 @@ void UExtCharacterMovementComponent::ApplyVelocityBraking(float DeltaTime, float
 	}
 }
 
-void UExtCharacterMovementComponent::ApplyAccumulatedForces(float DeltaSeconds)
+void UExtCharacterMovementComponent::PhysWalking(float deltaTime, int32 Iterations)
 {
-	if (bPushAwayFromPawns && IsWalking())
+	// Full override is needed to apply pawn push away as a separate velocity.
+	// It's not enough to override MoveAlongFloor since it only runs when velocity is not zero.
+	FULL_OVERRIDE();
+
+	if (deltaTime < MIN_TICK_TIME)
 	{
-		const TArray<FOverlapInfo>& Overlaps = UpdatedPrimitive->GetOverlapInfos();
+		return;
+	}
 
-		if (Overlaps.Num() > 0)
+	if (!CharacterOwner || (!CharacterOwner->Controller && !bRunPhysicsWithNoController && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity() && (CharacterOwner->GetLocalRole() != ROLE_SimulatedProxy)))
+	{
+		Acceleration = FVector::ZeroVector;
+		Velocity = FVector::ZeroVector;
+		return;
+	}
+
+	if (!UpdatedComponent->IsQueryCollisionEnabled())
+	{
+		SetMovementMode(MOVE_Walking);
+		return;
+	}
+
+	bJustTeleported = false;
+	bool bCheckedFall = false;
+	bool bTriedLedgeMove = false;
+	float remainingTime = deltaTime;
+
+	// Perform the move
+	while ((remainingTime >= MIN_TICK_TIME) && (Iterations < MaxSimulationIterations) && CharacterOwner && (CharacterOwner->Controller || bRunPhysicsWithNoController || HasAnimRootMotion() || CurrentRootMotion.HasOverrideVelocity() || (CharacterOwner->GetLocalRole() == ROLE_SimulatedProxy)))
+	{
+		Iterations++;
+		bJustTeleported = false;
+		const float timeTick = GetSimulationTimeStep(remainingTime, Iterations);
+		remainingTime -= timeTick;
+
+		// Save current values
+		UPrimitiveComponent* const OldBase = GetMovementBase();
+		const FVector PreviousBaseLocation = (OldBase != NULL) ? OldBase->GetComponentLocation() : FVector::ZeroVector;
+		const FVector OldLocation = UpdatedComponent->GetComponentLocation();
+		const FFindFloorResult OldFloor = CurrentFloor;
+
+		RestorePreAdditiveRootMotionVelocity();
+
+		// Ensure velocity is horizontal.
+		MaintainHorizontalGroundVelocity();
+		const FVector OldVelocity = Velocity;
+		Acceleration.Z = 0.f;
+
+		// Apply acceleration
+		if (!HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
 		{
-			float MyCapsuleRadius = 0.0f;
-			float MyCapsuleHalfHeight = 0.0f;
-			CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleSize(MyCapsuleRadius, MyCapsuleHalfHeight);
-			const FVector MyCapsuleLocation = UpdatedPrimitive->GetComponentLocation();
+			CalcVelocity(timeTick, GroundFriction, false, GetMaxBrakingDeceleration());
+		}
 
-			for (int32 OverlapIndex = 0; OverlapIndex < Overlaps.Num(); OverlapIndex++)
+		ApplyRootMotionToVelocity(timeTick);
+
+		if (IsFalling())
+		{
+			// Root motion could have put us into Falling.
+			// No movement has taken place this movement tick so we pass on full time/past iteration count
+			StartNewPhysics(remainingTime + timeTick, Iterations - 1);
+			return;
+		}
+
+		// Compute move parameters
+		FVector PushAwayVelocity = FVector::ZeroVector;
+		if (bPushAwayFromPawns)
+		{
+			PushAwayVelocity = CalcPushAwayVelocity(deltaTime);
+			Velocity += PushAwayVelocity * PushAwayRealVelocityFraction;
+			PushAwayVelocity = PushAwayVelocity * (1.f - PushAwayRealVelocityFraction);
+		}
+		const FVector MoveVelocity = Velocity;
+		const FVector Delta = timeTick * MoveVelocity;
+		const bool bZeroDelta = Delta.IsNearlyZero() && PushAwayVelocity.IsNearlyZero();
+		FStepDownResult StepDownResult;
+
+		if (bZeroDelta)
+		{
+			remainingTime = 0.f;
+		}
+		else
+		{
+			// try to move forward
+			MoveAlongFloor(MoveVelocity + PushAwayVelocity, timeTick, &StepDownResult);
+
+			if (IsFalling())
 			{
-				const FOverlapInfo& Overlap = Overlaps[OverlapIndex];
-				UPrimitiveComponent* OverlapComp = Overlap.OverlapInfo.Component.Get();
-
-				if (!OverlapComp || OverlapComp->GetCollisionObjectType() != ECollisionChannel::ECC_Pawn)
+				// pawn decided to jump up
+				const float DesiredDist = Delta.Size();
+				if (DesiredDist > KINDA_SMALL_NUMBER)
 				{
-					continue;
+					const float ActualDist = (UpdatedComponent->GetComponentLocation() - OldLocation).Size2D();
+					remainingTime += timeTick * (1.f - FMath::Min(1.f, ActualDist / DesiredDist));
 				}
+				StartNewPhysics(remainingTime, Iterations);
+				return;
+			}
+			else if (IsSwimming()) //just entered water
+			{
+				StartSwimming(OldLocation, OldVelocity, timeTick, remainingTime, Iterations);
+				return;
+			}
+		}
 
-				if (UCapsuleComponent* OverlapCapsule = Cast<UCapsuleComponent>(OverlapComp))
+		// Update floor.
+		// StepUp might have already done it for us.
+		if (StepDownResult.bComputedFloor)
+		{
+			CurrentFloor = StepDownResult.FloorResult;
+		}
+		else
+		{
+			FindFloor(UpdatedComponent->GetComponentLocation(), CurrentFloor, bZeroDelta, NULL);
+		}
+
+		// check for ledges here
+		const bool bCheckLedges = !CanWalkOffLedges();
+		if (bCheckLedges && !CurrentFloor.IsWalkableFloor())
+		{
+			// calculate possible alternate movement
+			const FVector GravDir = FVector(0.f, 0.f, -1.f);
+			const FVector NewDelta = bTriedLedgeMove ? FVector::ZeroVector : GetLedgeMove(OldLocation, Delta, GravDir);
+			if (!NewDelta.IsZero())
+			{
+				// first revert this move
+				RevertMove(OldLocation, OldBase, PreviousBaseLocation, OldFloor, false);
+
+				// avoid repeated ledge moves if the first one fails
+				bTriedLedgeMove = true;
+
+				// Try new movement direction
+				Velocity = NewDelta / timeTick;
+				remainingTime += timeTick;
+				continue;
+			}
+			else
+			{
+				// see if it is OK to jump
+				// @todo collision : only thing that can be problem is that oldbase has world collision on
+				bool bMustJump = bZeroDelta || (OldBase == NULL || (!OldBase->IsQueryCollisionEnabled() && MovementBaseUtility::IsDynamicBase(OldBase)));
+				if ((bMustJump || !bCheckedFall) && CheckFall(OldFloor, CurrentFloor.HitResult, Delta, OldLocation, remainingTime, timeTick, Iterations, bMustJump))
 				{
-					const float BothRadii = MyCapsuleRadius + OverlapCapsule->GetScaledCapsuleRadius();
-					FVector PushDirection = MyCapsuleLocation - OverlapComp->GetComponentLocation();
-					PushDirection.Z = 0.0f;
-					const float PushForcePct = 1.0f - FMath::Pow(FMath::Clamp(PushDirection.Size() / BothRadii, 0.0f, 1.0f), PushAwayDistanceExp);
-					float PushForce = FMath::Lerp(MinPushAwayForce, MaxPushAwayForce, PushForcePct);
-					if (!bPushAwayForceIgnoresMass)
+					return;
+				}
+				bCheckedFall = true;
+
+				// revert this move
+				RevertMove(OldLocation, OldBase, PreviousBaseLocation, OldFloor, true);
+				remainingTime = 0.f;
+				break;
+			}
+		}
+		else
+		{
+			// Validate the floor check
+			if (CurrentFloor.IsWalkableFloor())
+			{
+				if (ShouldCatchAir(OldFloor, CurrentFloor))
+				{
+					HandleWalkingOffLedge(OldFloor.HitResult.ImpactNormal, OldFloor.HitResult.Normal, OldLocation, timeTick);
+					if (IsMovingOnGround())
 					{
-						PushForce /= Mass;
+						// If still walking, then fall. If not, assume the user set a different mode they want to keep.
+						StartFalling(Iterations, remainingTime, timeTick, Delta, OldLocation);
 					}
-
-					PushDirection.Normalize();
-					PendingForceToApply += PushDirection * PushForce;
+					return;
 				}
+
+				AdjustFloorHeight();
+				SetBase(CurrentFloor.HitResult.Component.Get(), CurrentFloor.HitResult.BoneName);
+			}
+			else if (CurrentFloor.HitResult.bStartPenetrating && remainingTime <= 0.f)
+			{
+				// The floor check failed because it started in penetration
+				// We do not want to try to move downward because the downward sweep failed, rather we'd like to try to pop out of the floor.
+				FHitResult Hit(CurrentFloor.HitResult);
+				Hit.TraceEnd = Hit.TraceStart + FVector(0.f, 0.f, MAX_FLOOR_DIST);
+				const FVector RequestedAdjustment = GetPenetrationAdjustment(Hit);
+				ResolvePenetration(RequestedAdjustment, Hit, UpdatedComponent->GetComponentQuat());
+				bForceNextFloorCheck = true;
+			}
+
+			// check if just entered water
+			if (IsSwimming())
+			{
+				StartSwimming(OldLocation, Velocity, timeTick, remainingTime, Iterations);
+				return;
+			}
+
+			// See if we need to start falling.
+			if (!CurrentFloor.IsWalkableFloor() && !CurrentFloor.HitResult.bStartPenetrating)
+			{
+				const bool bMustJump = bJustTeleported || bZeroDelta || (OldBase == NULL || (!OldBase->IsQueryCollisionEnabled() && MovementBaseUtility::IsDynamicBase(OldBase)));
+				if ((bMustJump || !bCheckedFall) && CheckFall(OldFloor, CurrentFloor.HitResult, Delta, OldLocation, remainingTime, timeTick, Iterations, bMustJump))
+				{
+					return;
+				}
+				bCheckedFall = true;
+			}
+		}
+
+
+		// Allow overlap events and such to change physics state and velocity
+		if (IsMovingOnGround())
+		{
+			// Make velocity reflect actual move
+			if (!bJustTeleported && PushAwayVelocity.IsNearlyZero() && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity() && timeTick >= MIN_TICK_TIME)
+			{
+				// TODO-RootMotionSource: Allow this to happen during partial override Velocity, but only set allowed axes?
+				Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / timeTick;
+			}
+		}
+
+		// If we didn't move at all this iteration then abort (since future iterations will also be stuck).
+		if (UpdatedComponent->GetComponentLocation() == OldLocation)
+		{
+			remainingTime = 0.f;
+			break;
+		}
+	}
+
+	if (IsMovingOnGround())
+	{
+		MaintainHorizontalGroundVelocity();
+	}
+}
+
+FVector UExtCharacterMovementComponent::CalcPushAwayVelocity(float DeltaTime)
+{
+	FVector PushAwayVelocity = FVector::ZeroVector;
+
+	const TArray<FOverlapInfo>& Overlaps = UpdatedPrimitive->GetOverlapInfos();
+	if (Overlaps.Num() > 0)
+	{
+		float MyCapsuleRadius = 0.f;
+		float MyCapsuleHalfHeight = 0.f;
+		CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleSize(MyCapsuleRadius, MyCapsuleHalfHeight);
+		const FVector MyCapsuleLocation = UpdatedPrimitive->GetComponentLocation();
+		const IGenericTeamAgentInterface* OwnerTeamAgent = Cast<const IGenericTeamAgentInterface>(GetOwner());
+
+		for (int32 OverlapIndex = 0; OverlapIndex < Overlaps.Num(); OverlapIndex++)
+		{
+			const FOverlapInfo& Overlap = Overlaps[OverlapIndex];
+			UPrimitiveComponent* OverlapComp = Overlap.OverlapInfo.Component.Get();
+
+			if (!OverlapComp || OverlapComp->GetCollisionObjectType() != ECollisionChannel::ECC_Pawn)
+			{
+				continue;
+			}
+
+			if (UCapsuleComponent* OverlapCapsule = Cast<UCapsuleComponent>(OverlapComp))
+			{
+				const float OtherCapsuleRadius = OverlapCapsule->GetScaledCapsuleRadius();
+				FVector DeltaLocation = MyCapsuleLocation - OverlapComp->GetComponentLocation();
+				DeltaLocation.Z = 0.f;
+				//const float PenetrationDistance = MyCapsuleRadius + OtherCapsuleRadius - DeltaLocation.Size();
+				const float PenetrationFac = FMath::Clamp(DeltaLocation.Size() / (MyCapsuleRadius + OtherCapsuleRadius), 0.f, 1.f);
+				const float PushForceFac = 1.f - FMath::Pow(PenetrationFac, PushAwayDistanceExp);
+				const FVector PushDirection = DeltaLocation.GetSafeNormal();
+
+				float PushForceAmount = FMath::Max(0.f, FMath::Lerp(MinPushAway, MaxPushAway, PushForceFac));
+				if (OwnerTeamAgent && OwnerTeamAgent->GetTeamAttitudeTowards(*OverlapCapsule->GetOwner()) == ETeamAttitude::Hostile)
+				{
+					PushForceAmount *= EnemyPushAway;
+				}
+
+				PushAwayVelocity += PushDirection * OtherCapsuleRadius * PushForceAmount;
 			}
 		}
 	}
 
-	Super::ApplyAccumulatedForces(DeltaSeconds);
+	return PushAwayVelocity;
 }
 
 void UExtCharacterMovementComponent::SimulateMovement(float DeltaSeconds)

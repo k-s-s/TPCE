@@ -277,6 +277,10 @@ protected:  // Variables
 	UPROPERTY()
 	FVector SimulatedAcceleration;
 
+	/** */
+	UPROPERTY()
+	FVector PushAwayAccumulatedForce;
+
 public: // Variables
 
 	/**
@@ -437,35 +441,40 @@ public: // Variables
 
 	/**
 	 * Allows soft collision between characters by pushing ourselves away from other ECC_Pawn capsules.
-	 * Make sure collision response is set to overlap, and note that braking/friction values might cause the force to be negated.
+	 * Collision response must be set to overlap.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
 	bool bPushAwayFromPawns;
 
-	/** Repulsion force from pawn capsules that barely overlap ours. */
+	/** Repulsion from pawn capsules that barely overlap ours. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0"))
-	float MinPushAwayForce;
+	float MinPushAway;
 
-	/** Repulsion force from pawn capsules that heavily overlap ours. */
+	/** Repulsion from pawn capsules that heavily overlap ours. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0"))
-	float MaxPushAwayForce;
+	float MaxPushAway;
 
-	/** Repulsion force ignores mass. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction")
-	bool bPushAwayForceIgnoresMass;
+	/** Repulsion multiplier when the other pawn is considered an enemy. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0"))
+	float EnemyPushAway;
 
-	/** Distance curve exponent. Higher values make the repulsion force approach the maximum value faster. */
+	/** Distance curve exponent. 1.0 is linear, higher values make the repulsion force approach the maximum value faster. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0"))
 	float PushAwayDistanceExp;
+
+	/** Push away is a separate velocity unaffected by inertia and friction. This allows applying a fraction of it as normal velocity. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, AdvancedDisplay, Category = "Character Movement: Pawn Interaction", meta = (ClampMin = "0", UIMin = "0", ClampMax = "1", UIMax = "1"))
+	float PushAwayRealVelocityFraction;
 
 protected: // Methods
 
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	virtual FVector ScaleInputAcceleration(const FVector& InputAcceleration) const override;
 
+	virtual void PhysWalking(float deltaTime, int32 Iterations) override;
 	virtual void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration) override;
-	virtual void ApplyAccumulatedForces(float DeltaSeconds) override;
 	virtual void SimulateMovement(float DeltaSeconds) override;
+	virtual FVector CalcPushAwayVelocity(float DeltaTime);
 
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity);
 
