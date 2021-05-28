@@ -58,6 +58,9 @@ protected:
 
 private:
 
+	float MinDistanceSqr;
+	float MaxDistanceSqr;
+
 	bool CalcConditionImpl(const UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const;
 	float GetGeometricDistanceSquared(const FVector& A, const FVector& B) const;
 	bool CalculateDistance(const UBehaviorTreeComponent& OwnerComp, const FBlackboardKeySelector& Target, float& Distance) const;

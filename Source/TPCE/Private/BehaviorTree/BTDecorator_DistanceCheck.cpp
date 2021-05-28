@@ -29,6 +29,9 @@ void UBTDecorator_DistanceCheck::InitializeFromAsset(UBehaviorTree& Asset)
 {
 	Super::InitializeFromAsset(Asset);
 
+	MinDistanceSqr = FMath::Square(MinDistance);
+	MaxDistanceSqr = FMath::Square(MaxDistance);
+
 	UBlackboardData* BBAsset = GetBlackboardAsset();
 	if (ensure(BBAsset))
 	{
@@ -36,7 +39,7 @@ void UBTDecorator_DistanceCheck::InitializeFromAsset(UBehaviorTree& Asset)
 	}
 }
 
-bool UBTDecorator_DistanceCheck::CalculateDistance(const UBehaviorTreeComponent& OwnerComp, const FBlackboardKeySelector& Target, float& Distance) const
+bool UBTDecorator_DistanceCheck::CalculateDistance(const UBehaviorTreeComponent& OwnerComp, const FBlackboardKeySelector& Target, float& DistanceSqr) const
 {
 	FVector TargetLocation = FVector::ZeroVector;
 	const UBlackboardComponent* MyBlackboard = OwnerComp.GetBlackboardComponent();
@@ -44,7 +47,7 @@ bool UBTDecorator_DistanceCheck::CalculateDistance(const UBehaviorTreeComponent&
 
 	if (MyBlackboard && MyBlackboard->GetLocationFromEntry(Target.GetSelectedKeyID(), TargetLocation) && MyController && MyController->GetPawn())
 	{
-		Distance = GetGeometricDistanceSquared(MyController->GetPawn()->GetActorLocation(), TargetLocation);
+		DistanceSqr = GetGeometricDistanceSquared(MyController->GetPawn()->GetActorLocation(), TargetLocation);
 		return true;
 	}
 
@@ -54,9 +57,9 @@ bool UBTDecorator_DistanceCheck::CalculateDistance(const UBehaviorTreeComponent&
 
 FORCEINLINE bool UBTDecorator_DistanceCheck::CalcConditionImpl(const UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	float Distance;
-	return CalculateDistance(OwnerComp, Observed, Distance)
-		&& (MinDistance <= 0.f || Distance >= MinDistance) && (MaxDistance <= 0.f || Distance <= MaxDistance);
+	float DistanceSqr;
+	return CalculateDistance(OwnerComp, Observed, DistanceSqr)
+		&& (MinDistanceSqr <= 0.f || DistanceSqr >= MinDistanceSqr) && (MaxDistanceSqr <= 0.f || DistanceSqr <= MaxDistanceSqr);
 }
 
 bool UBTDecorator_DistanceCheck::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
