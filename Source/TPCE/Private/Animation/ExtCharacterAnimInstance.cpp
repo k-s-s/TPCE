@@ -23,7 +23,8 @@ UExtCharacterAnimInstance::UExtCharacterAnimInstance()
 	AimOffsetResetInterpSpeed = 2.0f;
 	AimOffsetMaxAngle = 0.0f;
 	AimDistanceDefault = 200.0f;
-	RootBoneOffsetResetInterpSpeed = 5.0f;
+	RootBoneResetSpeed = 180.0f;
+	RootBoneResetCurveName = TEXT("RootBoneReset");
 
 	WalkSpeed = 165.f;
 	RunSpeed = 375.f;
@@ -196,23 +197,23 @@ void UExtCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		}
 		else
 		{
-			// FRotator TurnRotation = (Mesh->GetComponentQuat() * Character->GetBaseRotationOffset().Inverse()).Rotator();
+			if (RootBoneOffset.X < -AngleTolerance || RootBoneOffset.X > AngleTolerance)
+			{
+				const float RootBoneSpeedFactor = bIsGettingUp ? GetCurveValue(RootBoneResetCurveName) : 1.f;
+				if (RootBoneSpeedFactor > 0.f)
+				{
+					RootBoneOffset.X = FMathEx::FInterpConstantAngleTo(RootBoneOffset.X, 0.0f, DeltaSeconds, RootBoneResetSpeed * RootBoneSpeedFactor);
+					RootBoneRotation = CharacterOwnerMesh->GetComponentTransform().TransformRotation(FQuat(FVector::UpVector, FMath::DegreesToRadians(RootBoneOffset.X)));
+				}
+			}
+			else
+			{
+				RootBoneOffset.X = 0.0f;
+				RootBoneRotation = CharacterOwnerMesh->GetComponentQuat();
+			}
+
 			if (!bIsGettingUp)
 			{
-				// Update root bone rotation smoothly.
-				{
-					if (RootBoneOffset.X < -AngleTolerance || RootBoneOffset.X > AngleTolerance)
-					{
-						RootBoneOffset.X = FMathEx::FInterpConstantAngleTo(RootBoneOffset.X, 0.0f, DeltaSeconds, 180.f);
-						RootBoneRotation = CharacterOwnerMesh->GetComponentTransform().TransformRotation(FQuat(FVector::UpVector, FMath::DegreesToRadians(RootBoneOffset.X)));
-					}
-					else
-					{
-						RootBoneOffset.X = 0.0f;
-						RootBoneRotation = CharacterOwnerMesh->GetComponentQuat();
-					}
-				}
-
 				NativeUpdateGaitScale(DeltaSeconds);
 				NativeUpdatePivotTurn(LastVelocity, DeltaSeconds);
 				NativeUpdateTurnInPlace(DeltaSeconds);

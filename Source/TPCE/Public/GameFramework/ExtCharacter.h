@@ -944,9 +944,11 @@ public:		// Methods
 	void SetRagdoll(bool Value);
 
 	/** */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Pawn|Character")
 	FORCEINLINE bool IsGettingUp() const { return GettingUpTimerHandle.IsValid(); }
 
 	/** */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Pawn|Character")
 	FORCEINLINE bool IsLanding() const { return LandingTimerHandle.IsValid(); }
 
 	/** */

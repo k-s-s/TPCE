@@ -370,7 +370,11 @@ private:
 
 	/** How fast the root bone offset should reset. Use 0 for immediate. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
-	float RootBoneOffsetResetInterpSpeed;
+	float RootBoneResetSpeed;
+
+	/** Curve that can be added to getting up from ragdoll montages to control rotation of the root bone. */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Skeleton", meta = (AllowPrivateAccess = "true"))
+	FName RootBoneResetCurveName;
 
 	/** Curve used to determine the correct animation position for turn in place given an angular distance to the target rotation. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking|Idle|TurnInPlace", meta = (AllowPrivateAccess = "true"))
@@ -730,7 +734,7 @@ public:
 
 	FORCEINLINE float GetAimOffsetResetInterpSpeed() const { return AimOffsetResetInterpSpeed; }
 
-	FORCEINLINE float GetRootBoneOffsetResetInterpSpeed() const { return RootBoneOffsetResetInterpSpeed; }
+	FORCEINLINE float GetRootBoneResetSpeed() const { return RootBoneResetSpeed; }
 
 	FORCEINLINE UCurveFloat* GetTurnInPlaceLeftLongCurveNormal() const { return TurnInPlaceLeftLongCurveNormal; }
 
