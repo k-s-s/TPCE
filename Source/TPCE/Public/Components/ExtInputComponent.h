@@ -56,10 +56,18 @@ public:
 	/**
 	 * Gets the description attached with the action binding with the specified index, if available.
 	 *
-	 * @param BindingIndex The index of the binding to get.
+	 * @param Handle The handle of the binding.
 	 * @return True if the binding had a description attached to it.
 	 */
-	bool GetActionBindingDescription(const int32 BindingIndex, FText& Text) const;
+	bool GetActionBindingDescriptionForHandle(const int32 Handle, FText& Text) const;
+
+	/**
+	 * Sets the description attached with the action binding with the specified index.
+	 *
+	 * @param Handle The handle of the binding.
+	 * @param Text Description of the action binding.
+	 */
+	void SetActionBindingDescriptionForHandle(const int32 Handle, const FText& Text);
 
 	/**
 	 * Adds the specified action binding.

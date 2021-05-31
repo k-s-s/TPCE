@@ -14,15 +14,31 @@ FInputActionBinding& UExtInputComponent::AddActionBindingWithDescription(FInputA
 	return NewBinding;
 }
 
-bool UExtInputComponent::GetActionBindingDescription(const int32 BindingIndex, FText& Text) const
+bool UExtInputComponent::GetActionBindingDescriptionForHandle(const int32 Handle, FText& Text) const
 {
-	FInputActionBinding& Binding = GetActionBinding(BindingIndex);
-
-	if (const FText* TextP = ActionBindingDescriptions.Find(Binding.GetHandle()))
+	if (Handle != INDEX_NONE)
 	{
-		Text = *TextP;
-		return true;
+		if (const FText* TextPtr = ActionBindingDescriptions.Find(Handle))
+		{
+			Text = *TextPtr;
+			return true;
+		}
 	}
 
 	return false;
+}
+
+void UExtInputComponent::SetActionBindingDescriptionForHandle(const int32 Handle, const FText& Text)
+{
+	if (Handle != INDEX_NONE)
+	{
+		if (!Text.IsEmpty())
+		{
+			ActionBindingDescriptions.Add(Handle, Text);
+		}
+		else
+		{
+			ActionBindingDescriptions.Remove(Handle);
+		}
+	}
 }

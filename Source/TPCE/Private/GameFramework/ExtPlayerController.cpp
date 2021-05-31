@@ -199,9 +199,9 @@ void AExtPlayerController::GetInputBindingDescriptions(TArray<FInputBindingDescr
 			for (int32 ActionBindingIndex = 0; ActionBindingIndex < NumActionBindings; ActionBindingIndex++)
 			{
 				FText Text;
-				if (ExtInputComponent->GetActionBindingDescription(ActionBindingIndex, Text))
+				const FInputActionBinding& ActionBinding = ExtInputComponent->GetActionBinding(ActionBindingIndex);
+				if (ExtInputComponent->GetActionBindingDescriptionForHandle(ActionBinding.GetHandle(), Text))
 				{
-					FInputActionBinding& ActionBinding = ExtInputComponent->GetActionBinding(ActionBindingIndex);
 					const TArray<FInputActionKeyMapping>& KeysForAction = PlayerInput->GetKeysForAction(ActionBinding.GetActionName());
 					for (const FInputActionKeyMapping& KeyMapping : KeysForAction)
 					{
