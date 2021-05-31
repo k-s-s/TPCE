@@ -223,12 +223,12 @@ void AExtPlayerController::GetInputBindingDescriptions(TArray<FInputBindingDescr
 					}
 				}
 			}
+		}
 
-			if (ExtInputComponent->bBlockInput)
-			{
-				// Stop traversing the stack, all input has been consumed by this InputComponent
-				break;
-			}
+		if (InputComponentStack[StackIndex]->bBlockInput)
+		{
+			// Stop traversing the stack, all input has been consumed by this InputComponent
+			break;
 		}
 	}
 }
