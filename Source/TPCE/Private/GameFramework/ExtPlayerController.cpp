@@ -192,16 +192,16 @@ void AExtPlayerController::GetInputBindingDescriptions(TArray<FInputBindingDescr
 	int32 StackIndex = InputComponentStack.Num() - 1;
 	for (; StackIndex >= 0; --StackIndex)
 	{
-		if (const UExtInputComponent* KkIC = Cast<UExtInputComponent>(InputComponentStack[StackIndex]))
+		if (const UExtInputComponent* ExtInputComponent = Cast<UExtInputComponent>(InputComponentStack[StackIndex]))
 		{
 			// Go through bindings and get the key mappings that have an user provided description
-			const int32 NumActionBindings = KkIC->GetNumActionBindings();
+			const int32 NumActionBindings = ExtInputComponent->GetNumActionBindings();
 			for (int32 ActionBindingIndex = 0; ActionBindingIndex < NumActionBindings; ActionBindingIndex++)
 			{
 				FText Text;
-				if (KkIC->GetActionBindingDescription(ActionBindingIndex, Text))
+				if (ExtInputComponent->GetActionBindingDescription(ActionBindingIndex, Text))
 				{
-					FInputActionBinding& ActionBinding = KkIC->GetActionBinding(ActionBindingIndex);
+					FInputActionBinding& ActionBinding = ExtInputComponent->GetActionBinding(ActionBindingIndex);
 					const TArray<FInputActionKeyMapping>& KeysForAction = PlayerInput->GetKeysForAction(ActionBinding.GetActionName());
 					for (const FInputActionKeyMapping& KeyMapping : KeysForAction)
 					{
@@ -224,7 +224,7 @@ void AExtPlayerController::GetInputBindingDescriptions(TArray<FInputBindingDescr
 				}
 			}
 
-			if (KkIC->bBlockInput)
+			if (ExtInputComponent->bBlockInput)
 			{
 				// Stop traversing the stack, all input has been consumed by this InputComponent
 				break;

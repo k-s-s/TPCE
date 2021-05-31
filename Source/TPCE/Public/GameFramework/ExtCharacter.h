@@ -542,6 +542,7 @@ protected:	// Methods
 	UFUNCTION()
 	virtual void OnRep_IsPerformingGenericAction();
 
+	virtual UInputComponent* CreatePlayerInputComponent() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	/** [local] Handle player input to move forwards/backward */

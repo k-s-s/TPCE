@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Components/SceneComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
+#include "Components/ExtInputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Curves/CurveFloat.h"
@@ -957,6 +957,12 @@ FVector AExtCharacter::GetPawnViewLocation() const
 
 
 /// Input
+
+UInputComponent* AExtCharacter::CreatePlayerInputComponent()
+{
+	static const FName InputComponentName(TEXT("PawnInputComponent0"));
+	return NewObject<UExtInputComponent>(this, InputComponentName);
+}
 
 void AExtCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
