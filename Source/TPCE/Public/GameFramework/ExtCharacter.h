@@ -273,14 +273,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Transient, Category = Character)
 	uint32 bHasLandedSafely : 1;
 
-private:	// Variables
-
-	/* Handle for the timer triggered after landing. */
-	FTimerHandle LandingTimerHandle;
-
-	/* Handle for the timer triggered when getting up from ragdoll. */
-	FTimerHandle GettingUpTimerHandle;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName MoveForwardActionName;
 
@@ -359,6 +351,22 @@ private:	// Variables
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName RightForearmBoneName;
 
+	/** Current character gait determined by the latest movement actions */
+	UPROPERTY(BlueprintReadOnly, Transient, Category = Character, meta = (AllowPrivateAccess = "true"))
+	ECharacterGait Gait;
+
+	/** Current character rotation mode. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = Character, meta = (AllowPrivateAccess = "true"))
+	ECharacterRotationMode RotationMode;
+
+private:	// Variables
+
+	/* Handle for the timer triggered after landing. */
+	FTimerHandle LandingTimerHandle;
+
+	/* Handle for the timer triggered when getting up from ragdoll. */
+	FTimerHandle GettingUpTimerHandle;
+
 #if WITH_EDITORONLY_DATA
 
 	/** Component shown in the editor only to indicate Look Rotation */
@@ -386,14 +394,6 @@ private:	// Variables
 	UArrowComponent* LastAccelerationArrow;
 
 #endif
-
-	/** Current character gait determined by the latest movement actions */
-	UPROPERTY(BlueprintReadOnly, Transient, Category = Character, meta = (AllowPrivateAccess = "true"))
-	ECharacterGait Gait;
-
-	/** Current character rotation mode. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = Character, meta = (AllowPrivateAccess = "true"))
-	ECharacterRotationMode RotationMode;
 
 protected:
 
