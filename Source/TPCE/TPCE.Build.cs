@@ -27,17 +27,17 @@ public class TPCE: ModuleRules
 				"InputCore",
 				"AIModule",
 				"GameplayTasks",
+				"NavigationSystem",
 			}
 		);
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				// UI
 				"Slate",
 				"SlateCore",
 				"UMG",
-				"RHI", // Needed for GetMax2DTextureDimension
+				"RHI",  // Needed for GetMax2DTextureDimension
             }
 		);
 	}
