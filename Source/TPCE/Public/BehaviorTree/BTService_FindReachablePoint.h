@@ -13,7 +13,7 @@
  * Find Reachable Point service node.
  * A service node that finds a navigation reachable point from the initial location when it becomes active.
  */
-UCLASS()
+UCLASS(hidecategories=(Service))
 class TPCE_API UBTService_FindReachablePoint : public UBTService_BlackboardBase
 {
 	GENERATED_UCLASS_BODY()

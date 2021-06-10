@@ -69,8 +69,8 @@ bool UBTDecorator_DistanceCheck::CalculateRawConditionValue(UBehaviorTreeCompone
 
 void UBTDecorator_DistanceCheck::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	TNodeInstanceMemory* DecoratorMemory = (TNodeInstanceMemory*)NodeMemory;
-	DecoratorMemory->bLastRawResult = CalcConditionImpl(OwnerComp, NodeMemory);
+	TNodeInstanceMemory* MyMemory = (TNodeInstanceMemory*)NodeMemory;
+	MyMemory->bLastRawResult = CalcConditionImpl(OwnerComp, NodeMemory);
 }
 
 void UBTDecorator_DistanceCheck::OnBlackboardChange(const UBlackboardComponent& Blackboard, FBlackboard::FKey ChangedKeyID)
@@ -80,12 +80,12 @@ void UBTDecorator_DistanceCheck::OnBlackboardChange(const UBlackboardComponent& 
 
 void UBTDecorator_DistanceCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	TNodeInstanceMemory* DecoratorMemory = CastInstanceNodeMemory<TNodeInstanceMemory>(NodeMemory);
+	TNodeInstanceMemory* MyMemory = CastInstanceNodeMemory<TNodeInstanceMemory>(NodeMemory);
 
 	const bool bResult = CalcConditionImpl(OwnerComp, NodeMemory);
-	if (bResult != DecoratorMemory->bLastRawResult)
+	if (bResult != MyMemory->bLastRawResult)
 	{
-		DecoratorMemory->bLastRawResult = bResult;
+		MyMemory->bLastRawResult = bResult;
 		OwnerComp.RequestExecution(this);
 	}
 }
@@ -148,11 +148,6 @@ void UBTDecorator_DistanceCheck::DescribeRuntimeValues(const UBehaviorTreeCompon
 			(MinDistance <= 0.f || Distance >= MinDistance) && (MaxDistance <= 0.f || Distance <= MaxDistance) ? TEXT("inside") : TEXT("outside")
 		));
 	}
-}
-
-uint16 UBTDecorator_DistanceCheck::GetInstanceMemorySize() const
-{
-	return sizeof(TNodeInstanceMemory);
 }
 
 #if WITH_EDITOR
