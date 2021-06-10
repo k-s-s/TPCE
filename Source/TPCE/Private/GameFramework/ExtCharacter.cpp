@@ -1573,7 +1573,7 @@ bool AExtCharacter::CanCrouchInternal_Implementation() const
 	UExtCharacterMovementComponent* ExtCharacterMovement = GetExtCharacterMovement();
 	check(ExtCharacterMovement);
 
-	return !bIsCrouched
+	return !ExtCharacterMovement->bWantsToCrouch
 		&& !bPressedJump
 		&& ExtCharacterMovement
 		&& !ExtCharacterMovement->bWantsToSprint
@@ -1607,7 +1607,10 @@ bool AExtCharacter::CanWalk() const
 
 bool AExtCharacter::CanWalkInternal_Implementation() const
 {
-	return !bIsWalkingInsteadOfRunning;
+	UExtCharacterMovementComponent* ExtCharacterMovement = GetExtCharacterMovement();
+	check(ExtCharacterMovement);
+
+	return !ExtCharacterMovement->bWantsToWalkInsteadOfRun;
 }
 
 void AExtCharacter::Walk(bool bClientSimulation)
@@ -1672,7 +1675,7 @@ bool AExtCharacter::CanSprintInternal_Implementation() const
 	UExtCharacterMovementComponent* ExtCharacterMovement = GetExtCharacterMovement();
 	check(ExtCharacterMovement);
 
-	return !bIsSprinting
+	return !ExtCharacterMovement->bWantsToSprint
 		&& !bPressedJump
 		&& !bIsRagdoll
 		&& !IsGettingUp()
@@ -1739,7 +1742,7 @@ bool AExtCharacter::CanPerformGenericActionInternal_Implementation() const
 	UExtCharacterMovementComponent* ExtCharacterMovement = GetExtCharacterMovement();
 	check(ExtCharacterMovement);
 
-	return !bIsPerformingGenericAction;
+	return !ExtCharacterMovement->bWantsToPerformGenericAction;
 }
 
 void AExtCharacter::PerformGenericAction(bool bClientSimulation)
