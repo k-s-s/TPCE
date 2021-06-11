@@ -16,8 +16,9 @@ UBTTask_PlayMontage::UBTTask_PlayMontage(const FObjectInitializer& ObjectInitial
 	PlayRate = 1.f;
 	StartingPosition = 0.f;
 	StartingSection = NAME_None;
-	bFinishOnBlendOut = false;
 	FinishOnNotify = NAME_None;
+	bFinishOnBlendOut = false;
+	AbortBlendOutTime = .25f;
 
 	MontageInstanceID = INDEX_NONE;
 }
@@ -84,6 +85,11 @@ EBTNodeResult::Type UBTTask_PlayMontage::ExecuteTask(UBehaviorTreeComponent& Own
 
 EBTNodeResult::Type UBTTask_PlayMontage::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	if (UAnimInstance* AnimInstance = AnimInstancePtr.Get())
+	{
+		AnimInstance->Montage_Stop(AbortBlendOutTime, MontageToPlay);
+	}
+
 	UnbindDelegates();
 
 	return EBTNodeResult::Aborted;
@@ -101,7 +107,7 @@ bool UBTTask_PlayMontage::IsNotifyValid(FName NotifyName, const FBranchingPointN
 
 void UBTTask_PlayMontage::OnMontageBlendingOut(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (MyOwnerComp && bFinishOnBlendOut)
+	if (MyOwnerComp && !bInterrupted && bFinishOnBlendOut)
 	{
 		FinishLatentTask(*MyOwnerComp, EBTNodeResult::Succeeded);
 		UnbindDelegates();
@@ -110,7 +116,7 @@ void UBTTask_PlayMontage::OnMontageBlendingOut(UAnimMontage* Montage, bool bInte
 
 void UBTTask_PlayMontage::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	if (MyOwnerComp && !bFinishOnBlendOut)
+	if (MyOwnerComp && !bInterrupted && !bFinishOnBlendOut)
 	{
 		FinishLatentTask(*MyOwnerComp, EBTNodeResult::Succeeded);
 		UnbindDelegates();

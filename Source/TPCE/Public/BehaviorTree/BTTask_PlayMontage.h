@@ -43,6 +43,10 @@ class TPCE_API UBTTask_PlayMontage : public UBTTaskNode
 	UPROPERTY(EditAnywhere, Category="Node")
 	bool bFinishOnBlendOut;
 
+	/** Blend out time when task is aborted and the montage is stopped. */
+	UPROPERTY(EditAnywhere, Category="Node")
+	float AbortBlendOutTime;
+
 	UPROPERTY()
 	UBehaviorTreeComponent* MyOwnerComp;
 
