@@ -45,7 +45,7 @@ void AExtPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	bBeganPlaying = true;
+	bBeganPlay = true;
 }
 
 AActor* AExtPlayerController::GetViewTarget() const
@@ -95,7 +95,7 @@ void AExtPlayerController::AutoManageActiveCameraTarget(AActor* SuggestedTarget)
 			ACameraActor* AutoCameraTarget = GetAutoActivateCameraForPlayer();
 			if (AutoCameraTarget && AutoCameraTarget != GetViewTarget())
 			{
-				if (!bBeganPlaying)
+				if (!bBeganPlay)
 				{
 					// Don't blend into the view target when entering playing state
 					SetViewTarget(AutoCameraTarget);
@@ -119,7 +119,7 @@ void AExtPlayerController::AutoManageActiveCameraTarget(AActor* SuggestedTarget)
 		// No auto-activate CameraActor, so use the suggested target.
 		if (SuggestedTarget != GetViewTarget())
 		{
-			if (!bBeganPlaying)
+			if (!bBeganPlay)
 			{
 				// Don't blend into the view target when entering playing state
 				SetViewTarget(SuggestedTarget);
@@ -139,7 +139,6 @@ void AExtPlayerController::AutoManageActiveCameraTarget(AActor* SuggestedTarget)
 		}
 	}
 }
-
 
 void AExtPlayerController::PushInputComponent(UInputComponent* InInputComponent)
 {

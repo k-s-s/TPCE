@@ -189,7 +189,7 @@ protected:
 	AActor* OldViewTarget;
 
 	UPROPERTY(Transient)
-	bool bBeganPlaying;
+	bool bBeganPlay;
 
 	FVector ViewCorners[4];
 	FVector ViewExtentsMin;
