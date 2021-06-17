@@ -26,6 +26,10 @@ class TPCE_API UBTService_FindReachablePoint : public UBTService_BlackboardBase
 	UPROPERTY(EditAnywhere, Category="Node", meta=(ClampMin="0", UIMin="0"))
 	float Radius;
 
+	/** Offset the search origin in the controlled pawn's rotation. */
+	UPROPERTY(EditAnywhere, Category="Node")
+	FVector OriginOffset;
+
 	/** "None" will result in default filter being used. */
 	UPROPERTY(EditAnywhere, Category="Node")
 	TSubclassOf<UNavigationQueryFilter> FilterClass;
@@ -35,9 +39,11 @@ class TPCE_API UBTService_FindReachablePoint : public UBTService_BlackboardBase
 
 	virtual FString GetStaticDescription() const override;
 
-	EBlackboardNotificationResult OnBlackboardKeyValueChange(const UBlackboardComponent& Blackboard, FBlackboard::FKey ChangedKeyID);
-
 #if WITH_EDITOR
 	virtual FName GetNodeIconName() const override;
 #endif // WITH_EDITOR
+
+protected:
+
+	bool GetRandomReachablePoint(const UBehaviorTreeComponent& OwnerComp, const FVector& InOrigin, FVector& OutRandomPoint) const;
 };

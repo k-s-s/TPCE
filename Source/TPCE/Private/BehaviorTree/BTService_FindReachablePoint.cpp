@@ -48,43 +48,66 @@ void UBTService_FindReachablePoint::OnBecomeRelevant(UBehaviorTreeComponent& Own
 
 	if (MyController && MyBlackboard)
 	{
-		bool bOrigin = false;
+		bool bValidOrigin = false;
 		FVector OriginLocation;
+		const APawn* ControlledPawn = MyController->GetPawn();
+
 		if (Origin.IsSet())
 		{
-			bOrigin = MyBlackboard->GetLocationFromEntry(Origin.GetSelectedKeyID(), OriginLocation);
+			bValidOrigin = MyBlackboard->GetLocationFromEntry(Origin.GetSelectedKeyID(), OriginLocation);
 		}
-		else if (MyController->GetPawn())
+		else if (ControlledPawn)
 		{
-			OriginLocation = MyController->GetPawn()->GetActorLocation();
-			bOrigin = true;
+			OriginLocation = ControlledPawn->GetActorLocation();
+			bValidOrigin = true;
 		}
 
-		bool bSuccess = false;
-		if (bOrigin)
+		if (bValidOrigin)
 		{
-			UWorld* MyWorld = MyController->GetWorld();
+			if (ControlledPawn)
+			{
+				OriginLocation += MyController->GetPawn()->GetActorQuat().RotateVector(OriginOffset);
+			}
+
+			FVector Result;
+			if (!GetRandomReachablePoint(OwnerComp, OriginLocation, Result))
+			{
+				// Couldn't find a valid reachable point
+				// An invalid location will cause a MoveTo task to fail, so return the origin instead
+				Result = OriginLocation;
+			}
+			MyBlackboard->SetValue<UBlackboardKeyType_Vector>(BlackboardKey.GetSelectedKeyID(), Result);
+		}
+		else
+		{
+			MyBlackboard->ClearValue(BlackboardKey.GetSelectedKeyID());
+		}
+	}
+}
+
+bool UBTService_FindReachablePoint::GetRandomReachablePoint(const UBehaviorTreeComponent& OwnerComp, const FVector& InOrigin, FVector& OutRandomPoint) const
+{
+	if (const AAIController* MyController = OwnerComp.GetAIOwner())
+	{
+		if (UWorld* MyWorld = MyController->GetWorld())
+		{
 			if (UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(MyWorld))
 			{
 				if (ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate))
 				{
 					TSubclassOf<UNavigationQueryFilter> UseFilterClass = *FilterClass ? FilterClass : MyController->GetDefaultNavigationFilterClass();
-					FNavLocation RandomPoint(OriginLocation);
-					if (NavSys->GetRandomReachablePointInRadius(OriginLocation, Radius, RandomPoint, NavData,
+					FNavLocation RandomPoint(InOrigin);
+					if (NavSys->GetRandomReachablePointInRadius(InOrigin, Radius, RandomPoint, NavData,
 						UNavigationQueryFilter::GetQueryFilter(*NavData, MyController, UseFilterClass)))
 					{
-						MyBlackboard->SetValue<UBlackboardKeyType_Vector>(BlackboardKey.GetSelectedKeyID(), RandomPoint.Location);
-						bSuccess = true;
+						OutRandomPoint = RandomPoint.Location;
+						return true;
 					}
 				}
 			}
 		}
-
-		if (!bSuccess)
-		{
-			MyBlackboard->ClearValue(BlackboardKey.GetSelectedKeyID());
-		}
 	}
+	return false;
 }
 
 FString UBTService_FindReachablePoint::GetStaticDescription() const
@@ -96,7 +119,7 @@ FString UBTService_FindReachablePoint::GetStaticDescription() const
 		KeyDesc = BlackboardKey.SelectedKeyName.ToString();
 	}
 
-	FString OriginDesc("invalid");
+	FString OriginDesc("self");
 	if (Origin.SelectedKeyType == UBlackboardKeyType_Object::StaticClass() ||
 		Origin.SelectedKeyType == UBlackboardKeyType_Vector::StaticClass())
 	{
