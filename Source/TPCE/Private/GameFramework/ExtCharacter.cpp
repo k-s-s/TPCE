@@ -10,7 +10,6 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Curves/CurveFloat.h"
-#include "Animation/AnimInstance.h"
 
 #include "Net/UnrealNetwork.h"
 #include "Logging/LogMacros.h"
@@ -64,7 +63,6 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 		FName NAME_WalkAction;
 		FName NAME_SprintAction;
 		FName NAME_GenericAction;
-		FName NAME_FireAction;
 		FName NAME_RagdollMeshCollisionProfile;
 		FName NAME_RagdollCapsuleCollisionProfile;
 		FName NAME_RagdollMeshConstraintProfile;
@@ -103,7 +101,6 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 			NAME_WalkAction(TEXT("Walk")),
 			NAME_SprintAction(TEXT("Sprint")),
 			NAME_GenericAction(TEXT("GenericAction")),
-			NAME_FireAction(TEXT("Fire")),
 			NAME_RagdollMeshCollisionProfile(NAME_Ragdoll),
 			NAME_RagdollCapsuleCollisionProfile(NAME_Spectator),
 			NAME_RagdollMeshConstraintProfile(NAME_Ragdoll),
@@ -131,7 +128,6 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	WalkActionName = ConstructorStatics.NAME_WalkAction;
 	SprintActionName = ConstructorStatics.NAME_SprintAction;
 	GenericActionName = ConstructorStatics.NAME_GenericAction;
-	FireActionName = ConstructorStatics.NAME_FireAction;
 
 	RagdollMeshCollisionProfileName = ConstructorStatics.NAME_RagdollMeshCollisionProfile;
 	RagdollCapsuleCollisionProfileName = ConstructorStatics.NAME_RagdollCapsuleCollisionProfile;
@@ -1000,9 +996,6 @@ void AExtCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	PlayerInputComponent->BindAction(GenericActionName, IE_Pressed, this, &ThisClass::PlayerInputStartGenericAction);
 	PlayerInputComponent->BindAction(GenericActionName, IE_Released, this, &ThisClass::PlayerInputStopGenericAction);
-
-	PlayerInputComponent->BindAction(FireActionName, IE_Pressed, this, &ThisClass::PlayerInputStartFire);
-	PlayerInputComponent->BindAction(FireActionName, IE_Released, this, &ThisClass::PlayerInputStopFire);
 }
 
 void AExtCharacter::PlayerInputMoveForward(float Value)
@@ -1191,56 +1184,6 @@ void AExtCharacter::PlayerInputStopGenericAction()
 	{
 		UnPerformGenericAction();
 	}
-}
-
-void AExtCharacter::PlayerInputStartFire()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		// 	Fire();
-
-		// Temporary ragdoll test
-		ToggleRagdoll();
-	}
-}
-
-void AExtCharacter::PlayerInputStopFire()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		// UnFire();
-	}
-}
-
-
-/// Temporary For Ragdoll Tests
-
-void AExtCharacter::ToggleRagdoll()
-{
-	SetRagdoll(!bIsRagdoll);
-
-	if (GetLocalRole() < ROLE_Authority)
-		ServerToggleRagdoll();
-	else
-	{
-		MulticastSetRagdoll(bIsRagdoll);
-	}
-}
-
-bool AExtCharacter::ServerToggleRagdoll_Validate()
-{
-	return true;
-}
-
-void AExtCharacter::ServerToggleRagdoll_Implementation()
-{
-	ToggleRagdoll();
-}
-
-void AExtCharacter::MulticastSetRagdoll_Implementation(bool Value)
-{
-	if (!IsLocallyControlled())
-		SetRagdoll(Value);
 }
 
 

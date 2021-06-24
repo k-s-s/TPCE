@@ -32,13 +32,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRagdollChangedSignature, AExtCharac
 // ---------------------------------
 // TODO: Comment all methods with All/Local/Server to indicate where they are expected to be called
 // TODO: Add missing comments/tooltips to members
-// TODO: Try to improve the movement blend with a walk-in-place animation for gait scale 0. This should reduce leg crossing.
 // TODO: Idle Breaks
-// TODO: Female animations
-// TODO: Better crouch animations
 // TODO: Animations for walk 45 and 135 deg w/ LeftFootFwd
 // TODO: Carry Weapon
-// TODO: Fire Action
 // TODO: Interact with scene objects
 // TODO: Additive Hit Reactions
 // TODO: Stun
@@ -51,7 +47,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRagdollChangedSignature, AExtCharac
 // TODO: Better solution for pelvis adjustment in speed warping
 // TODO: Handle walking off ledges more gracefully
 // TODO: Hand IK on getting up
-// TODO: Create Physics Asset for shadow casting
 // TODO: Profile of performance cost of the animated character in the game.
 // TODO: Disable certain features according to LOD (leaning, breathing, speed warping, foot IK, ...)
 
@@ -311,9 +306,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName GenericActionName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName FireActionName;
 
 	/** Name of the collision profile to be used by the capsule component when in ragdoll mode. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Ragdoll, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
@@ -610,23 +602,6 @@ protected:	// Methods
 
 	/** [local] Handle player input to stop generic action*/
 	virtual void PlayerInputStopGenericAction();
-
-	/** [local] Handle player input to start firing */
-	virtual void PlayerInputStartFire();
-
-	/** [local] Handle player input to stop firing */
-	virtual void PlayerInputStopFire();
-
-	/** Temporary Function for Ragdoll Testing. */
-	void ToggleRagdoll();
-
-	/** Temporary Function for Ragdoll Testing. */
-	UFUNCTION(Server, Reliable, WithValidation)
-	void ServerToggleRagdoll();
-
-	/** Temporary Function for Ragdoll Testing. */
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastSetRagdoll(bool Value);
 
 
 	/** Update movement component settings every time crouched, gait or generic action changes. */

@@ -111,5 +111,6 @@ protected:
 	float TimeBecameInactive;
 	mutable FString CachedJobName;
 
+	// AIJobsComponent sets TimeBecameInactive to the current time on registering
 	friend class UAIJobsComponent;
 };
