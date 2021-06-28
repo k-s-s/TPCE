@@ -87,8 +87,11 @@ struct FMathEx : public FMath
 	/** Interpolate from Current to Target using a spring-damper like function that does not overshoot. */
 	static TPCE_API FRotator RSmoothInterpTo(const FRotator& Current, const FRotator& Target, FRotator& CurrentVelocity, float SmoothTime, const FRotator& MaxSpeed, float DeltaTime);
 
-	/** Find the cardinal direction for an angle given the current cardinal direction, the half angle width of the north segment and a buffer for tolerance */
+	/** Find the cardinal direction for an angle given the current cardinal direction, the half angle width of the north segment and a buffer for tolerance. */
 	static TPCE_API ECardinalDirection FindCardinalDirection(float Angle, const ECardinalDirection CurrentCardinalDirection, const float NorthSegmentHalfWidth = 60.f, const float Buffer = 5.0f);
+
+	/** Find the cardinal direction to a target point given the start point and rotation. */
+	static TPCE_API ECardinalDirection FindCardinalDirection(const FVector& Point, const FVector& StartPoint, const FQuat& Rotation);
 
 
 

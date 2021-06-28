@@ -1735,6 +1735,11 @@ void AExtCharacter::OnStartGenericAction()
 	GenericActionChangedDelegate.Broadcast(this);
 }
 
+void AExtCharacter::MulticastPlayHitReact_Implementation(ECardinalDirection HitDirection, AActor* DamageCauser)
+{
+	HitReactDelegate.Broadcast(this, HitDirection, DamageCauser);
+}
+
 
 /// Ragdoll
 

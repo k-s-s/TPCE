@@ -27,6 +27,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCrouchChangedSignature, AExtCharact
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGaitChangedSignature, AExtCharacter*, Sender);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRotationModeChangedSignature, AExtCharacter*, Sender);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRagdollChangedSignature, AExtCharacter*, Sender);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FHitReactSignature, AExtCharacter*, Sender, ECardinalDirection, HitDirection, AActor*, DamageCauser);
 
 // UP NEXT
 // ---------------------------------
@@ -473,6 +474,9 @@ public: // Dynamic Multicast Delegates
 	UPROPERTY(BlueprintAssignable, Category = Character)
 	FRagdollChangedSignature RagdollChangedDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category = Character)
+	FHitReactSignature HitReactDelegate;
+
 private:	// Methods
 
 	/**
@@ -888,6 +892,11 @@ public:		// Methods
 	/** Event when Character starts performing the generic action. */
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnStartGenericAction"))
 	void K2_OnStartGenericAction();
+
+	/** UNRELIABLE RPC to play a hit reaction. */
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayHitReact(ECardinalDirection HitDirection, AActor* DamageCauser);
+	virtual void MulticastPlayHitReact_Implementation(ECardinalDirection HitDirection, AActor* DamageCauser);
 
 	virtual UPawnMovementComponent* GetMovementComponent() const override;
 

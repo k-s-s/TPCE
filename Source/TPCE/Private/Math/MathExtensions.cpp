@@ -410,6 +410,37 @@ ECardinalDirection FMathEx::FindCardinalDirection(float Angle, const ECardinalDi
 	return ECardinalDirection::South;
 }
 
+ECardinalDirection FMathEx::FindCardinalDirection(const FVector& Point, const FVector& StartPoint, const FQuat& Rotation)
+{
+	const float DistanceToFrontBackPlane = FVector::PointPlaneDist(Point, StartPoint, Rotation.GetAxisY());
+	const float DistanceToRightLeftPlane = FVector::PointPlaneDist(Point, StartPoint, Rotation.GetAxisX());
+
+	if (FMath::Abs(DistanceToFrontBackPlane) <= FMath::Abs(DistanceToRightLeftPlane))
+	{
+		if (DistanceToRightLeftPlane >= 0)
+		{
+			return ECardinalDirection::North;
+		}
+		else
+		{
+			return ECardinalDirection::South;
+		}
+	}
+	else
+	{
+		if (DistanceToFrontBackPlane >= 0)
+		{
+			return ECardinalDirection::East;
+		}
+		else
+		{
+			return ECardinalDirection::West;
+		}
+	}
+
+	checkNoEntry();
+}
+
 float FMathEx::SoftClip(float Value, float Start, float End)
 {
 	if (Start < End)
