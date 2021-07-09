@@ -858,6 +858,7 @@ void AExtCharacter::Restart()
 	// The user can always override this method and call UnRagdoll() if desired.
 
 	OnRestart();
+	K2_OnRestart();
 
 	// Lock the new controller inputs if in ragdoll
 	if (bIsRagdoll && Controller)

@@ -613,8 +613,12 @@ protected:	// Methods
 
 	void UpdateMovementComponentSettings(const FCharacterGaitSettings& Settings);
 
-	/** Called when the character is restarted. */
+	/** Called when the Pawn is being restarted (usually by being possessed by a Controller). */
 	virtual void OnRestart();
+
+	/** Called when the Pawn is being restarted (usually by being possessed by a Controller). */
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnRestart"))
+	void K2_OnRestart();
 
 	virtual bool CanJumpInternal_Implementation() const override;
 
