@@ -170,6 +170,38 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Math|Float")
 	static float EaseSinusoidal(float Value);
 
+	/** Modulo (A % B). Handles negative numbers. */
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "-% (Byte)", CompactNodeTitle = "-%", Keywords = "% modulus"), Category="Math|Byte")
+	static uint8 NegativePercent_ByteByte(uint8 A, uint8 B = 1);
+
+	/** Modulo (A % B). Handles negative numbers. */
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "-% (integer)", CompactNodeTitle = "-%", Keywords = "% modulus"), Category="Math|Integer")
+	static int32 NegativePercent_IntInt(int32 A, int32 B = 1);
+
+	/** Modulo (A % B). Handles negative numbers. */
+	UFUNCTION(BlueprintPure, CustomThunk, meta = (DisplayName = "-% (float)", CompactNodeTitle = "-%", Keywords = "% modulus"), Category = "Math|Float")
+	static float NegativePercent_FloatFloat(float A, float B = 1.f);
+
+	static float GenericNegativePercent_FloatFloat(float A, float B);
+
+	/** Custom thunk to allow script stack trace in case of modulo by zero */
+	DECLARE_FUNCTION(execNegativePercent_FloatFloat)
+	{
+		P_GET_PROPERTY(UFloatProperty, A);
+		P_GET_PROPERTY(UFloatProperty, B);
+
+		P_FINISH;
+
+		if (B == 0.f)
+		{
+			FFrame::KismetExecutionMessage(*FString::Printf(TEXT("Modulo by zero detected: %f %% 0\n%s"), A, *Stack.GetStackTrace()), ELogVerbosity::Warning);
+			*(float*)RESULT_PARAM = 0;
+			return;
+		}
+
+		*(float*)RESULT_PARAM = GenericNegativePercent_FloatFloat(A, B);
+	}
+
 	/**
 	 * Calculates a moving average for an irregular time series.
 	 *
@@ -235,4 +267,9 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="Math|Matrix")
 	static void GetProjectionMatrix(FVector2D Pivot, FVector2D Translation, float RotationAngle, float Scale, float HorizontalFOVAngle, float AspectRatio, FMatrix& ProjectionMatrix);
+
+private:
+
+	static void ReportError_NegativePercent_ByteByte();
+	static void ReportError_NegativePercent_IntInt();
 };

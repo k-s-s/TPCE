@@ -3,6 +3,8 @@
 #include "Kismet/KismetMathLibraryExtensions.h"
 #include "Math/MathExtensions.h"
 
+const FName DivideByZeroWarning = FName("DivideByZeroWarning");
+
 UKismetMathLibraryEx::UKismetMathLibraryEx(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -162,6 +164,42 @@ float UKismetMathLibraryEx::EaseSinusoidal(float Value)
 	return .5f * (1.f - FMath::Cos(Value * PI));
 }
 
+KISMET_MATH_FORCEINLINE
+uint8 UKismetMathLibraryEx::NegativePercent_ByteByte(uint8 A, uint8 B)
+{
+	if (B == 0)
+	{
+		ReportError_NegativePercent_ByteByte();
+		return 0;
+	}
+
+	return ((A % B) + B) % B;
+}
+
+KISMET_MATH_FORCEINLINE
+int32 UKismetMathLibraryEx::NegativePercent_IntInt(int32 A, int32 B)
+{
+	if (B == 0)
+	{
+		ReportError_NegativePercent_IntInt();
+		return 0;
+	}
+
+	return ((A % B) + B) % B;
+}
+
+/* This function is custom thunked, the real function is GenericNegativePercent_FloatFloat */
+float UKismetMathLibraryEx::NegativePercent_FloatFloat(float A, float B)
+{
+	check(0);
+	return 0;
+}
+
+float UKismetMathLibraryEx::GenericNegativePercent_FloatFloat(float A, float B)
+{
+	return (B != 0.f) ? FMath::Fmod(FMath::Fmod(A, B) + B, B) : 0.f;
+}
+
 float UKismetMathLibraryEx::GetVectorComponent(const FVector& A, const EVectorComponent Select)
 {
 	if (Select == EVectorComponent::X)
@@ -283,4 +321,14 @@ void UKismetMathLibraryEx::GetProjectionMatrix(FVector2D Pivot, FVector2D Transl
 		* PostRotationMatrix
 		* TranslateMatrix
 		* OriginalProjectionMatrix;
+}
+
+void UKismetMathLibraryEx::ReportError_NegativePercent_ByteByte()
+{
+	FFrame::KismetExecutionMessage(TEXT("Modulo by zero"), ELogVerbosity::Warning, DivideByZeroWarning);
+}
+
+void UKismetMathLibraryEx::ReportError_NegativePercent_IntInt()
+{
+	FFrame::KismetExecutionMessage(TEXT("Modulo by zero"), ELogVerbosity::Warning, DivideByZeroWarning);
 }
