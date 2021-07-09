@@ -251,9 +251,6 @@ protected:  // Variables
 	/** Smoothly updated rotation offset used when rotating to desired contol rotation. */
 	float RotationOffset;
 
-	/** Current smoothed turn in place speed. */
-	FRotator EasedTurnInPlaceRotationRate;
-
 	/** Time counter used for turn in place delay. */
 	float TurnInPlaceTimeCounter;
 
@@ -342,7 +339,7 @@ public: // Variables
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace", ClampMin = "0", UIMin = "0"))
 	float TurnInPlaceRotationRateSpeed;
 
-	/** Slow down turning in place when the yaw delta is less than this many degrees. Only used if TurnInPlaceRotationRateSpeed is > 0.0. */
+	/** Slow down turning in place when the yaw delta is less than this many degrees. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement: TurnInPlace", meta = (editcondition = "bEnableTurnInPlace", ClampMin = "0", UIMin = "0"))
 	float TurnInPlaceSlowThreshold;
 

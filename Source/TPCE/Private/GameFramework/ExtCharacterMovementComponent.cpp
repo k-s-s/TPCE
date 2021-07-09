@@ -1434,24 +1434,19 @@ void UExtCharacterMovementComponent::PhysicsRotation(float DeltaSeconds)
 					return;
 				}
 
-				if (TurnInPlaceRotationRateSpeed > 0.f && TurnInPlaceSlowThreshold > 0.f)
+				FRotator CurrentTurnInPlaceRotationRate = TurnInPlaceRotationRate;
+				if (TurnInPlaceSlowThreshold > 0.f)
 				{
+					const float MinRateFactor = .1f;  // How much the turn rate is slowed down, shouldn't be zero
 					const float CurrentTargetYaw = FMath::IsFinite(TurnInPlaceTargetYaw) ? TurnInPlaceTargetYaw : CurrentRotation.Yaw;
-					const float TargetRateFactor = FMath::Clamp(FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, CurrentTargetYaw)) / TurnInPlaceSlowThreshold, .1f, 1.f);
-					EasedTurnInPlaceRotationRate = FMathEx::RSafeInterpTo(EasedTurnInPlaceRotationRate, TurnInPlaceRotationRate * TargetRateFactor, DeltaSeconds, TurnInPlaceRotationRateSpeed);
-				}
-				else if (TurnInPlaceRotationRateSpeed > 0.f)
-				{
-					EasedTurnInPlaceRotationRate = FMathEx::RSafeInterpTo(EasedTurnInPlaceRotationRate, TurnInPlaceRotationRate, DeltaSeconds, TurnInPlaceRotationRateSpeed);
-				}
-				else
-				{
-					EasedTurnInPlaceRotationRate = TurnInPlaceRotationRate;
+					const float YawDelta = FMath::Abs(FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, CurrentTargetYaw));
+					const float RateFactor = FMath::Lerp(MinRateFactor, 1.f, FMath::Clamp(YawDelta / TurnInPlaceSlowThreshold, 0.f, 1.f));
+					CurrentTurnInPlaceRotationRate *= RateFactor;
 				}
 
-				DeltaRot.Pitch = CalculateConstantDeltaRotationAxis(CurrentRotation.Pitch, TargetRotation.Pitch, DeltaSeconds, EasedTurnInPlaceRotationRate.Pitch);
-				DeltaRot.Yaw = CalculateConstantDeltaRotationAxis(CurrentRotation.Yaw, TargetRotation.Yaw, DeltaSeconds, EasedTurnInPlaceRotationRate.Yaw);
-				DeltaRot.Roll = CalculateConstantDeltaRotationAxis(CurrentRotation.Roll, TargetRotation.Roll, DeltaSeconds, EasedTurnInPlaceRotationRate.Roll);
+				DeltaRot.Pitch = CalculateConstantDeltaRotationAxis(CurrentRotation.Pitch, TargetRotation.Pitch, DeltaSeconds, CurrentTurnInPlaceRotationRate.Pitch);
+				DeltaRot.Yaw = CalculateConstantDeltaRotationAxis(CurrentRotation.Yaw, TargetRotation.Yaw, DeltaSeconds, CurrentTurnInPlaceRotationRate.Yaw);
+				DeltaRot.Roll = CalculateConstantDeltaRotationAxis(CurrentRotation.Roll, TargetRotation.Roll, DeltaSeconds, CurrentTurnInPlaceRotationRate.Roll);
 			}
 			else // if (IsMoving())
 			{
