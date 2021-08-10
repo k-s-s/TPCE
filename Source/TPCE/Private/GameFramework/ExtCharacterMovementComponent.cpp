@@ -158,7 +158,7 @@ UExtCharacterMovementComponent::UExtCharacterMovementComponent(const FObjectInit
 
 #if WITH_EDITOR
 
-bool UExtCharacterMovementComponent::CanEditChange(const UProperty* InProperty) const
+bool UExtCharacterMovementComponent::CanEditChange(const FProperty* InProperty) const
 {
 	bool bCanChange = Super::CanEditChange(InProperty);
 

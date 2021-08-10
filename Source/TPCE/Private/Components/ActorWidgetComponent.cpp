@@ -21,7 +21,7 @@ UActorWidgetComponent::UActorWidgetComponent()
 
 #if WITH_EDITOR
 
-bool UActorWidgetComponent::CanEditChange(const UProperty* InProperty) const
+bool UActorWidgetComponent::CanEditChange(const FProperty* InProperty) const
 {
 	bool bCanChange = Super::CanEditChange(InProperty);
 
@@ -82,20 +82,20 @@ void UActorWidgetComponent::InitWidget()
 {
 	Super::InitWidget();
 
-	if (UActorWidget* ActorWidget = Cast<UActorWidget>(Widget))
+	if (UActorWidget* ActorWidget = Cast<UActorWidget>(GetWidget()))
 		ActorWidget->SetWidgetComponent(this);
 }
 
 void UActorWidgetComponent::SetWidget(UUserWidget* InWidget)
 {
 	// Reset old widget if it exists
-	if (UActorWidget* ActorWidget = Cast<UActorWidget>(Widget))
+	if (UActorWidget* ActorWidget = Cast<UActorWidget>(GetWidget()))
 		ActorWidget->SetWidgetComponent(nullptr);
 
 	Super::SetWidget(InWidget);
 
 	// Setup new widget if it exists
-	if (UActorWidget* ActorWidget = Cast<UActorWidget>(Widget))
+	if (UActorWidget* ActorWidget = Cast<UActorWidget>(GetWidget()))
 		ActorWidget->SetWidgetComponent(this);
 }
 

@@ -117,8 +117,8 @@ FReply SCopyAdditiveLayerTracksWindow::OnApply()
 
 	if (!SourceAnimSequence.IsValid() || !SourceAnimSequence->DoesContainTransformCurves())
 	{
-		static const FText MessageFormat = LOCTEXT("CopyAdditiveLayerTracksWindow_NoSourceTracks", "Additive layer tracks will be cleared, are you sure you want to proceed?");
-		const bool bUserInputResult = OpenMsgDlgInt(EAppMsgType::YesNo, MessageFormat, LOCTEXT("CopyAdditiveLayerTracksWindow_NoSourceTracksTitle", "No source additive layer tracks")) == EAppReturnType::Yes;
+		static const FText Message = LOCTEXT("CopyAdditiveLayerTracksWindow_NoSourceTracks", "Additive layer tracks will be cleared, are you sure you want to proceed?");
+		const bool bUserInputResult = FMessageDialog::Open(EAppMsgType::YesNo, Message) == EAppReturnType::Yes;
 		if (!bUserInputResult)
 		{
 			return FReply::Handled();

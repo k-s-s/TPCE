@@ -28,7 +28,7 @@ extern TPCE_API const FName NAME_Secondary;
 
 // Epic Skeleton Bone Names
 
-extern TPCE_API const FName NAME_Root;
+extern TPCE_API const FName NAME_RootBone;
 extern TPCE_API const FName NAME_Pelvis;
 extern TPCE_API const FName NAME_Spine_01;
 extern TPCE_API const FName NAME_Spine_02;

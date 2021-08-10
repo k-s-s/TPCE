@@ -29,7 +29,7 @@ FBoneModifier::FBoneModifier(FName InBoneName, float InOffset):
 
 UAnimationModifier_FootSyncMarkers::UAnimationModifier_FootSyncMarkers()
 {
-	PelvisBoneName = NAME_Root;
+	PelvisBoneName = NAME_RootBone;
 	bAxisFromName = true;
 	MovementAxis = EAxisOption::Y;
 	bMarkFootPlantOnly = true;
@@ -38,7 +38,7 @@ UAnimationModifier_FootSyncMarkers::UAnimationModifier_FootSyncMarkers()
 	FootBones.Add(FBoneModifier(NAME_Foot_R));
 }
 
-bool UAnimationModifier_FootSyncMarkers::CanEditChange(const UProperty* InProperty) const
+bool UAnimationModifier_FootSyncMarkers::CanEditChange(const FProperty* InProperty) const
 {
 	bool bCanChange = Super::CanEditChange(InProperty);
 

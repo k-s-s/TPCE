@@ -92,7 +92,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Settings, AdvancedDisplay)
 	uint32 bCreateCurve : 1;
 
-	virtual bool CanEditChange(const UProperty* InProperty) const override;
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
 
 	virtual void OnApply_Implementation(UAnimSequence* AnimationSequence) override;
 	virtual void OnRevert_Implementation(UAnimSequence* AnimationSequence) override;

@@ -735,7 +735,7 @@ public:		// Methods
 	virtual void PostNetReceive() override;
 
 #if WITH_EDITOR
-	virtual bool CanEditChange(const UProperty* InProperty) const override;
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
 	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& e) override;
 #endif
 

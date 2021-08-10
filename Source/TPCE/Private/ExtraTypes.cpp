@@ -10,7 +10,7 @@ const FName NAME_Standing(TEXT("Standing"));
 const FName NAME_Primary(TEXT("Primary"));
 const FName NAME_Secondary(TEXT("Secondary"));
 
-const FName NAME_Root(TEXT("root"));
+const FName NAME_RootBone(TEXT("root"));
 const FName NAME_Pelvis(TEXT("pelvis"));
 const FName NAME_Spine_01(TEXT("spine_01"));
 const FName NAME_Spine_02(TEXT("spine_02"));

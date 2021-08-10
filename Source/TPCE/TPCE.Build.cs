@@ -34,6 +34,7 @@ public class TPCE: ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
+				"NetCore",
 				"Slate",
 				"SlateCore",
 				"UMG",

@@ -13,7 +13,7 @@ void UKismetArrayLibraryEx::Array_ShuffleWithStream(const TArray<int32>& TargetA
 	check(0);
 }
 
-void UKismetArrayLibraryEx::GenericArray_ShuffleWithStream(void* TargetArray, const UArrayProperty* ArrayProp, const FRandomStream& RandomStream)
+void UKismetArrayLibraryEx::GenericArray_ShuffleWithStream(void* TargetArray, const FArrayProperty* ArrayProp, const FRandomStream& RandomStream)
 {
 	if (TargetArray)
 	{
