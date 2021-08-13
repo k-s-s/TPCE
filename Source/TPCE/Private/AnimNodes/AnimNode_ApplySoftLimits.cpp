@@ -9,6 +9,12 @@
 
 FAnimNode_ApplySoftLimits::FAnimNode_ApplySoftLimits()
 	: ControlSpace(BCS_ParentBoneSpace)
+	, LimitMin(FVector::ZeroVector)
+	, LimitMax(FVector::ZeroVector)
+	, Knee(FVector::ZeroVector)
+	, bFlipX(false)
+	, bFlipY(false)
+	, bFlipZ(false)
 {
 }
 
