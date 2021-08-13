@@ -12,8 +12,8 @@ public class TPCE: ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[]
 			{
-                "TPCE/Private"
-            }
+				"TPCE/Private"
+			}
 		);
 
 		PublicDependencyModuleNames.AddRange(
@@ -39,7 +39,7 @@ public class TPCE: ModuleRules
 				"SlateCore",
 				"UMG",
 				"RHI",  // Needed for GetMax2DTextureDimension
-            }
+			}
 		);
 
 		if (Target.bBuildDeveloperTools || (Target.Configuration != UnrealTargetConfiguration.Shipping && Target.Configuration != UnrealTargetConfiguration.Test))

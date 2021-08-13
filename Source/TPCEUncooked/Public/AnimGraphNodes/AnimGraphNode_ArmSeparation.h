@@ -4,23 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
-#include "Layout/Visibility.h"
 #include "AnimGraphNode_SkeletalControlBase.h"
-#include "AnimNodes/AnimNode_ApplySoftLimits.h"
+#include "AnimNodes/AnimNode_ArmSeparation.h"
 
-#include "AnimGraphNode_ApplySoftLimits.generated.h"
+#include "AnimGraphNode_ArmSeparation.generated.h"
 
-class IDetailCategoryBuilder;
-class IDetailLayoutBuilder;
-class IPropertyHandle;
-
-UCLASS()
-class TPCEEDITOR_API UAnimGraphNode_ApplySoftLimits : public UAnimGraphNode_SkeletalControlBase
+UCLASS(HideCategories=(Shape))
+class TPCEUNCOOKED_API UAnimGraphNode_ArmSeparation : public UAnimGraphNode_SkeletalControlBase
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category=Settings)
-	FAnimNode_ApplySoftLimits Node;
+	FAnimNode_ArmSeparation Node;
 
 public:
 	// UEdGraphNode interface
@@ -28,16 +23,14 @@ public:
 	virtual FText GetTooltipText() const override;
 	// End of UEdGraphNode interface
 
-	// UAnimGraphNode_Base interface
+	// UAnimGraphNode_SkeletalControlBase interface
 	virtual void Draw(FPrimitiveDrawInterface* PDI, USkeletalMeshComponent* SkelMeshComp) const override;
-	virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
-	// End of UAnimGraphNode_Base interface
+	virtual void GetOnScreenDebugInfo(TArray<FText>& DebugInfo, FAnimNode_Base* RuntimeAnimNode, USkeletalMeshComponent* PreviewSkelMeshComp) const override;
+	// End of UAnimGraphNode_SkeletalControlBase interface
 
 protected:
 	// UAnimGraphNode_SkeletalControlBase interface
 	virtual FText GetControllerDescription() const override;
 	virtual const FAnimNode_SkeletalControlBase* GetNode() const override { return &Node; }
 	// End of UAnimGraphNode_SkeletalControlBase interface
-
-	static void AddTripletPropertyRow(const FText& Name, const FText& Tooltip, IDetailCategoryBuilder& Category, TSharedRef<IPropertyHandle> PropertyHandle, const FName XPropertyName, const FName YPropertyName, const FName ZPropertyName, TAttribute<EVisibility> VisibilityAttribute);
 };

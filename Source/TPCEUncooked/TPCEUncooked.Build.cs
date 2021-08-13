@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class TPCEEditor : ModuleRules
+public class TPCEUncooked : ModuleRules
 {
-	public TPCEEditor(ReadOnlyTargetRules Target) : base(Target)
+	public TPCEUncooked(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		bEnforceIWYU = true;
@@ -12,7 +12,7 @@ public class TPCEEditor : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[]
 			{
-				"TPCEEditor/Private"
+				"TPCEUncooked/Private"
 			});
 
 		PublicDependencyModuleNames.AddRange(
@@ -20,7 +20,6 @@ public class TPCEEditor : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"InputCore",
 				"Engine",
 				"UnrealEd",
 			});
@@ -31,8 +30,8 @@ public class TPCEEditor : ModuleRules
 				"Slate",
 				"SlateCore",
 				"EditorStyle",
-				"PropertyEditor",
-				"AnimationModifiers",
+				"UMG",
+				"AnimGraph",
 				"BlueprintGraph",
 				"TPCE",
 			});

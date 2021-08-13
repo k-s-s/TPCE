@@ -12,7 +12,7 @@
 *
 */
 UCLASS()
-class TPCEEDITOR_API UAnimGraphNode_SpeedWarping : public UAnimGraphNode_SkeletalControlBase
+class TPCEUNCOOKED_API UAnimGraphNode_SpeedWarping : public UAnimGraphNode_SkeletalControlBase
 {
 	GENERATED_BODY()
 

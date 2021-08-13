@@ -12,7 +12,7 @@
 *
 */
 UCLASS()
-class TPCEEDITOR_API UAnimGraphNode_OrientationWarping : public UAnimGraphNode_Base
+class TPCEUNCOOKED_API UAnimGraphNode_OrientationWarping : public UAnimGraphNode_Base
 {
 	GENERATED_BODY()
 
