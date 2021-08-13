@@ -5,7 +5,7 @@
 UENUM(BlueprintType)
 enum class EDistanceCurveType : uint8
 {
-	Pith,
+	Pitch,
 	Yaw,
 	Roll,
 	X,

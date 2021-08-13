@@ -17,7 +17,7 @@ float UDistanceCurveFactory::GetValue(const float Time)
 
 	switch (DistanceCurveType)
 	{
-	case EDistanceCurveType::Pith:
+	case EDistanceCurveType::Pitch:
 		return Transform.Rotator().Pitch;
 	case EDistanceCurveType::Yaw:
 		return Transform.Rotator().Yaw;

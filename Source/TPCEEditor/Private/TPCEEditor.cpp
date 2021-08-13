@@ -268,7 +268,7 @@ void FTPCEEditor::CreateContentBrowserAssetMenu(FMenuBuilder& MenuBuilder, TArra
 							TEXT_CreateDistanceCurveFromPitchTitle,
 							FText::GetEmpty(),
 							FSlateIcon(),
-							FUIAction(FExecuteAction::CreateRaw(this, &FTPCEEditor::CreateDistanceCurveAssets, Sequences, EDistanceCurveType::Pith))
+							FUIAction(FExecuteAction::CreateRaw(this, &FTPCEEditor::CreateDistanceCurveAssets, Sequences, EDistanceCurveType::Pitch))
 						);
 
 						SubMenuBuilder.AddMenuEntry(
