@@ -16,6 +16,7 @@
 #include "Kismet/KismetStringLibrary.h"
 #include "Kismet/KismetStringTableLibrary.h"
 #include "Kismet/KismetTextLibrary.h"
+#include "KismetSystemLibraryExtensions.h"
 #include "KismetArrayLibraryExtensions.h"
 #include "KismetInputLibraryExtensions.h"
 #include "KismetMathLibraryExtensions.h"
@@ -32,6 +33,7 @@ static struct TPCE_API Kismet: public UKismetSystemLibrary
 	typedef ::UKismetRenderingLibrary Rendering;
 	typedef ::UKismetStringLibrary String;
 	typedef ::UKismetStringTableLibrary StringTable;
+	typedef ::UKismetSystemLibraryEx System;
 	typedef ::UKismetTextLibrary Text;
 };
 
