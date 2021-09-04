@@ -17,6 +17,34 @@ struct FMathEx : public FMath
 {
 	using FMath::RInterpTo;
 
+
+
+	/** Maps negative values to positive values while going back and forth. */
+	static FORCEINLINE uint32 ZigZag(int32 x)
+	{
+		return (uint32(x) << 1) ^ (x >> 31);
+	}
+
+	/** Maps negative values to positive values while going back and forth. */
+	static FORCEINLINE uint64 ZigZag_64(int64 x)
+	{
+		return (uint64(x) << 1) ^ (x >> 63);
+	}
+
+	/** Reverses ZigZag. Maps alternating values to positive and negative values. */
+	static FORCEINLINE int32 ReverseZigZag(uint32 y)
+	{
+		return static_cast<int32>(((y >> 1) ^ -(static_cast<int64>(y) & 1)));
+	}
+
+	/** Reverses ZigZag_64. Maps alternating values to positive and negative values. */
+	static FORCEINLINE int64 ReverseZigZag_64(uint64 y)
+	{
+		return static_cast<int64>(((y >> 1) ^ -(static_cast<int64>(y) & 1)));
+	}
+
+
+
 	/** Interpolate rotator from Current to Target. Scaled by distance to Target, so it has a strong start speed and ease out. */
 	static TPCE_API FQuat QInterpTo(const FQuat& Current, const FQuat& Target, float DeltaTime, float InterpSpeed);
 
