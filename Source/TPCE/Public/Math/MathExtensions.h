@@ -121,6 +121,9 @@ struct FMathEx : public FMath
 	/** Find the cardinal direction to a target point given the start point and rotation. */
 	static TPCE_API ECardinalDirection FindCardinalDirection(const FVector& Point, const FVector& StartPoint, const FQuat& Rotation);
 
+	/** Snaps an angle value to the nearest cardinal direction. */
+	static TPCE_API ECardinalDirection FindCardinalDirection(float Angle);
+
 
 
 	/**
