@@ -444,7 +444,9 @@ ECardinalDirection FMathEx::FindCardinalDirection(const FVector& Point, const FV
 ECardinalDirection FMathEx::FindCardinalDirection(float Angle)
 {
 	Angle = FRotator::ClampAxis(Angle);
-	switch (FMath::FloorToInt((Angle + 45.f) / 90.f) % 4)
+	const uint8 Quadrant = FMath::FloorToInt((Angle + 45.f) / 90.f) % 4;
+
+	switch (Quadrant)
 	{
 	case 0:
 		return ECardinalDirection::North;
@@ -457,6 +459,7 @@ ECardinalDirection FMathEx::FindCardinalDirection(float Angle)
 	}
 
 	checkNoEntry();
+	return {};
 }
 
 float FMathEx::SoftClip(float Value, float Start, float End)
