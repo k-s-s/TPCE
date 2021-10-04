@@ -515,3 +515,52 @@ float FMathEx::SoftClipRange(float Value, float Low, float High, float Knee)
 
 	return Value;
 }
+
+void FMathEx::FourPointBezier(const FVector& A, const FVector& B, const FVector& C, const FVector& D, float T, FVector& OutPosition, FVector& OutTangent)
+{
+	const FVector AB = FMath::Lerp<FVector>(A, B, T);
+	const FVector BC = FMath::Lerp<FVector>(B, C, T);
+	const FVector CD = FMath::Lerp<FVector>(C, D, T);
+	const FVector ABBC = FMath::Lerp<FVector>(AB, BC, T);
+	const FVector BCCD = FMath::Lerp<FVector>(BC, CD, T);
+	OutPosition = FMath::Lerp<FVector>(ABBC, BCCD, T);
+	OutTangent = (BCCD - ABBC).GetSafeNormal();
+}
+
+float InternalClosestPointOnFourPointBezier(const FVector& A, const FVector& B, const FVector& C, const FVector& D, const FVector& Point, float Start, float End, int Steps, int Iterations)
+{
+	// Simple approximation method based on https://pomax.github.io/bezierjs/
+	// An algebraic solution can be found at https://computingandrecording.wordpress.com/2017/03/20/closest-point-to-a-cubic-spline/
+	// Sturm's theorem is expensive, since this is always a cubic polynomial there's probably a better choice for real root isolation
+	// Unrelated: https://apoorvaj.io/cubic-bezier-through-four-points/ for Catmull-Rom curves
+
+	if (Iterations <= 0)
+	{
+		return (Start + End) / 2.f;
+	}
+
+	const float StepSize = (End - Start) / Steps;
+	float BestT = 0.f;
+	float BestDistance = FLT_MAX;
+	FVector CurrentPosition, CurrentTangent;
+
+	for (float T = Start; T <= End; T += StepSize)
+	{
+		FMathEx::FourPointBezier(A, B, C, D, T, CurrentPosition, CurrentTangent);
+		const float Distance = FVector::DistSquared(CurrentPosition, Point);
+
+		if (Distance < BestDistance)
+		{
+			BestT = T;
+			BestDistance = Distance;
+		}
+	}
+
+	return InternalClosestPointOnFourPointBezier(A, B, C, D, Point, FMath::Max(BestT - StepSize, 0.f), FMath::Min(BestT + StepSize, 1.f), Steps, Iterations - 1);
+}
+
+void FMathEx::ClosestPointOnFourPointBezier(const FVector& A, const FVector& B, const FVector& C, const FVector& D, const FVector& Point, float& OutT, FVector& OutPosition, FVector& OutTangent, int32 Steps)
+{
+	OutT = InternalClosestPointOnFourPointBezier(A, B, C, D, Point, 0.f, 1.f, Steps, 2);
+	FourPointBezier(A, B, C, D, OutT, OutPosition, OutTangent);
+}

@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
 #include "AnimGraphNode_SkeletalControlBase.h"
 #include "AnimNodes/AnimNode_ArmSeparation.h"
 

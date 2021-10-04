@@ -4,7 +4,6 @@
 
 #include "Animation/AnimInstance.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Materials/MaterialInstanceDynamic.h"
 
 #define LOCTEXT_NAMESPACE "TPCEAnimGraphNodes"
 

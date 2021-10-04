@@ -138,4 +138,10 @@ struct FMathEx : public FMath
 	 * Input domain is [Low-Knee..High+Knee]
 	 */
 	static TPCE_API float SoftClipRange(float Value, float Low, float High, float Knee);
+
+	/** Calculate the point on the curve for the given interpolator parameter. */
+	static TPCE_API void FourPointBezier(const FVector& A, const FVector& B, const FVector& C, const FVector& D, float T, FVector& OutPosition, FVector& OutTangent);
+
+	/** Find the point on the curve defined by four control points which is closest to Point. */
+	static TPCE_API void ClosestPointOnFourPointBezier(const FVector& A, const FVector& B, const FVector& C, const FVector& D, const FVector& Point, float& OutT, FVector& OutPosition, FVector& OutTangent, int32 Steps = 12);
 };
