@@ -14,7 +14,7 @@
  * Boxes describe an axis-aligned extent in three dimensions. They are used for many different things in the
  * Engine and in games, such as bounding volumes, collision detection and visibility calculation.
  */
-struct TPCE_API FIntBox
+struct FIntBox
 {
 public:
 
@@ -48,7 +48,7 @@ public:
 	 * @param InMin The box's minimum point.
 	 * @param InMax The box's maximum point.
 	 */
-	FIntBox( const FIntVector& InMin, const FIntVector& InMax )
+	TPCE_API FIntBox( const FIntVector& InMin, const FIntVector& InMax )
 		: Min(InMin)
 		, Max(InMax)
 		, IsValid(1)
@@ -60,7 +60,7 @@ public:
 	 * @param Points Array of Points to create for the bounding volume.
 	 * @param Count The number of points.
 	 */
-	FIntBox( const FIntVector* Points, int32 Count );
+	TPCE_API FIntBox( const FIntVector* Points, int32 Count );
 
 	/**
 	 * Creates and initializes a new box from an array of points.
@@ -206,26 +206,14 @@ public:
 	}
 
 	/**
-	 * Moves the center of bounding box to new destination.
-	 *
-	 * @param The destination point to move center of box to.
-	 * @return A new bounding box.
-	 */
-	FORCEINLINE FIntBox MoveTo( const FIntVector& Destination ) const
-	{
-		const FIntVector Offset = Destination - GetCenter();
-		return FIntBox(Min + Offset, Max + Offset);
-	}
-
-	/**
 	 * Gets the center point of this box.
 	 *
 	 * @return The center point.
 	 * @see GetCenterAndExtents, GetExtent, GetSize, GetVolume
 	 */
-	FORCEINLINE FIntVector GetCenter() const
+	FORCEINLINE FVector GetCenter() const
 	{
-		return FIntVector((Min + Max) * 0.5f);
+		return FVector(Min + Max) * 0.5f;
 	}
 
 	/**
@@ -325,7 +313,7 @@ public:
 	 * @param Other The bounding box to test overlap
 	 * @return the overlap box. It can be 0 if they don't overlap
 	 */
-	FIntBox Overlap( const FIntBox& Other ) const;
+	TPCE_API FIntBox Overlap( const FIntBox& Other ) const;
 
 	/**
 	  * Gets a bounding volume transformed by an inverted FTransform object.
@@ -333,7 +321,7 @@ public:
 	  * @param M The transformation object to perform the inversely transform this box with.
 	  * @return	The transformed box.
 	  */
-	FIntBox InverseTransformBy( const FTransform& M ) const;
+	TPCE_API FIntBox InverseTransformBy( const FTransform& M ) const;
 
 	/**
 	 * Checks whether the given location is inside this box.
@@ -400,7 +388,7 @@ public:
 	 * @return The transformed box.
 	 * @see TransformProjectBy
 	 */
-	FIntBox TransformBy( const FMatrix& M ) const;
+	TPCE_API FIntBox TransformBy( const FMatrix& M ) const;
 
 	/**
 	 * Gets a bounding volume transformed by a FTransform object.
@@ -409,7 +397,7 @@ public:
 	 * @return The transformed box.
 	 * @see TransformProjectBy
 	 */
-	FIntBox TransformBy( const FTransform& M ) const;
+	TPCE_API FIntBox TransformBy( const FTransform& M ) const;
 
 	/**
 	 * Transforms and projects a world bounding box to screen space
@@ -418,7 +406,7 @@ public:
 	 * @return The transformed box.
 	 * @see TransformBy
 	 */
-	FIntBox TransformProjectBy( const FMatrix& ProjM ) const;
+	TPCE_API FIntBox TransformProjectBy( const FMatrix& ProjM ) const;
 
 	/**
 	 * Get a textual representation of this box.
