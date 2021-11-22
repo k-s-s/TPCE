@@ -166,7 +166,7 @@ public:
 	 * @param W The size to increase the volume by.
 	 * @return A new bounding box.
 	 */
-	FORCEINLINE FIntBox ExpandBy(float W) const
+	FORCEINLINE FIntBox ExpandBy(int32 W) const
 	{
 		return FIntBox(Min - FIntVector(W, W, W), Max + FIntVector(W, W, W));
 	}
@@ -277,7 +277,7 @@ public:
 	 * @return The box volume.
 	 * @see GetCenter, GetCenterAndExtents, GetExtent, GetSize
 	 */
-	FORCEINLINE float GetVolume() const
+	FORCEINLINE int32 GetVolume() const
 	{
 		return ((Max.X - Min.X) * (Max.Y - Min.Y) * (Max.Z - Min.Z));
 	}
