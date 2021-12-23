@@ -9,15 +9,6 @@
 
 #include "ExtraTypes.generated.h"
 
-/**
- * When you modify this, please note that this information can be saved with instances
- * also DefaultEngine.ini [/Script/Engine.CollisionProfile] should match with this list.
- */
-#define COLLISION_WEAPON		ECC_GameTraceChannel1
-#define COLLISION_PROJECTILE	ECC_GameTraceChannel2
-#define COLLISION_PICKUP		ECC_GameTraceChannel3
-#define COLLISION_CAMERA_ACTOR 	ECC_GameTraceChannel4
-
 extern TPCE_API const FName NAME_Spectator;
 extern TPCE_API const FName NAME_Normal;
 extern TPCE_API const FName NAME_Ragdoll;
