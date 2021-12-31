@@ -315,6 +315,13 @@ void UExtCharacterMovementComponent::ApplyVelocityBraking(float DeltaTime, float
 	}
 }
 
+void UExtCharacterMovementComponent::ApplyAccumulatedForces(float DeltaSeconds)
+{
+	LastForceVelocity = PendingForceToApply * DeltaSeconds;
+
+	Super::ApplyAccumulatedForces(DeltaSeconds);
+}
+
 void UExtCharacterMovementComponent::PhysWalking(float deltaTime, int32 Iterations)
 {
 	// Full override is needed to apply pawn push away as a separate velocity.

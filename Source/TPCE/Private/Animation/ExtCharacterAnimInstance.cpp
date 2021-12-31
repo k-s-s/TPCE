@@ -49,6 +49,9 @@ UExtCharacterAnimInstance::UExtCharacterAnimInstance()
 	PlayRateWalk = 1.f;
 	PlayRateWalkCrouched = 1.f;
 
+	ForceVelocitySpeed = 5.f;
+	ForceVelocityScale = 10.f;
+
 	SpeedWarpScale = 1.0f;
 }
 
@@ -101,8 +104,6 @@ void UExtCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		LastGroundSpeed = GroundSpeed;
 
 		const FTransform& CharacterMeshTransform = CharacterOwnerMesh->GetComponentTransform();
-
-
 		const FVector CharacterMeshLocation = CharacterOwnerMesh->GetComponentLocation();
 		const FVector CharacterMeshLocationDelta = (CharacterMeshLocation - LastCharacterMeshLocation).ProjectOnToNormal(CharacterOwnerMovement->Velocity.GetSafeNormal());
 		LastCharacterMeshLocation = CharacterMeshLocation;
@@ -111,6 +112,21 @@ void UExtCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// In order to reduce sliding in simulated proxies we use a Velocity calculated from the mesh displacement since last frame.
 		Velocity = CharacterMeshLocationDelta / DeltaSeconds;
 		Acceleration = CharacterOwnerMovement->GetCurrentAcceleration();
+		bIsAccelerating = Acceleration.SizeSquared() > KINDA_SMALL_NUMBER;
+
+		if (bIsAccelerating && ForceVelocitySpeed > 0.f)
+		{
+			// Using strong wind applying a constant force as an example...
+			// If not accelerating, the character will walk in the direction of the wind
+			// If accelerating into the wind, run even though the character more or less stays in place (getting pushed back)
+			// If accelerating away from the wind, run faster than normal (pushed by the wind)
+			FVector LastForceVelocity2D = CharacterOwnerMovement->LastForceVelocity;
+			LastForceVelocity2D.Z = 0.f;
+			SmoothForceVelocity = FMath::Lerp(SmoothForceVelocity, LastForceVelocity2D, DeltaSeconds * ForceVelocitySpeed);
+			const float ForceVelocityWeight = FVector::DotProduct(SmoothForceVelocity.GetSafeNormal2D(), Acceleration.GetSafeNormal2D());
+			GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::White, FString::SanitizeFloat(ForceVelocityWeight));
+			Velocity += SmoothForceVelocity * (ForceVelocityScale * ForceVelocityWeight);
+		}
 
 		Speed = Velocity.Size();
 		GroundSpeed = Velocity.Size2D();
@@ -119,8 +135,6 @@ void UExtCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bWasMoving2D = bIsMoving2D;
 		bIsMoving = Speed > 0.01f;
 		bIsMoving2D = GroundSpeed > 0.01f;
-
-		bIsAccelerating = Acceleration.SizeSquared() > KINDA_SMALL_NUMBER;
 
 		if (bIsMoving2D)
 		{

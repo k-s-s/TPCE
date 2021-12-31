@@ -332,6 +332,10 @@ private:
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	FVector LastMovementVelocity;
 
+	/** Averaged velocity from external forces applied to the character. */
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
+	FVector SmoothForceVelocity;
+
 	/** Any difference between course (velocity direction) and heading (character forward) in the XY plane. */
 	UPROPERTY(BlueprintReadOnly, Transient, Category = "Character", meta = (AllowPrivateAccess = "true"))
 	float MovementDrift;
@@ -491,6 +495,19 @@ private:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
 	float SlopeRunSpeedScale;
+
+	/**
+	 * Speed at which external forces are blended into velocity when not accelerating. Disabled if zero.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking", meta = (AllowPrivateAccess = "true", ClampMin = "0", UIMin = "0"))
+	float ForceVelocitySpeed;
+
+	/**
+	 * Multiplier for external forces blended into velocity.
+	 * This allows the character to be shown running into strong winds instead of standing motionless.
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Settings|Walking", meta = (AllowPrivateAccess = "true"))
+	float ForceVelocityScale;
 
 protected:
 

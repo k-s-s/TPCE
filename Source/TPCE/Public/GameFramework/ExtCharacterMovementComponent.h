@@ -355,13 +355,17 @@ public: // Variables
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category = Velocity, meta = (AllowPrivateAccess = "true"))
 	FVector LastMovementVelocity;
 
-	/** Last velocity vector when acceleration was non-zero */
+	/** Last velocity vector when acceleration was non-zero. */
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category = Velocity, meta = (AllowPrivateAccess = "true"))
 	FVector LastAcceleratedVelocity;
 
 	/** Last non-zero acceleration vector. */
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category = Velocity, meta = (AllowPrivateAccess = "true"))
 	FVector LastMovementAcceleration;
+
+	/** Last change in velocity when forces were applied. */
+	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category = Velocity, meta = (AllowPrivateAccess = "true"))
+	FVector LastForceVelocity;
 
 	/** During a brake velocity is clamped to zero if its magnitude is below this value. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (General Settings)", meta = (ClampMin = "0", UIMin = "0"), AdvancedDisplay)
@@ -470,6 +474,7 @@ protected: // Methods
 
 	virtual void PhysWalking(float deltaTime, int32 Iterations) override;
 	virtual void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration) override;
+	virtual void ApplyAccumulatedForces(float DeltaSeconds) override;
 	virtual void SimulateMovement(float DeltaSeconds) override;
 	virtual FVector CalcPushAwayVelocity(float DeltaTime);
 
