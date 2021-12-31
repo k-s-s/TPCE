@@ -124,7 +124,6 @@ void UExtCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			LastForceVelocity2D.Z = 0.f;
 			SmoothForceVelocity = FMath::Lerp(SmoothForceVelocity, LastForceVelocity2D, DeltaSeconds * ForceVelocitySpeed);
 			const float ForceVelocityWeight = FVector::DotProduct(SmoothForceVelocity.GetSafeNormal2D(), Acceleration.GetSafeNormal2D());
-			GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::White, FString::SanitizeFloat(ForceVelocityWeight));
 			Velocity += SmoothForceVelocity * (ForceVelocityScale * ForceVelocityWeight);
 		}
 
