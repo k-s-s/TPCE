@@ -476,6 +476,7 @@ protected: // Methods
 	virtual void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration) override;
 	virtual void ApplyAccumulatedForces(float DeltaSeconds) override;
 	virtual void SimulateMovement(float DeltaSeconds) override;
+	virtual void PerformMovement(float DeltaSeconds) override;
 	virtual FVector CalcPushAwayVelocity(float DeltaTime);
 
 	virtual void OnMovementUpdated(float DeltaSeconds, const FVector& OldLocation, const FVector& OldVelocity);
@@ -515,6 +516,8 @@ public: // Methods
 	virtual FRotator GetDeltaRotation(const FRotator& CurrentRotation, const FRotator& DesiredRotation, float DeltaSeconds) const;
 	virtual FRotator ComputeOrientToMovementRotation(const FRotator& CurrentRotation, float DeltaSeconds);
 	virtual FRotator ComputeOrientToLookRotation(const FRotator& LookRotation, const float NorthSegmentHalfWidth, float Buffer, float DeltaSeconds);
+
+	virtual bool GetOverrideAndAdditiveRootMotionRotation(float DeltaSeconds, FQuat& OutRotation);
 
 	virtual bool ShouldRemainVertical() const override;
 
