@@ -363,6 +363,10 @@ public: // Variables
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category = Velocity, meta = (AllowPrivateAccess = "true"))
 	FVector LastMovementAcceleration;
 
+	/** Real time of the last non-zero acceleration vector. */
+	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category = Velocity, meta = (AllowPrivateAccess = "true"))
+	float LastMovementAccelerationTime;
+
 	/** Last change in velocity when forces were applied. */
 	UPROPERTY(BlueprintReadOnly, Transient, DuplicateTransient, Category = Velocity, meta = (AllowPrivateAccess = "true"))
 	FVector LastForceVelocity;
