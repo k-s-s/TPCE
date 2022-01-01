@@ -1183,11 +1183,14 @@ void UExtCharacterMovementComponent::OnMovementUpdated(float DeltaSeconds, const
 
 	const bool bIsMoving2D = Velocity.SizeSquared2D() > KINDA_SMALL_NUMBER;
 	if (bIsMoving2D)
+	{
 		LastMovementVelocity = Velocity;
+	}
 
 	const bool bIsAccelerating = Acceleration.SizeSquared() > KINDA_SMALL_NUMBER;
 	if (bIsAccelerating)
 	{
+		LastMovementAccelerationTime = GetWorld()->RealTimeSeconds;
 		LastMovementAcceleration = Acceleration;
 		LastAcceleratedVelocity = Velocity;
 	}
