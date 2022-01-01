@@ -1246,7 +1246,8 @@ bool UExtCharacterMovementComponent::CanTurnInPlaceInCurrentState() const
 	// The root bone is adjusted instead.
 	return bEnableTurnInPlace
 		&& ExtCharacterOwner
-		&& !ExtCharacterOwner->IsGettingUp();
+		&& !ExtCharacterOwner->IsGettingUp()
+		&& !HasRootMotionSources();
 }
 
 void UExtCharacterMovementComponent::ResetTurnInPlaceState()
