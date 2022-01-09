@@ -62,6 +62,12 @@ void UAIJob::BeginJob()
 
 void UAIJob::FinishJob()
 {
+	if (!GetWorld())
+	{
+		// World is shutting down
+		return;
+	}
+
 	if (!bActive)
 	{
 		UE_VLOG(this, LogAIJobs, Warning, TEXT("Tried to finish job that is not active"));
