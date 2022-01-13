@@ -23,12 +23,12 @@
 		{
 			"Name": "TPCEEditor",
 			"Type": "Editor",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "PreDefault"
 		},
 		{
 			"Name": "TPCEUncooked",
 			"Type": "UncookedOnly",
-			"LoadingPhase": "PostEngineInit"
+			"LoadingPhase": "PreDefault"
 		}
 	]
 }
