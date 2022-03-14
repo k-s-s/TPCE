@@ -152,7 +152,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Camera)
 	bool GetViewExtents(FVector& TopLeft, FVector& TopRight, FVector& BottomRight, FVector& BottomLeft, FVector& Min, FVector& Max) const;
 
-	/** Returns the ground plane used for view extents and other functions. */
+	/** Returns the ground plane used for view extents and other functions. Located at the feet of the controlled pawn if available. */
 	virtual FPlane GetGroundPlane() const;
 
 	/**

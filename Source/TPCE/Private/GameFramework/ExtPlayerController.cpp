@@ -270,6 +270,11 @@ bool AExtPlayerController::DeprojectScreenPositionToGround(float ScreenX, float 
 
 FPlane AExtPlayerController::GetGroundPlane() const
 {
+	if (APawn* MyPawn = GetPawn())
+	{
+		return FPlane(MyPawn->GetActorLocation() - FVector(0.f, 0.f, MyPawn->GetDefaultHalfHeight()), FVector::UpVector);
+	}
+
 	return FPlane(RootComponent->GetComponentLocation(), FVector::UpVector);
 }
 
