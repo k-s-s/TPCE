@@ -115,10 +115,6 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	} ConstructorStatics;
 
 	// Input settings
-	MoveForwardActionName = ConstructorStatics.NAME_MoveForwardAction;
-	MoveBackwardActionName = ConstructorStatics.NAME_MoveBackwardAction;
-	MoveLeftActionName = ConstructorStatics.NAME_MoveLeftAction;
-	MoveRightActionName = ConstructorStatics.NAME_MoveRightAction;
 	MoveForwardAxisName = ConstructorStatics.NAME_MoveForwardAxis;
 	MoveRightAxisName = ConstructorStatics.NAME_MoveRightAxis;
 	LookUpAxisName = ConstructorStatics.NAME_LookUpAxis;
@@ -970,18 +966,6 @@ void AExtCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis(LookUpAxisName, this, &ThisClass::PlayerInputLookUp);
 	PlayerInputComponent->BindAxis(LookRightAxisName, this, &ThisClass::PlayerInputLookRight);
 
-	PlayerInputComponent->BindAction(MoveForwardActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveForward);
-	PlayerInputComponent->BindAction(MoveForwardActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveForward);
-
-	PlayerInputComponent->BindAction(MoveBackwardActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveBackward);
-	PlayerInputComponent->BindAction(MoveBackwardActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveBackward);
-
-	PlayerInputComponent->BindAction(MoveLeftActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveLeft);
-	PlayerInputComponent->BindAction(MoveLeftActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveLeft);
-
-	PlayerInputComponent->BindAction(MoveRightActionName, IE_Pressed, this, &ThisClass::PlayerInputStartMoveRight);
-	PlayerInputComponent->BindAction(MoveRightActionName, IE_Released, this, &ThisClass::PlayerInputStopMoveRight);
-
 	PlayerInputComponent->BindAction(CrouchActionName, IE_Pressed, this, &ThisClass::PlayerInputStartCrouch);
 	PlayerInputComponent->BindAction(CrouchActionName, IE_Released, this, &ThisClass::PlayerInputStopCrouch);
 
@@ -1000,8 +984,6 @@ void AExtCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 void AExtCharacter::PlayerInputMoveForward(float Value)
 {
-	Value += MoveForwardValue;
-
 	if (Value != 0.0f && Controller && Controller->IsLocalPlayerController())
 	{
 		FVector Location;
@@ -1013,78 +995,12 @@ void AExtCharacter::PlayerInputMoveForward(float Value)
 
 void AExtCharacter::PlayerInputMoveRight(float Value)
 {
-	Value += MoveRightValue;
-
 	if (Value != 0.0f && Controller && Controller->IsLocalPlayerController())
 	{
 		FVector Location;
 		FRotator Rotation;
 		Controller->GetPlayerViewPoint(Location, Rotation);
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, Rotation.Yaw, 0.0f)).GetUnitAxis(EAxis::Y), Value);
-	}
-}
-
-void AExtCharacter::PlayerInputStartMoveForward()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveForwardValue = +1;
-	}
-}
-
-void AExtCharacter::PlayerInputStopMoveForward()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveForwardValue = 0;
-	}
-}
-
-void AExtCharacter::PlayerInputStartMoveBackward()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveForwardValue = -1;
-	}
-}
-
-void AExtCharacter::PlayerInputStopMoveBackward()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveForwardValue = 0;
-	}
-}
-
-void AExtCharacter::PlayerInputStartMoveLeft()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveRightValue = -1;
-	}
-}
-
-void AExtCharacter::PlayerInputStopMoveLeft()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveRightValue = 0;
-	}
-}
-
-void AExtCharacter::PlayerInputStartMoveRight()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveRightValue = +1;
-	}
-}
-
-void AExtCharacter::PlayerInputStopMoveRight()
-{
-	if (Controller && Controller->IsLocalPlayerController())
-	{
-		MoveRightValue = 0;
 	}
 }
 

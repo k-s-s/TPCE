@@ -252,14 +252,6 @@ public:		// Bitfields
 	UPROPERTY(BlueprintReadOnly, Transient, Category = Character)
 	uint32 bIsJumping : 1;
 
-	/** Forwards/backwards movement value from input actions, added to the axis value. */
-	UPROPERTY(Transient)
-	int32 MoveForwardValue;
-
-	/** Left/right movement value from input actions, added to the axis value. */
-	UPROPERTY(Transient)
-	int32 MoveRightValue;
-
 protected:
 
 	/**
@@ -268,18 +260,6 @@ protected:
 	 */
 	UPROPERTY(BlueprintReadWrite, Transient, Category = Character)
 	uint32 bHasLandedSafely : 1;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName MoveForwardActionName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName MoveBackwardActionName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName MoveLeftActionName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FName MoveRightActionName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FName MoveForwardAxisName;
@@ -546,30 +526,6 @@ protected:	// Methods
 
 	/** [local] Handle player input to move side to side */
 	virtual void PlayerInputMoveRight(float Value);
-
-	/** [local] Handle player input to start moving forwards */
-	virtual void PlayerInputStartMoveForward();
-
-	/** [local] Handle player input to stop moving forwards */
-	virtual void PlayerInputStopMoveForward();
-
-	/** [local] Handle player input to start moving backwards */
-	virtual void PlayerInputStartMoveBackward();
-
-	/** [local] Handle player input to stop moving backwards */
-	virtual void PlayerInputStopMoveBackward();
-
-	/** [local] Handle player input to start moving left */
-	virtual void PlayerInputStartMoveLeft();
-
-	/** [local] Handle player input to stop moving left */
-	virtual void PlayerInputStopMoveLeft();
-
-	/** [local] Handle player input to start moving right */
-	virtual void PlayerInputStartMoveRight();
-
-	/** [local] Handle player input to stop moving right */
-	virtual void PlayerInputStopMoveRight();
 
 	/** [local] Handle player input to look up/down */
 	virtual void PlayerInputLookUp(float Value);
