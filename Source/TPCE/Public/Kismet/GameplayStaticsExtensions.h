@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Kismet/GameplayStatics.h"
+#include "GenericTeamAgentInterface.h"
 
 #include "GameplayStaticsExtensions.generated.h"
 
@@ -25,6 +26,10 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Utilities|Transformation", meta=(Keywords="Bone"))
 	static FString GetSocketTag(class USceneComponent* Target, FName InSocketName);
+
+	/** Return team attitude between two actors. */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="AI", meta=(DefaultToSelf="ControlledObject"))
+	static ETeamAttitude::Type GetTeamAttitudeTowards(class AActor* ThisActor, class AActor* OtherActor);
 
 	/** Set the Source Cubemap Angle of a Skylight Component. */
 	UFUNCTION(BlueprintCallable, Category="Light")

@@ -30,6 +30,19 @@ FString UGameplayStaticsEx::GetSocketTag(USceneComponent* Target, FName InSocket
 	return FString();
 }
 
+ETeamAttitude::Type UGameplayStaticsEx::GetTeamAttitudeTowards(AActor* ThisActor, AActor* OtherActor)
+{
+	if (ThisActor && OtherActor)
+	{
+		if (const IGenericTeamAgentInterface* TeamAgent = Cast<const IGenericTeamAgentInterface>(ThisActor))
+		{
+			return TeamAgent->GetTeamAttitudeTowards(*OtherActor);
+		}
+	}
+
+	return ETeamAttitude::Neutral;
+}
+
 void UGameplayStaticsEx::SetSourceCubemapAngle(USkyLightComponent* SkyLightComponent, float NewSourceCubemapAngle)
 {
 	SkyLightComponent->SourceCubemapAngle = NewSourceCubemapAngle;
