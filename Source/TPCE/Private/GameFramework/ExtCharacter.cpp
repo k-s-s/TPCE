@@ -261,11 +261,11 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 	ExtCharacterMovement->CrouchedHalfHeight = 60.0f;
 	ExtCharacterMovement->SetWalkableFloorAngle(50.0f);
 
-	ExtCharacterMovement->MaxWalkSpeed = MovementSettings.Primary.Standing.Walk.MaxSpeed;
-	ExtCharacterMovement->MaxWalkAcceleration = MovementSettings.Primary.Standing.Walk.MaxAcceleration;
-	ExtCharacterMovement->WalkFriction = MovementSettings.Primary.Standing.Walk.Friction;
-	ExtCharacterMovement->BrakingDecelerationWalking = MovementSettings.Primary.Standing.Walk.BrakingDeceleration;
-	ExtCharacterMovement->BrakingFrictionFactor = MovementSettings.Primary.Standing.Walk.BrakingFrictionFactor;
+	ExtCharacterMovement->MaxWalkSpeed = MovementSettings.Primary.Standing.Run.MaxSpeed;
+	ExtCharacterMovement->MaxWalkAcceleration = MovementSettings.Primary.Standing.Run.MaxAcceleration;
+	ExtCharacterMovement->WalkFriction = MovementSettings.Primary.Standing.Run.Friction;
+	ExtCharacterMovement->BrakingDecelerationWalking = MovementSettings.Primary.Standing.Run.BrakingDeceleration;
+	ExtCharacterMovement->BrakingFrictionFactor = MovementSettings.Primary.Standing.Run.BrakingFrictionFactor;
 
 
 #if WITH_EDITOR
@@ -723,6 +723,8 @@ void AExtCharacter::PostInitializeComponents()
 #if WITH_EDITOR
 	UpdateDebugComponentsVisibility();
 #endif
+
+	UpdateMovementComponentSettings();
 
 	if (bIsRagdoll)
 	{
