@@ -50,10 +50,6 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 		FName NAME_AccelerationArrow;
 #endif
 #endif
-		FName NAME_MoveForwardAction;
-		FName NAME_MoveBackwardAction;
-		FName NAME_MoveLeftAction;
-		FName NAME_MoveRightAction;
 		FName NAME_MoveForwardAxis;
 		FName NAME_MoveRightAxis;
 		FName NAME_LookUpAxis;
@@ -88,10 +84,6 @@ AExtCharacter::AExtCharacter(const FObjectInitializer& ObjectInitializer)
 #endif
 #endif
 
-			NAME_MoveForwardAction(TEXT("MoveForward")),
-			NAME_MoveBackwardAction(TEXT("MoveBackward")),
-			NAME_MoveLeftAction(TEXT("MoveLeft")),
-			NAME_MoveRightAction(TEXT("MoveRight")),
 			NAME_MoveForwardAxis(TEXT("MoveForward")),
 			NAME_MoveRightAxis(TEXT("MoveRight")),
 			NAME_LookUpAxis(TEXT("LookUp")),
