@@ -2003,7 +2003,7 @@ void UExtCharacterMovementComponent::UnWalk(bool bClientSimulation)
 		return;
 	}
 
-	if (CharacterOwner)
+	if (ExtCharacterOwner)
 	{
 		if (!bClientSimulation)
 		{
