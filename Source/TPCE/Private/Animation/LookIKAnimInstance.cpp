@@ -2,11 +2,10 @@
 
 #include "Animation/LookIKAnimInstance.h"
 
-#include "GameFramework/ExtCharacter.h"
 #include "Math/MathExtensions.h"
 #include "Kismet/Kismet.h"
-#include "ExtraMacros.h"
-#include "ExtraTypes.h"
+#include "TPCEMacros.h"
+#include "TPCETypes.h"
 
 ULookIKAnimInstance::ULookIKAnimInstance()
 {

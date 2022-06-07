@@ -3,7 +3,7 @@
 
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "Third Person Character Extension",
+	"FriendlyName": "Third Person Character Extensions",
 	"Description": "Adds code and assets to improve third person characters in a character-based project.",
 	"Category": "Gameplay",
 	"CreatedBy": "Nicolas Lebedenco",

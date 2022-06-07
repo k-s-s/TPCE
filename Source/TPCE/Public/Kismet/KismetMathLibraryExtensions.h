@@ -4,7 +4,7 @@
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/Bounds.h"
-#include "ExtraTypes.h"
+#include "TPCETypes.h"
 
 #include "KismetMathLibraryExtensions.generated.h"
 

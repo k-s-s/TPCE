@@ -7,15 +7,13 @@
 #include "UObject/ObjectMacros.h"
 #include "Animation/AnimInstance.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "ExtraTypes.h"
+#include "TPCETypes.h"
 
 #include "LookIKAnimInstance.generated.h"
 
 class USkeletalMeshComponent;
 class UAnimSequence;
 class UCurveFloat;
-class AExtCharacter;
-class UExtCharacterMovementComponent;
 
 /**
  * AnimInstance class related to looking behavior.

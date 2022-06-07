@@ -5,16 +5,6 @@
 #include "PropertyEditorModule.h"
 #include "SCopyAdditiveLayerTracksWindow.h"
 
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/ExtCharacter.h"
-#include "GameFramework/ExtCharacterMovementComponent.h"
-
-#include "DetailCustomizations/CharacterDetails.h"
-#include "DetailCustomizations/CharacterMovementDetails.h"
-#include "DetailCustomizations/ExtCharacterDetails.h"
-#include "DetailCustomizations/ExtCharacterMovementDetails.h"
-
 #include "Components/ArmComponent.h"
 #include "ComponentVisualizers/ArmComponentVisualizer.h"
 
@@ -125,11 +115,6 @@ void FTPCEEditor::ShutdownModule()
 
 void FTPCEEditor::RegisterPropertyEditors()
 {
-	RegisterCustomClassLayout(ACharacter::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FCharacterDetails::MakeInstance));
-	RegisterCustomClassLayout(AExtCharacter::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FExtCharacterDetails::MakeInstance));
-
-	RegisterCustomClassLayout(UCharacterMovementComponent::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FCharacterMovementDetails::MakeInstance));
-	RegisterCustomClassLayout(UExtCharacterMovementComponent::StaticClass()->GetFName(), FOnGetDetailCustomizationInstance::CreateStatic(&FExtCharacterMovementDetails::MakeInstance));
 }
 
 void FTPCEEditor::RegisterComponentVisualizers()

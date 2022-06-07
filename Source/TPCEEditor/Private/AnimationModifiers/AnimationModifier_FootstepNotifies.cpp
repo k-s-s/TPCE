@@ -6,7 +6,7 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "UObject/UObjectBaseUtility.h"
 #include "ReferenceSkeleton.h"
-#include "ExtraTypes.h"
+#include "TPCETypes.h"
 
 const FName UAnimationModifier_FootstepNotifies::NotifyTrackName(TEXT("Footsteps"));
 

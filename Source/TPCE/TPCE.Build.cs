@@ -2,7 +2,7 @@
 
 using UnrealBuildTool;
 
-public class TPCE: ModuleRules
+public class TPCE : ModuleRules
 {
 	public TPCE(ReadOnlyTargetRules Target) : base(Target)
 	{

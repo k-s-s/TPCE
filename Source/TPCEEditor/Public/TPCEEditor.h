@@ -9,7 +9,7 @@
 #include "PropertyEditorDelegates.h"
 #include "IAssetTools.h"
 #include "IAssetTypeActions.h"
-#include "ExtraEditorTypes.h"
+#include "TPCEEditorTypes.h"
 
 class UAnimSequence;
 

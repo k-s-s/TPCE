@@ -4,7 +4,7 @@
 
 #include "Animation/AnimSequence.h"
 #include "UObject/UObjectBaseUtility.h"
-#include "ExtraTypes.h"
+#include "TPCETypes.h"
 
 FBonePair::FBonePair()
 	: BoneName1(NAME_None)

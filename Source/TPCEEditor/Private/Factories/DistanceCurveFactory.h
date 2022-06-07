@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Factories/Factory.h"
-#include "ExtraEditorTypes.h"
+#include "TPCEEditorTypes.h"
 
 #include "DistanceCurveFactory.generated.h"
 

@@ -3,7 +3,7 @@
 #include "AnimationModifiers/AnimationModifier_FootSyncMarkers.h"
 #include "Animation/AnimSequence.h"
 #include "UObject/UObjectBaseUtility.h"
-#include "ExtraTypes.h"
+#include "TPCETypes.h"
 #include "Internationalization/Regex.h"
 
 const FName UAnimationModifier_FootSyncMarkers::NotifyTrackName(TEXT("FootSync"));

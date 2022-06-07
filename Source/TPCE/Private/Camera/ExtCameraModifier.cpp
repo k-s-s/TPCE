@@ -4,7 +4,7 @@
 
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
-#include "ExtraMacros.h"
+#include "TPCEMacros.h"
 
 UExtCameraModifier::UExtCameraModifier()
 	: bPauseWithPlayerInput(false)
