@@ -89,6 +89,9 @@ extern TPCE_API const FName NAME_IKHand_Gun;
 extern TPCE_API const FName NAME_IKHand_L;
 extern TPCE_API const FName NAME_IKHand_R;
 
+extern TPCE_API const FName NAME_Weapon_L;
+extern TPCE_API const FName NAME_Weapon_R;
+
 /** */
 UENUM(BlueprintType)
 enum class ELongitudinalDirection : uint8

@@ -79,3 +79,6 @@ const FName NAME_IKHandRoot(TEXT("ik_hand_root"));
 const FName NAME_IKHand_Gun(TEXT("ik_hand_gun"));
 const FName NAME_IKHand_L(TEXT("ik_hand_l"));
 const FName NAME_IKHand_R(TEXT("ik_hand_r"));
+
+const FName NAME_Weapon_L(TEXT("weapon_l"));
+const FName NAME_Weapon_R(TEXT("weapon_r"));

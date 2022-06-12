@@ -69,8 +69,8 @@ protected:
 	void RegisterAssetTools(IAssetTools& AssetTools);
 	void RegisterContentBrowserExtenders();
 
-
 public:
+
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 };
