@@ -25,9 +25,10 @@ UBTTask_PlayMontage::UBTTask_PlayMontage(const FObjectInitializer& ObjectInitial
 
 EBTNodeResult::Type UBTTask_PlayMontage::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	MyOwnerComp = &OwnerComp;
+
 	const AAIController* MyController = OwnerComp.GetAIOwner();
 	EBTNodeResult::Type Result = EBTNodeResult::Failed;
-	MyOwnerComp = &OwnerComp;
 
 	if (MontageToPlay && MyController && MyController->GetPawn())
 	{
@@ -46,27 +47,23 @@ EBTNodeResult::Type UBTTask_PlayMontage::ExecuteTask(UBehaviorTreeComponent& Own
 			if (UAnimInstance* AnimInstance = SkelMesh->GetAnimInstance())
 			{
 				const float MontageLength = AnimInstance->Montage_Play(MontageToPlay, PlayRate, EMontagePlayReturnType::MontageLength, StartingPosition);
-				if (MontageLength > 0.f)
+				if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(MontageToPlay))
 				{
 					AnimInstancePtr = AnimInstance;
-					if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(MontageToPlay))
-					{
-						MontageInstanceID = MontageInstance->GetInstanceID();
-					}
+					MontageInstanceID = MontageInstance->GetInstanceID();
+
+					BlendingOutDelegate.BindUObject(this, &UBTTask_PlayMontage::OnMontageBlendingOut);
+					MontageInstance->OnMontageBlendingOutStarted = BlendingOutDelegate;
+
+					MontageEndedDelegate.BindUObject(this, &UBTTask_PlayMontage::OnMontageEnded);
+					MontageInstance->OnMontageEnded = MontageEndedDelegate;
+
+					AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &UBTTask_PlayMontage::OnNotifyBeginReceived);
 
 					if (StartingSection != NAME_None)
 					{
 						AnimInstance->Montage_JumpToSection(StartingSection, MontageToPlay);
 					}
-
-					BlendingOutDelegate.BindUObject(this, &UBTTask_PlayMontage::OnMontageBlendingOut);
-					AnimInstance->Montage_SetBlendingOutDelegate(BlendingOutDelegate, MontageToPlay);
-
-					MontageEndedDelegate.BindUObject(this, &UBTTask_PlayMontage::OnMontageEnded);
-					AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, MontageToPlay);
-
-					AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this, &UBTTask_PlayMontage::OnNotifyBeginReceived);
-					AnimInstance->OnPlayMontageNotifyEnd.AddDynamic(this, &UBTTask_PlayMontage::OnNotifyEndReceived);
 
 					Result = EBTNodeResult::InProgress;
 				}
@@ -85,12 +82,12 @@ EBTNodeResult::Type UBTTask_PlayMontage::ExecuteTask(UBehaviorTreeComponent& Own
 
 EBTNodeResult::Type UBTTask_PlayMontage::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	UnbindDelegates();
+
 	if (UAnimInstance* AnimInstance = AnimInstancePtr.Get())
 	{
 		AnimInstance->Montage_Stop(AbortBlendOutTime, MontageToPlay);
 	}
-
-	UnbindDelegates();
 
 	return EBTNodeResult::Aborted;
 }
@@ -109,8 +106,8 @@ void UBTTask_PlayMontage::OnMontageBlendingOut(UAnimMontage* Montage, bool bInte
 {
 	if (MyOwnerComp && !bInterrupted && bFinishOnBlendOut)
 	{
-		FinishLatentTask(*MyOwnerComp, EBTNodeResult::Succeeded);
 		UnbindDelegates();
+		FinishLatentTask(*MyOwnerComp, EBTNodeResult::Succeeded);
 	}
 }
 
@@ -118,8 +115,8 @@ void UBTTask_PlayMontage::OnMontageEnded(UAnimMontage* Montage, bool bInterrupte
 {
 	if (MyOwnerComp && !bInterrupted && !bFinishOnBlendOut)
 	{
-		FinishLatentTask(*MyOwnerComp, EBTNodeResult::Succeeded);
 		UnbindDelegates();
+		FinishLatentTask(*MyOwnerComp, EBTNodeResult::Succeeded);
 	}
 }
 
@@ -131,29 +128,18 @@ void UBTTask_PlayMontage::OnNotifyBeginReceived(FName NotifyName, const FBranchi
 		{
 			FinishLatentTask(*MyOwnerComp, EBTNodeResult::Succeeded);
 		}
-
-		//OnNotifyBegin.Broadcast(NotifyName);
-	}
-}
-
-void UBTTask_PlayMontage::OnNotifyEndReceived(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointNotifyPayload)
-{
-	if (MyOwnerComp && IsNotifyValid(NotifyName, BranchingPointNotifyPayload))
-	{
-		//OnNotifyEnd.Broadcast(NotifyName);
 	}
 }
 
 void UBTTask_PlayMontage::UnbindDelegates()
 {
+	MontageEndedDelegate.Unbind();
+	BlendingOutDelegate.Unbind();
+
 	if (UAnimInstance* AnimInstance = AnimInstancePtr.Get())
 	{
 		AnimInstance->OnPlayMontageNotifyBegin.RemoveDynamic(this, &UBTTask_PlayMontage::OnNotifyBeginReceived);
-		AnimInstance->OnPlayMontageNotifyEnd.RemoveDynamic(this, &UBTTask_PlayMontage::OnNotifyEndReceived);
 	}
-
-	AnimInstancePtr.Reset();
-	MyOwnerComp = nullptr;
 }
 
 #if WITH_EDITOR

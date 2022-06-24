@@ -26,7 +26,7 @@ class TPCE_API UBTService_FindReachablePoint : public UBTService_BlackboardBase
 	UPROPERTY(EditAnywhere, Category="Node", meta=(ClampMin="0", UIMin="0"))
 	float Radius;
 
-	/** Offset the search origin in the controlled pawn's rotation. */
+	/** Offset the search origin in the controlled pawn's rotation space. */
 	UPROPERTY(EditAnywhere, Category="Node")
 	FVector OriginOffset;
 
