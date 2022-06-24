@@ -44,25 +44,13 @@ FString UBTService_ModifyFloat::GetStaticDescription() const
 		KeyDesc = BlackboardKey.SelectedKeyName.ToString();
 	}
 
-	return FString::Printf(TEXT("%s %s %.2f"), *KeyDesc, *GetOperatorDescription(Operator), Operand);
+	return FString::Printf(TEXT("%s\n%s %s %.2f"), *Super::GetStaticDescription(), *KeyDesc, *GetOperatorDescription(Operator), Operand);
 }
 
-FString UBTService_ModifyFloat::GetOperatorDescription(EModifyFloatOperator Op) const
+FString UBTService_ModifyFloat::GetOperatorDescription(EModifyFloatOperator Op)
 {
-	switch (Op)
-	{
-	case EModifyFloatOperator::Assign:
-		return "=";
-	case EModifyFloatOperator::Add:
-		return "+=";
-	case EModifyFloatOperator::Subtract:
-		return "-=";
-	case EModifyFloatOperator::Multiply:
-		return "*=";
-	case EModifyFloatOperator::Divide:
-		return "/=";
-	}
-	return "?";
+	static FString Desc[] = { TEXT("="), TEXT("+="), TEXT("-="), TEXT("*="), TEXT("/=") };
+	return ((int)Op < UE_ARRAY_COUNT(Desc)) ? Desc[(int)Op] : FString();
 }
 
 template<typename T>

@@ -26,7 +26,8 @@ enum class EModifyFloatOperator : uint8
 };
 
 /**
- * Modifies a float blackboard value.
+ * Modify Float service node.
+ * A service node that periodically modifies a float Blackboard entry.
  */
 UCLASS()
 class TPCE_API UBTService_ModifyFloat : public UBTService_BlackboardBase
@@ -58,7 +59,7 @@ class TPCE_API UBTService_ModifyFloat : public UBTService_BlackboardBase
 
 protected:
 
-	FString GetOperatorDescription(EModifyFloatOperator Op) const;
+	static FString GetOperatorDescription(EModifyFloatOperator Op);
 
 	template<typename T>
 	T GetOperatorResult(EModifyFloatOperator Op, T Value1, T Value2) const;

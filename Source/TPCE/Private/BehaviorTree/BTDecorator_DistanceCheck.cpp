@@ -92,23 +92,18 @@ void UBTDecorator_DistanceCheck::TickNode(UBehaviorTreeComponent& OwnerComp, uin
 
 float UBTDecorator_DistanceCheck::GetGeometricDistanceSquared(const FVector& A, const FVector& B) const
 {
-	float Result = MAX_flt;
 	switch (GeometricDistanceType)
 	{
 	case FAIDistanceType::Distance3D:
-		Result = FVector::DistSquared(A, B);
-		break;
+		return FVector::DistSquared(A, B);
 	case FAIDistanceType::Distance2D:
-		Result = FVector::DistSquaredXY(A, B);
-		break;
+		return FVector::DistSquaredXY(A, B);
 	case FAIDistanceType::DistanceZ:
-		Result = FMath::Square(A.Z - B.Z);
-		break;
+		return FMath::Square(A.Z - B.Z);
 	default:
 		checkNoEntry();
-		break;
 	}
-	return Result;
+	return MAX_flt;
 }
 
 FString UBTDecorator_DistanceCheck::GetStaticDescription() const
