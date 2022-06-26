@@ -67,6 +67,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AI|Jobs")
 	virtual float GetJobTimeActive() const;
 
+	/** Get the outer AI controller if available. */
+	UFUNCTION(BlueprintCallable, Category="AI|Jobs", meta=(DisplayName="Get AI Owner", KeyWords="controller aicontroller"))
+	AAIController* GetAIOwner() const { return JobsComponent ? JobsComponent->GetAIOwner() : nullptr; }
+
 #if WITH_GAMEPLAY_DEBUGGER
 	virtual void DescribeSelfToGameplayDebugger(FGameplayDebuggerCategory* DebuggerCategory) const;
 #endif // WITH_GAMEPLAY_DEBUGGER

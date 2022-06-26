@@ -62,7 +62,7 @@ public:
 	bool RemoveJob(UAIJob* Job);
 
 	/** Get the outer AI controller if available. */
-	UFUNCTION(BlueprintCallable, Category="AI|Jobs")
+	UFUNCTION(BlueprintCallable, Category="AI|Jobs", meta=(DisplayName="Get AI Owner", KeyWords="controller aicontroller"))
 	AAIController* GetAIOwner() const { return AIOwner; }
 
 	/** Get the outer controller's pawn if available, otherwise the outer as an actor. */
