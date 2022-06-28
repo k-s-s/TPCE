@@ -37,6 +37,7 @@ protected:
 	UPROPERTY(Transient)
 	UAIJob* CurrentJob;
 
+	/** Cached owner controller. */
 	UPROPERTY(Transient)
 	AAIController* AIOwner;
 
@@ -49,9 +50,11 @@ public:
 	virtual void InitializeComponent() override;
 	// End UActorComponent Interface
 
-	void MoveJobs(TArray<UAIJob*>& InJobs);
 	FORCEINLINE TJobArray::TIterator GetAvailableJobsIterator() { return TJobArray::TIterator(AvailableJobs); }
 	FORCEINLINE TJobArray::TConstIterator GetAvailableJobsConstIterator() const { return TJobArray::TConstIterator(AvailableJobs); }
+
+	/** Move and claim ownership of multiple job objects. */
+	void MoveJobs(TArray<UAIJob*>& InJobs);
 
 	/** Create and add a new job of the given class. */
 	UFUNCTION(BlueprintCallable, Category="AI|Jobs", meta=(DeterminesOutputType="JobClass"))

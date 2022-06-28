@@ -26,6 +26,17 @@ UBTService_Distance::UBTService_Distance(const FObjectInitializer& ObjectInitial
 	Observed.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(ThisClass, Observed));
 }
 
+void UBTService_Distance::InitializeFromAsset(UBehaviorTree& Asset)
+{
+	Super::InitializeFromAsset(Asset);
+
+	UBlackboardData* BBAsset = GetBlackboardAsset();
+	if (ensure(BBAsset))
+	{
+		Observed.ResolveSelectedKey(*BBAsset);
+	}
+}
+
 void UBTService_Distance::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);

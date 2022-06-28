@@ -25,6 +25,7 @@ class TPCE_API UBTService_Distance : public UBTService_BlackboardBase
 	UPROPERTY(EditAnywhere, Category="Blackboard")
 	FBlackboardKeySelector Observed;
 
+	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
 	virtual FString GetStaticDescription() const override;
 #if WITH_EDITOR
 	virtual FName GetNodeIconName() const override;
