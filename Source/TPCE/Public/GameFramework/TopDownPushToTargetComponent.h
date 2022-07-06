@@ -10,7 +10,7 @@
 /**
  * A specialized PushToTargetComponent designed specifically for the TopDownPlayerController.
  */
-UCLASS(Within=TopDownPlayerController)
+UCLASS()
 class TPCE_API UTopDownPushToTargetComponent : public UPushToTargetComponent
 {
 	GENERATED_BODY()
