@@ -21,6 +21,14 @@ class TPCE_API UBTService_Distance : public UBTService_BlackboardBase
 	UPROPERTY(EditAnywhere, Category="Node")
 	FAIDistanceType GeometricDistanceType;
 
+	/** If set, AI pawn's capsule dimensions will be subtracted from the result.  */
+	UPROPERTY(EditAnywhere, Category="Node")
+	bool bReachTestIncludesAgentRadius;
+
+	/** If set, observed pawn's capsule dimensions will be subtracted from the result. */
+	UPROPERTY(EditAnywhere, Category="Node")
+	bool bReachTestIncludesGoalRadius;
+
 	/** Blackboard key selector */
 	UPROPERTY(EditAnywhere, Category="Blackboard")
 	FBlackboardKeySelector Observed;
@@ -37,6 +45,6 @@ protected:
 
 private:
 
-	float GetGeometricDistance(const FVector& A, const FVector& B) const;
+	float GetGeometricDistance(const FVector& A, const FVector& B, float RadiusSum, float HalfHeightSum) const;
 	static FString GetGeometricDistanceDescription(FAIDistanceType GeometricDistanceType);
 };

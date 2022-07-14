@@ -47,7 +47,30 @@ void UBTService_Distance::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 	if (MyBlackboard && MyBlackboard->GetLocationFromEntry(Observed.GetSelectedKeyID(), TargetLocation) && MyController && MyController->GetPawn())
 	{
-		const float Distance = GetGeometricDistance(MyController->GetPawn()->GetActorLocation(), TargetLocation);
+		float CollisionRadiusSum = 0.f;
+		float CollisionHalfHeightSum = 0.f;
+
+		if (bReachTestIncludesAgentRadius)
+		{
+			// Could be cached
+			MyController->GetPawn()->GetSimpleCollisionCylinder(CollisionRadiusSum, CollisionHalfHeightSum);
+		}
+
+		if (bReachTestIncludesGoalRadius)
+		{
+			// Could be cached?
+			UObject* ObservedValue = MyBlackboard->GetValue<UBlackboardKeyType_Object>(Observed.GetSelectedKeyID());
+			if (AActor* ObservedPawn = Cast<APawn>(ObservedValue))
+			{
+				float CollisionRadius, CollisionHalfHeight;
+				ObservedPawn->GetSimpleCollisionCylinder(CollisionRadius, CollisionHalfHeight);
+
+				CollisionRadiusSum += CollisionRadius;
+				CollisionHalfHeightSum += CollisionHalfHeight;
+			}
+		}
+
+		const float Distance = GetGeometricDistance(MyController->GetPawn()->GetActorLocation(), TargetLocation, CollisionRadiusSum, CollisionHalfHeightSum);
 
 		MyBlackboard->SetValue<UBlackboardKeyType_Float>(BlackboardKey.GetSelectedKeyID(), Distance);
 	}
@@ -71,16 +94,16 @@ FString UBTService_Distance::GetStaticDescription() const
 	return FString::Printf(TEXT("%s\n%s = %s to %s"), *Super::GetStaticDescription(), *KeyDesc, *GetGeometricDistanceDescription(GeometricDistanceType), *ObservedKeyDesc);
 }
 
-float UBTService_Distance::GetGeometricDistance(const FVector& A, const FVector& B) const
+float UBTService_Distance::GetGeometricDistance(const FVector& A, const FVector& B, float RadiusSum, float HalfHeightSum) const
 {
 	switch (GeometricDistanceType)
 	{
 	case FAIDistanceType::Distance3D:
-		return FVector::Dist(A, B);
+		return FMath::Max(0.f, FVector::Dist(A, B) - RadiusSum);  // Wrong but whatever
 	case FAIDistanceType::Distance2D:
-		return FVector::DistXY(A, B);
+		return FMath::Max(0.f, FVector::DistXY(A, B) - RadiusSum);
 	case FAIDistanceType::DistanceZ:
-		return FMath::Abs(A.Z - B.Z);
+		return FMath::Max(0.f, FMath::Abs(A.Z - B.Z) - HalfHeightSum);
 	default:
 		checkNoEntry();
 	}

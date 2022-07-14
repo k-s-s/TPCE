@@ -42,23 +42,6 @@ void UBTTask_TurnTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemo
 	{
 		APawn* MyPawn = MyController->GetPawn();
 
-		/*if (BlackboardKey.SelectedKeyType == UBlackboardKeyType_Object::StaticClass())
-		{
-			UObject* KeyValue = MyBlackboard->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
-			if (const AActor* TargetActor = Cast<AActor>(KeyValue))
-			{
-				TargetRotation = GetLookAtRotation(MyPawn->GetActorLocation(), TargetActor->GetActorLocation());
-			}
-		}
-		else if (BlackboardKey.SelectedKeyType == UBlackboardKeyType_Vector::StaticClass())
-		{
-			const FVector TargetLocation = MyBlackboard->GetValue<UBlackboardKeyType_Vector>(BlackboardKey.GetSelectedKeyID());
-			if (FAISystem::IsValidLocation(TargetLocation))
-			{
-				TargetRotation = GetLookAtRotation(MyPawn->GetActorLocation(), TargetLocation);
-			}
-		}*/
-
 		const FQuat InitialRotation = MyPawn->GetActorQuat();
 		FVector TargetLocation = FVector::ZeroVector;
 		FQuat TargetRotation = InitialRotation;
