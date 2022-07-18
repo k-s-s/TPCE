@@ -95,16 +95,18 @@ bool UBTService_FindReachablePoint::GetRandomReachablePoint(const UBehaviorTreeC
 			{
 				if (ANavigationData* NavData = NavSys->GetDefaultNavDataInstance(FNavigationSystem::DontCreate))
 				{
-					TSubclassOf<UNavigationQueryFilter> UseFilterClass = *FilterClass ? FilterClass : MyController->GetDefaultNavigationFilterClass();
+					const TSubclassOf<UNavigationQueryFilter> UseFilterClass = *FilterClass ? FilterClass : MyController->GetDefaultNavigationFilterClass();
 					FNavLocation RandomPoint(InOrigin);
-					if (NavSys->GetRandomReachablePointInRadius(InOrigin, Radius, RandomPoint, NavData,
-						UNavigationQueryFilter::GetQueryFilter(*NavData, MyController, UseFilterClass)))
+					if (NavSys->GetRandomReachablePointInRadius(InOrigin, Radius, RandomPoint, NavData, UNavigationQueryFilter::GetQueryFilter(*NavData, MyController, UseFilterClass)))
 					{
 						OutRandomPoint = RandomPoint.Location;
 						return true;
 					}
 				}
 			}
+
+			OutRandomPoint = InOrigin + FVector(FMath::RandPointInCircle(Radius), 0.f);
+			return true;
 		}
 	}
 	return false;
