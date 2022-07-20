@@ -17,6 +17,11 @@ void UGameplayStaticsEx::BreakHitResultEx(const FHitResult& Hit, FName& MyBoneNa
 	PenetrationDepth = Hit.PenetrationDepth;
 }
 
+void UGameplayStaticsEx::GetSimpleCollisionCylinder(class AActor* Actor, float& CollisionRadius, float& CollisionHalfHeight)
+{
+	Actor->GetSimpleCollisionCylinder(CollisionRadius, CollisionHalfHeight);
+}
+
 FString UGameplayStaticsEx::GetSocketTag(USceneComponent* Target, FName InSocketName)
 {
 	if (UStaticMeshComponent* StaticMeshComponent = Cast<UStaticMeshComponent>(Target))

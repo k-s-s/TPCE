@@ -15,9 +15,21 @@ class TPCE_API UGameplayStaticsEx : public UGameplayStatics
 
 public:
 
-	/** Extracts additional data from a HitResult. */
+	/**
+	 * Extracts additional data from a HitResult.
+	 *
+	 * @param MyBoneName Name of _my_ bone which took part in hit event (in case of two skeletal meshes colliding).
+	 * @param PenetrationDepth Distance along Normal that will result in moving out of penetration or zero if it cannot be computed.
+	 */
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Collision")
 	static void BreakHitResultEx(const struct FHitResult& Hit, FName& MyBoneName, float& PenetrationDepth);
+
+	/**
+	 * Get axis-aligned cylinder around this actor, used for simple collision checks (ie Pawns reaching a destination).
+	 * If IsRootComponentCollisionRegistered() returns true, just returns its bounding cylinder, otherwise falls back to GetComponentsBoundingCylinder.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Collision")
+	static void GetSimpleCollisionCylinder(class AActor* Actor, float& CollisionRadius, float& CollisionHalfHeight);
 
 	/**
 	* Return the tag associated with the socket if it exists.
