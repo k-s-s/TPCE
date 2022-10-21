@@ -25,17 +25,17 @@ struct TPCE_API FFloatExponentialMovingAverageState
 	float LastTime;
 
 	FFloatExponentialMovingAverageState()
-		: LastSample(0.0f)
-		, LastTime(0.0f)
+		: LastSample(0.f)
+		, LastTime(0.f)
 	{}
 
 	void Reset()
 	{
-		LastSample = LastTime = 0.0f;
+		LastSample = LastTime = 0.f;
 	}
 };
 
-UCLASS(meta = (BlueprintThreadSafe))
+UCLASS(meta=(BlueprintThreadSafe))
 class TPCE_API UKismetMathLibraryEx : public UKismetMathLibrary
 {
 	GENERATED_UCLASS_BODY()
@@ -52,7 +52,7 @@ public:
 	 * @param		Intersection - The point of intersection between the line and the plane
 	 * @return		True if the intersection test was successful.
 	 */
-	UFUNCTION(BlueprintPure, Category = "Math|Intersection")
+	UFUNCTION(BlueprintPure, Category="Math|Intersection")
 	static bool RayPlaneIntersection(const FVector& RayStart, const FVector& RayDir, const FPlane& APlane, float& T, FVector& Intersection);
 
 	//
@@ -60,83 +60,83 @@ public:
 	//
 
 	/** Scales Bounds A by B */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds * float", CompactNodeTitle = "*", Keywords = "* multiply"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds * float", CompactNodeTitle="*", Keywords="* multiply"), Category="Math|Bounds")
 	static FBounds Multiply_BoundsFloat(FBounds  A, float B);
 
 	/** Scales Bounds A by B */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds * int", CompactNodeTitle = "*", Keywords = "* multiply"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds * int", CompactNodeTitle="*", Keywords="* multiply"), Category="Math|Bounds")
 	static FBounds Multiply_BoundsInt(FBounds A, int32 B);
 
-	/** Element-wise Bounds multiplication (Result = {A.x*B.x, A.y*B.y, A.z*B.z}) */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds * bounds", CompactNodeTitle = "*", Keywords = "* multiply", CommutativeAssociativeBinaryOperator = "true"), Category = "Math|Bounds")
+	/** Element-wise Bounds multiplication (Result={A.x*B.x, A.y*B.y, A.z*B.z}) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds * bounds", CompactNodeTitle="*", Keywords="* multiply", CommutativeAssociativeBinaryOperator="true"), Category="Math|Bounds")
 	static FBounds Multiply_BoundsBounds(FBounds A, const FBounds&  B);
 
 	/** Bounds divide by a float */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds / float", CompactNodeTitle = "/", Keywords = "/ divide division"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds / float", CompactNodeTitle="/", Keywords="/ divide division"), Category="Math|Bounds")
 	static FBounds Divide_BoundsFloat(FBounds A, float B = 1.f);
 
 	/** Bounds divide by an integer */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds / int", CompactNodeTitle = "/", Keywords = "/ divide division"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds / int", CompactNodeTitle="/", Keywords="/ divide division"), Category="Math|Bounds")
 	static FBounds Divide_BoundsInt(FBounds A, int32 B = 1);
 
-	/** Element-wise Bounds division (Result = {A.x/B.x, A.y/B.y, A.z/B.z}) */
-	UFUNCTION(BlueprintPure, meta = (AutoCreateRefTerm = "B", DisplayName = "bounds / bounds", CompactNodeTitle = "/", Keywords = "/ divide division"), Category = "Math|Bounds")
+	/** Element-wise Bounds division (Result={A.x/B.x, A.y/B.y, A.z/B.z}) */
+	UFUNCTION(BlueprintPure, meta=(AutoCreateRefTerm="B", DisplayName="bounds / bounds", CompactNodeTitle="/", Keywords="/ divide division"), Category="Math|Bounds")
 	static FBounds Divide_BoundsBounds(FBounds A, const FBounds& B);
 
 	/** Bounds addition */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds + bounds", CompactNodeTitle = "+", Keywords = "+ add plus", CommutativeAssociativeBinaryOperator = "true"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds + bounds", CompactNodeTitle="+", Keywords="+ add plus", CommutativeAssociativeBinaryOperator="true"), Category="Math|Bounds")
 	static FBounds Add_BoundsBounds(FBounds A, const FBounds& B);
 
 	/** Adds a float to each component of bounds */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds + float", CompactNodeTitle = "+", Keywords = "+ add plus"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds + float", CompactNodeTitle="+", Keywords="+ add plus"), Category="Math|Bounds")
 	static FBounds Add_BoundsFloat(FBounds A, float B);
 
 	/** Adds an integer to each component of bounds */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds + int", CompactNodeTitle = "+", Keywords = "+ add plus"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds + int", CompactNodeTitle="+", Keywords="+ add plus"), Category="Math|Bounds")
 	static FBounds Add_BoundsInt(FBounds A, int32 B);
 
 	/** Bounds subtraction */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds - bounds", CompactNodeTitle = "-", Keywords = "- subtract minus"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds - bounds", CompactNodeTitle="-", Keywords="- subtract minus"), Category="Math|Bounds")
 	static FBounds Subtract_BoundsBounds(FBounds A, const FBounds& B);
 
 	/** Subtracts a float from each component of bounds */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds - float", CompactNodeTitle = "-", Keywords = "- subtract minus"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds - float", CompactNodeTitle="-", Keywords="- subtract minus"), Category="Math|Bounds")
 	static FBounds Subtract_BoundsFloat(FBounds A, float B);
 
 	/** Subtracts an integer from each component of bounds */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "bounds - int", CompactNodeTitle = "-", Keywords = "- subtract minus"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="bounds - int", CompactNodeTitle="-", Keywords="- subtract minus"), Category="Math|Bounds")
 	static FBounds Subtract_BoundsInt(FBounds A, int32 B);
 
 	/** Returns true if bounds A is equal to bounds B (A == B) within a specified error tolerance */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Equal (bounds)", CompactNodeTitle = "==", Keywords = "== equal"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Equal (bounds)", CompactNodeTitle="==", Keywords="== equal"), Category="Math|Bounds")
 	static bool EqualEqual_BoundsBounds(const FBounds&  A, const FBounds& B, float ErrorTolerance = 1.e-4f);
 
 	/** Returns true if bounds A is not equal to bounds B (A != B) within a specified error tolerance */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Not Equal (bounds)", CompactNodeTitle = "!=", Keywords = "!= not equal"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Not Equal (bounds)", CompactNodeTitle="!=", Keywords="!= not equal"), Category="Math|Bounds")
 	static bool NotEqual_BoundsBounds(const FBounds&  A, const FBounds& B, float ErrorTolerance = 1.e-4f);
 
 	/** Returns true if bounds is valid(Min <= Max). */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "IsReversed"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IsReversed"), Category="Math|Bounds")
 	static bool BoundsIsReversed(const FBounds& A);
 
 	/** Returns length of bounds (Max - Min). */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Length"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Length"), Category="Math|Bounds")
 	static float BoundsLength(const FBounds& A);
 
 	/** Returns true if value is within bounds (Min <= Value <= Max). */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Contains"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Contains"), Category="Math|Bounds")
 	static bool BoundsContains(const FBounds& A, const float Value);
 
 	/** Expands bounds to both sides by the specified amount. */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Expand"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Expand"), Category="Math|Bounds")
 	static void BoundsExpand(FBounds& A, float Amount);
 
 	/** Expands bounds if necessary to include the specified value. */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Includes"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Includes"), Category="Math|Bounds")
 	static void BoundsInclude(FBounds& A, float Value);
 
 	/** Returns a value from Min to Max interpolated by Alpha. */
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Interpolate"), Category = "Math|Bounds")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Interpolate"), Category="Math|Bounds")
 	static float BoundsInterpolate(const FBounds& A, float Alpha);
 
 	//
@@ -144,42 +144,42 @@ public:
 	//
 
 	/** Find the cardinal direction for an angle given the current cardinal direction, the half angle width of the north segment and a buffer for tolerance */
-	UFUNCTION(BlueprintPure, Category = "Math|Orientation")
+	UFUNCTION(BlueprintPure, Category="Math|Orientation")
 	static ECardinalDirection CalculateCardinalDirection(float Angle, ECardinalDirection CurrentCardinalDirection, const float NorthSegmentHalfWidth, float Buffer);
 
 	/**
 	 * Applies a soft clip function so that the value tapers off then stops as it reaches either Low or High.
 	 * Input domain is [Low-Knee..High+Knee]
 	 */
-	UFUNCTION(BlueprintPure, Category = "Math|Float")
+	UFUNCTION(BlueprintPure, Category="Math|Float")
 	static float SoftClipRange(float Value, float Low, float High, float Knee);
 
 	/** Returns Value clamped between 0 and 1 (inclusive). */
-	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "[0..1]"), Category = "Math|Float")
+	UFUNCTION(BlueprintPure, meta=(CompactNodeTitle="[0..1]"), Category="Math|Float")
 	static float Saturate(float Value);
 
 	/** Returns 1-Value. */
-	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "1-x", Keywords = "- subtract minus"), Category = "Math|Float")
+	UFUNCTION(BlueprintPure, meta=(CompactNodeTitle="1-x", Keywords="- subtract minus"), Category="Math|Float")
 	static float OneMinus(float Value);
 
 	/** Takes an input value, adds a bias value to it, and then multiplies it by a scaling. To convert the input data from [-1,1] to [0,1] you would use a bias of 1.0 and scale of 0.5. */
-	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "Bias", Category = "Math|Float"))
+	UFUNCTION(BlueprintPure, meta=(CompactNodeTitle="Bias", Category="Math|Float"))
 	static float ConstantBiasScale(float Value, float Bias, float Scale);
 
 	/** Use to smooth out an interpolant value. */
-	UFUNCTION(BlueprintPure, Category = "Math|Float")
+	UFUNCTION(BlueprintPure, Category="Math|Float")
 	static float EaseSinusoidal(float Value);
 
 	/** Modulo (A % B). Handles negative numbers. */
-	UFUNCTION(BlueprintPure, meta=(DisplayName = "-% (Byte)", CompactNodeTitle = "-%", Keywords = "% modulus"), Category="Math|Byte")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="-% (Byte)", CompactNodeTitle="-%", Keywords="% modulus"), Category="Math|Byte")
 	static uint8 NegativePercent_ByteByte(uint8 A, uint8 B = 1);
 
 	/** Modulo (A % B). Handles negative numbers. */
-	UFUNCTION(BlueprintPure, meta=(DisplayName = "-% (integer)", CompactNodeTitle = "-%", Keywords = "% modulus"), Category="Math|Integer")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="-% (integer)", CompactNodeTitle="-%", Keywords="% modulus"), Category="Math|Integer")
 	static int32 NegativePercent_IntInt(int32 A, int32 B = 1);
 
 	/** Modulo (A % B). Handles negative numbers. */
-	UFUNCTION(BlueprintPure, CustomThunk, meta = (DisplayName = "-% (float)", CompactNodeTitle = "-%", Keywords = "% modulus"), Category = "Math|Float")
+	UFUNCTION(BlueprintPure, CustomThunk, meta=(DisplayName="-% (float)", CompactNodeTitle="-%", Keywords="% modulus"), Category="Math|Float")
 	static float NegativePercent_FloatFloat(float A, float B = 1.f);
 
 	static float GenericNegativePercent_FloatFloat(float A, float B);
@@ -233,15 +233,99 @@ public:
 	//
 
 	/** Linearly interpolates between A and B based on Alpha (100% of A when Alpha=0 and 100% of B when Alpha=1) */
-	UFUNCTION(BlueprintPure, meta=(DisplayName = "Lerp (Vector2D)", ScriptMethod = "LerpTo"), Category="Math|Vector2D")
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Lerp (Vector2D)", ScriptMethod="LerpTo"), Category="Math|Vector2D")
 	static FVector2D V2Lerp(FVector2D A, FVector2D B, float Alpha);
+
+	//
+	// IntVector constants
+	//
+
+	/** 3D int vector zero constant (0,0,0) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="Zero", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_Zero();
+
+	/** 3D int vector one constant (1,1,1) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="One", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_One();
+
+	/** 3D int vector INDEX_NONE constant (-1,-1,-1) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="None", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_None();
+
+	/** 3D int vector Unreal forward direction constant (1,0,0) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="Forward", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_Forward();
+
+	/** 3D int vector Unreal backward direction constant (-1,0,0) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="Backward", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_Backward();
+
+	/** 3D int vector Unreal up direction constant (0,0,1) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="Up", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_Up();
+
+	/** 3D int vector Unreal down direction constant (0,0,-1) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="Down", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_Down();
+
+	/** 3D int vector Unreal right direction constant (0,1,0) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="Right", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_Right();
+
+	/** 3D int vector Unreal left direction constant (0,-1,0) */
+	UFUNCTION(BlueprintPure, meta=(ScriptConstant="Left", ScriptConstantHost="IntVector"), Category="Math|IntVector")
+	static FIntVector IntVector_Left();
+
+	//
+	// IntVector functions
+	//
+
+	/** Returns IntVector A added by B */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector + IntVector", CompactNodeTitle="+", ScriptMethod="Add", ScriptOperator="+;+=", Keywords="+ add plus"), Category="Math|IntVector")
+	static FIntVector Add_IntVectorIntVector(FIntVector A, FIntVector B);
+
+	/** Addition (A - B) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector + Integer", CompactNodeTitle="+", ScriptMethod="AddInt", ScriptOperator="+;+=", Keywords="+ add plus"), Category="Math|IntVector")
+	static FIntVector Add_IntVectorInt(FIntVector A, int32 B);
+
+	/** Returns IntVector A subtracted by B */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector - IntVector", CompactNodeTitle="-", ScriptMethod="Subtract", ScriptOperator="-;-=", Keywords="- subtract minus"), Category="Math|IntVector")
+	static FIntVector Subtract_IntVectorIntVector(FIntVector A, FIntVector B);
+
+	/** Subtraction (A - B) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector - Integer", CompactNodeTitle="-", ScriptMethod="SubtractInt", ScriptOperator="-;-=", Keywords="- subtract minus"), Category="Math|IntVector")
+	static FIntVector Subtract_IntVectorInt(FIntVector A, int32 B);
+
+	/** Returns IntVector A multiplied by B */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector * IntVector", CompactNodeTitle="*", ScriptMethod="Multiply", ScriptOperator="*;*=", Keywords="* multiply"), Category="Math|IntVector")
+	static FIntVector Multiply_IntVectorIntVector(FIntVector A, FIntVector B);
+
+	/** Multiplication (A * B) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector * Integer", CompactNodeTitle="*", ScriptMethod="MultiplyInt", ScriptOperator="*;*=", Keywords="* multiply"), Category="Math|IntVector")
+	static FIntVector Multiply_IntVectorInt(FIntVector A, int32 B);
+
+	/** Returns IntVector A divided by B */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector / IntVector", CompactNodeTitle="/", ScriptMethod="Divide", ScriptOperator="/;/=", Keywords="/ divide"), Category="Math|IntVector")
+	static FIntVector Divide_IntVectorIntVector(FIntVector A, FIntVector B);
+
+	/** Division (A * B) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="IntVector / Integer", CompactNodeTitle="/", ScriptMethod="DivideInt", ScriptOperator="/;/=", Keywords="/ divide"), Category="Math|IntVector")
+	static FIntVector Divide_IntVectorInt(FIntVector A, int32 B);
+
+	/** Returns true if IntVector A is equal to IntVector B (A == B) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Equal (IntVector)", CompactNodeTitle="==", ScriptMethod="Equals", ScriptOperator="==", Keywords="== equal"), Category="Math|IntVector")
+	static bool Equal_IntVectorIntVector(FIntVector A, FIntVector B);
+
+	/** Returns true if IntVector A is NOT equal to IntVector B (A != B) */
+	UFUNCTION(BlueprintPure, meta=(DisplayName="Not Equal (IntVector)", CompactNodeTitle="!=", ScriptMethod="NotEqual", ScriptOperator="==", Keywords="== not equal"), Category="Math|IntVector")
+	static bool NotEqual_IntVectorIntVector(FIntVector A, FIntVector B);
 
 	//
 	// Transform functions
 	//
 
 	/** Identity transform constant. */
-	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "0", ScriptConstant = "Identity", ScriptConstantHost = "Transform"), Category = "Math|Transform")
+	UFUNCTION(BlueprintPure, meta=(CompactNodeTitle="0", ScriptConstant="Identity", ScriptConstantHost="Transform"), Category="Math|Transform")
 	static FTransform Transform_Identity();
 
 	//
@@ -272,4 +356,6 @@ private:
 
 	static void ReportError_NegativePercent_ByteByte();
 	static void ReportError_NegativePercent_IntInt();
+	static void ReportError_Divide_IntVectorOnInt();
+	static void ReportError_Divide_IntVectorOnIntVector();
 };

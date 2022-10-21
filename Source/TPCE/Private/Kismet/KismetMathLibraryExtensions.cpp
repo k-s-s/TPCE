@@ -242,6 +242,132 @@ FVector2D UKismetMathLibraryEx::V2Lerp(FVector2D A, FVector2D B, float V)
 	return A + V * (B - A);
 }
 
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_Zero()
+{
+	return FIntVector::ZeroValue;
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_One()
+{
+	return FIntVector(1);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_None()
+{
+	return FIntVector::NoneValue;
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_Forward()
+{
+	return FIntVector(1, 0, 0);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_Backward()
+{
+	return FIntVector(-1, 0, 0);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_Up()
+{
+	return FIntVector(0, 0, 1);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_Down()
+{
+	return FIntVector(0, 0, -1);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_Right()
+{
+	return FIntVector(0, 1, 0);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::IntVector_Left()
+{
+	return FIntVector(0, -1, 0);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Add_IntVectorIntVector(FIntVector A, FIntVector B)
+{
+	return A + B;
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Add_IntVectorInt(FIntVector A, int32 B)
+{
+	return A + FIntVector(B);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Subtract_IntVectorIntVector(FIntVector A, FIntVector B)
+{
+	return A - B;
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Subtract_IntVectorInt(FIntVector A, int32 B)
+{
+	return A - FIntVector(B);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Multiply_IntVectorIntVector(FIntVector A, FIntVector B)
+{
+	return FIntVector(A.X * B.X, A.Y * B.Y, A.Z * B.Z);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Multiply_IntVectorInt(FIntVector A, int32 B)
+{
+	return FIntVector(A.X * B, A.Y * B, A.Z * B);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Divide_IntVectorIntVector(FIntVector A, FIntVector B)
+{
+	if (B.X == 0 || B.Y == 0 || B.Z == 0)
+	{
+		ReportError_Divide_IntVectorOnIntVector();
+		return FIntVector::ZeroValue;
+	}
+
+	return FIntVector(A.X / B.X, A.Y / B.Y, A.Z / B.Z);
+}
+
+KISMET_MATH_FORCEINLINE
+FIntVector UKismetMathLibraryEx::Divide_IntVectorInt(FIntVector A, int32 B)
+{
+	if (B == 0)
+	{
+		ReportError_Divide_IntVectorOnInt();
+		return FIntVector::ZeroValue;
+	}
+
+	return FIntVector(A.X / B, A.Y / B, A.Z / B);
+}
+
+KISMET_MATH_FORCEINLINE
+bool UKismetMathLibraryEx::Equal_IntVectorIntVector(FIntVector A, FIntVector B)
+{
+	return A == B;
+}
+
+KISMET_MATH_FORCEINLINE
+bool UKismetMathLibraryEx::NotEqual_IntVectorIntVector(FIntVector A, FIntVector B)
+{
+	return A != B;
+}
+
 FTransform UKismetMathLibraryEx::Transform_Identity()
 {
 	return FTransform();
@@ -331,4 +457,14 @@ void UKismetMathLibraryEx::ReportError_NegativePercent_ByteByte()
 void UKismetMathLibraryEx::ReportError_NegativePercent_IntInt()
 {
 	FFrame::KismetExecutionMessage(TEXT("Modulo by zero"), ELogVerbosity::Warning, DivideByZeroWarning);
+}
+
+void UKismetMathLibraryEx::ReportError_Divide_IntVectorOnInt()
+{
+	FFrame::KismetExecutionMessage(TEXT("Divide by zero: Divide_IntVectorInt"), ELogVerbosity::Warning, DivideByZeroWarning);
+}
+
+void UKismetMathLibraryEx::ReportError_Divide_IntVectorOnIntVector()
+{
+	FFrame::KismetExecutionMessage(TEXT("Divide by zero: Divide_IntVectorIntVector"), ELogVerbosity::Warning, DivideByZeroWarning);
 }
