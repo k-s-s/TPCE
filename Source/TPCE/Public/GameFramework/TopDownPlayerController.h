@@ -70,6 +70,7 @@ public:
 	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& OutResult) override;
 	virtual bool HasActiveCameraComponent() const override;
 	virtual bool HasActivePawnControlCameraComponent() const override;
+	virtual FPlane GetGroundPlane() const;
 
 	UFUNCTION(BlueprintCallable, Category="Camera")
 	void SetCameraTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName=NAME_None);

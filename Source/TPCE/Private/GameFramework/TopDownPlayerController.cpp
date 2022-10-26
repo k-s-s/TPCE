@@ -179,6 +179,16 @@ bool ATopDownPlayerController::HasActivePawnControlCameraComponent() const
 	return (CameraComponent->IsActive() && CameraComponent->bUsePawnControlRotation);
 }
 
+FPlane ATopDownPlayerController::GetGroundPlane() const
+{
+	if (GetPawn())
+	{
+		return Super::GetGroundPlane();
+	}
+
+	return FPlane(CameraMount->GetComponentLocation(), FVector::UpVector);
+}
+
 void ATopDownPlayerController::SetCameraTargetComponent(USceneComponent* NewTargetComponent, const FName& SocketName)
 {
 	if (CameraTractor)
